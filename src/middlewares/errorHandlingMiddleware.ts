@@ -1,5 +1,5 @@
-import { CustomError } from "../common/errors";
-import { NextFunction, Request, Response } from "express";
+import { CustomError } from '../common/errors';
+import { NextFunction, Request, Response } from 'express';
 
 export const errorHandler = (
   err: Error,
@@ -14,7 +14,7 @@ export const errorHandler = (
     });
   } else {
     res.status(500).json({
-      message: "Something went wrong. Internal server error",
+      message: 'Something went wrong. Internal server error',
     });
   }
 };

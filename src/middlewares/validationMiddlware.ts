@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from "express";
-import { z } from "zod";
-import { ValidationError } from "../common/errors";
+import { NextFunction, Request, Response } from 'express';
+import { z } from 'zod';
+import { ValidationError } from '../common/errors';
 
 type ValidateProps = {
   schema: z.Schema<any>;
-  target: "BODY" | "QUERY";
+  target: 'BODY' | 'QUERY';
 };
 
 const validate = (props: ValidateProps) => {
@@ -12,19 +12,19 @@ const validate = (props: ValidateProps) => {
     const { schema, target } = props;
 
     const validation = schema.safeParse(
-      target === "BODY" ? req.body : req.query
+      target === 'BODY' ? req.body : req.query
     );
 
     if (!validation.success) {
       const formattedErrors = validation.error.issues.map((err) => ({
-        path: err.path.join("."),
+        path: err.path.join('.'),
         message: err.message,
       }));
 
       return next(new ValidationError(formattedErrors));
     }
 
-    if (target === "BODY") {
+    if (target === 'BODY') {
       req.validatedBody = validation.data;
     } else {
       req.validatedQuery = validation.data;
@@ -37,14 +37,14 @@ const validate = (props: ValidateProps) => {
 const validateRequestQuery = (schema: z.Schema<any>) => {
   return validate({
     schema,
-    target: "QUERY",
+    target: 'QUERY',
   });
 };
 
 const validateRequestBody = (schema: z.Schema<any>) => {
   return validate({
     schema,
-    target: "BODY",
+    target: 'BODY',
   });
 };
 

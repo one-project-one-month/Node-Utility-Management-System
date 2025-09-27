@@ -1,10 +1,8 @@
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from '../generated/prisma';
 
 const prisma = new PrismaClient();
 
-async function main() {
-
-}
+async function main() {}
 
 main()
   .catch((e) => {
