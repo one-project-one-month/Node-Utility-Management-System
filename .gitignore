@@ -1,0 +1,43 @@
+# prod
+dist/
+/build
+/out/
+
+# dev
+.vscode/*
+!.vscode/launch.json
+!.vscode/*.code-snippets
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf
+
+# deps
+node_modules/
+/node_modules
+generated
+package-lock.json
+
+# env
+.env*
+.env.production
+!.env.example
+
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# misc
+.DS_Store
+*.pem
+
+# local db
+*.db*
+
+# typescript
+*.tsbuildinfo
