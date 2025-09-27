@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import { errorHandler } from "./middlewares/errorHandlingMiddleware";
 
 /* ROUTES */
-import userRoute from './routes/userRoute'
+
 
 
 dotenv.config();
@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 /* ROUTES */
-app.use("/api/v1/users", userRoute)
+
 
 app.use(errorHandler);
 

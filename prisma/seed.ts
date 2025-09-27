@@ -3,13 +3,7 @@ import { PrismaClient } from "../generated/prisma";
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.user.create({
-    data: {
-      name: "Zaw Zaw",
-      email: "zaw@example.com",
-      password: "password123",
-    },
-  });
+
 }
 
 main()
