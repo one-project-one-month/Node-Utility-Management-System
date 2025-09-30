@@ -4,7 +4,7 @@ import { ValidationError } from '../common/errors';
 
 type ValidateProps = {
   schema: z.Schema<any>;
-  target: 'BODY' | 'QUERY';
+  target: 'BODY' | 'PARAMS';
 };
 
 const validate = (props: ValidateProps) => {
@@ -12,10 +12,11 @@ const validate = (props: ValidateProps) => {
     const { schema, target } = props;
 
     const validation = schema.safeParse(
-      target === 'BODY' ? req.body : req.query
+      target === 'BODY' ? req.body : req.params
     );
-
+  
     if (!validation.success) {
+      console.log("Validation Errors:", validation.error.issues);
       const formattedErrors = validation.error.issues.map((err) => ({
         path: err.path.join('.'),
         message: err.message,
@@ -27,17 +28,17 @@ const validate = (props: ValidateProps) => {
     if (target === 'BODY') {
       req.validatedBody = validation.data;
     } else {
-      req.validatedQuery = validation.data;
+      req.validatedParams = validation.data;
     }
 
     next();
   };
 };
 
-const validateRequestQuery = (schema: z.Schema<any>) => {
+const validateRequestParams = (schema: z.Schema<any>) => {
   return validate({
     schema,
-    target: 'QUERY',
+    target: 'PARAMS',
   });
 };
 
@@ -48,4 +49,4 @@ const validateRequestBody = (schema: z.Schema<any>) => {
   });
 };
 
-export { validateRequestBody, validateRequestQuery };
+export { validateRequestBody, validateRequestParams };

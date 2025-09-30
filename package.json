@@ -7,6 +7,7 @@
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node ./dist/index.js",
     "dev": "tsx watch --env-file=.env ./src/index.ts",
+    "dev:no-watch": "tsx --env-file=.env ./src/index.ts",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
@@ -23,6 +24,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
+    "@prisma/extension-accelerate": "2.0.2",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
