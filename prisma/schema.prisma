@@ -9,9 +9,202 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+  id            String   @id @default(uuid())
+  user_name     String
+  email         String   @unique
+  password      String
+  role          UserRole
+  refresh_token String?
+  is_active     Boolean  @default(true) // To check with laravel team
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // relations
+  tenant Tenant?
+
+  @@map("users")
+}
+
+enum UserRole {
+  Tenant
+  Admin
+  Staff
+}
+
+model Room {
+  id               String     @id @default(uuid())
+  room_no          Int        @unique
+  floor            Int // To check with laravel team
+  dimension        String
+  no_of_bed_room   Int
+  status           RoomStatus @default(Available)
+  selling_price    Decimal?
+  max_no_of_people Int
+  description      String?
+  created_at       DateTime   @default(now())
+  updated_at       DateTime   @updatedAt
+
+  // relations
+  contract         Contract[]
+  tenant           Tenant?
+  customer_service CustomerService[]
+  bill             Bill?
+
+  @@map("rooms")
+}
+
+enum RoomStatus {
+  Available
+  Rented
+  Purchased
+  InMaintenance
+}
+
+model Tenant {
+  id            String   @id @default(uuid())
+  names         String[]
+  emails        String[]
+  nrcs          String[]
+  phone_nos     String[]
+  emergency_nos String[]
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // relations
+  room    Room   @relation(fields: [room_id], references: [id])
+  room_id String @unique
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String @unique
+
+  @@map("tenants")
+}
+
+model ContractType {
+  id         String   @id @default(uuid())
+  name       String // 6 months, 12 months
+  duration   Int
+  price      Decimal
+  facilities String[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  contract Contract[]
+
+  @@map("contract_types")
+}
+
+model Contract {
+  id           String   @id @default(uuid())
+  contract_id  String
+  expiry_date  DateTime
+  created_date DateTime
+  updated_date DateTime
+
+  // Relations
+  room_id       String       @unique
+  room          Room         @relation(fields: [room_id], references: [id])
+  contract_type ContractType @relation(fields: [contract_id], references: [id])
+
+  @@map("contracts")
+}
+
+model CustomerService {
+  id             String        @id @default(uuid())
+  description    String
+  category       Category
+  status         ServiceStatus
+  priority_level PriorityLevel
+  issue_date     DateTime      @default(now())
+
+  room    Room   @relation(fields: [room_id], references: [id])
+  room_id String
+
+  @@map("customer_services")
+}
+
+enum Category {
+  Complain
+  Maintenance
+  Other
+}
+
+enum ServiceStatus {
+  Pending
+  Ongoing
+  Resolved
+}
+
+enum PriorityLevel {
+  Low
+  Medium
+  High
+}
+
+model Bill {
+  id              String   @id @default(uuid())
+  rental_fee      Decimal
+  electricity_fee Decimal
+  water_fee       Decimal
+  fine_fee        Decimal?
+  service_fee     Decimal
+  ground_fee      Decimal
+  car_parking_fee Decimal?
+  wifi_fee        Decimal?
+  total_amount    Decimal
+  due_date        DateTime
+  created_at      DateTime
+  updated_at      DateTime
+
+  //relations
+  room       Room        @relation(fields: [room_id], references: [id])
+  room_id    String      @unique
+  total_unit TotalUnits?
+  invoice    Invoice?
+
+  @@map("bills")
+}
+
+model TotalUnits {
+  id                String  @id @default(uuid())
+  electricity_units Decimal
+  water_units       Decimal
+  created_at        Decimal
+
+  Bill    Bill   @relation(fields: [bill_id], references: [id])
+  bill_id String @unique
+
+  @@map("total_units")
+}
+
+model Invoice {
+  id      String        @id @default(uuid())
+  status  InvoiceStatus
+  //relations
+  bill    Bill          @relation(fields: [bill_id], references: [id])
+  bill_id String        @unique
+
+  receipt Receipt?
+
+  @@map("invoices")
+}
+
+enum InvoiceStatus {
+  Overdue
+  Paid
+  Pending
+}
+
+model Receipt {
+  id             String        @id @default(uuid())
+  payment_method PaymentMethod
+
+  invoice    Invoice @relation(fields: [invoice_id], references: [id])
+  invoice_id String  @unique
+
+  @@map("receipts")
+}
+
+enum PaymentMethod {
+  Cash
+  Mobile_Banking
 }
