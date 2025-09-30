@@ -66,19 +66,22 @@ app.use("/api/v1/users", userRoute)
 
 import { Router } from "express";
 import {
+  getAllUsersController,
   getUserController,
   createUserController,
 } from "../controllers/userController";
 import {
   validateRequestBody,
+  validateRequestParams,
   validateRequestQuery,
 } from "../middlewares/validationMiddlware";
-import { CreateUserSchema, GetUserQuerySchema } from "../validations/userSchema";
+import { CreateUserSchema, GetUserParamSchema, GetUserQuerySchema } from "../validations/userSchema";
 
 const router = Router();
 
-router.get("/", validateRequestQuery(GetUserQuerySchema), getUserController);
-router.post("/", validateRequestBody(CreateUserSchema), createUserController);
+router.get("/", validateRequestQuery(GetUserQuerySchema), getAllUsersController);
+router.get("/:userId", validateRequestParams(GetUserParamSchema) ,getUserController);
+router.post("/",validateRequestBody(CreateUserSchema), createUserController);
 
 export default router;
 
@@ -90,9 +93,34 @@ export default router;
 ```ts
 // src/controllers/userController.ts
 
-import { NextFunction, Request, Response } from "express";
-import { getUserService, createUserService } from "../services/userService";
-import { NotFoundError } from "../common/errors";
+import { NextFunction, Request, Response } from 'express';
+import {
+  getAllUsersService,
+  getUserService,
+  createUserService,
+} from '../services/userService';
+import { NotFoundError } from '../common/errors';
+import { successResponse } from '../common/apiResponse';
+
+export async function getAllUsersController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const filters = req.validatedQuery;
+
+    const user = await getAllUsersService(filters);
+
+    if (!user) {
+      throw new NotFoundError('No users found');
+    }
+
+    successResponse(res, 'Users fetched successfully', user);
+  } catch (error) {
+    next(error);
+  }
+}
 
 export async function getUserController(
   req: Request,
@@ -100,18 +128,17 @@ export async function getUserController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const user = await getUserService(req.validatedQuery);
+    const user = await getUserService(req.validatedParams.userId);
 
     if (!user) {
-      throw new NotFoundError("No users found");
+      throw new NotFoundError('No users found');
     }
 
-    res.status(200).json({ data: user });
+    successResponse(res, 'User fetched successfully', user);
   } catch (error) {
     next(error);
   }
 }
-
 export async function createUserController(
   req: Request,
   res: Response,
@@ -119,7 +146,8 @@ export async function createUserController(
 ): Promise<void> {
   try {
     const user = await createUserService(req.validatedBody);
-    res.status(201).json({ data: user });
+
+    successResponse(res, 'User created successfully', user, 201);
   } catch (error) {
     next(error);
   }
@@ -131,33 +159,81 @@ export async function createUserController(
 ```ts
 // src/services/userService.ts
 
-import { BadRequestError } from "../common/errors";
-import prisma from "../lib/prismaClient";
-import { CreateUserType, GetUserQueryType } from "../validations/userSchema";
+import { BadRequestError } from '../common/errors';
+import prisma from '../lib/prismaClient';
+import {
+  CreateUserType,
+  GetUserQueryType,
+} from '../validations/userSchema';
+// import { Prisma } from '../../generated/prisma';
 
-export async function getUserService(data: GetUserQueryType) {
-  return await prisma.user.findUnique({
-    where: {
-      id: data.userId,
+export async function getAllUsersService(query: GetUserQueryType) {
+  const whereClause: any = {}
+  // OR 
+  // const whereClause: Prisma.UserWhereInput = {} // for type safety
+
+  if (query.email) {
+    whereClause.email = query.email;
+  }
+
+  return await prisma.user.findMany({
+    where: whereClause,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      updated_at: true,
+      created_at: true,
+      // Exclude password field from the result
+    }
+  });
+}
+
+export async function getUserService(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      createdAt: true,
+      updatedAt: true,
+      // Exclude password from results
     },
   });
+
+  return user;
 }
 
 export async function createUserService(data: CreateUserType) {
   // Check if user already exists
   const existingUser = await prisma.user.findUnique({
-    where: {
-      email: data.email,
-    },
+    where: { email: data.email },
   });
+
   if (existingUser) {
-    throw new BadRequestError("User with this email already exists");
+    throw new BadRequestError('User with this email already exists');
   }
 
+  // In real application, you would hash the password here
+  // const hashedPassword = await bcrypt.hash(data.password, 12);
+
   return await prisma.user.create({
-    data,
+    data: {
+      ...data,
+      // password: hashedPassword, // Use hashed password
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      createdAt: true,
+      updatedAt: true,
+      // Exclude password from response
+    },
   });
 }
+
 
 ```
 
@@ -166,13 +242,15 @@ export async function createUserService(data: CreateUserType) {
 ```ts
 // src/validations/userSchema.ts
 
-import z from "zod";
+import z from 'zod';
 
-export const GetUserQuerySchema = z.object({
-  userId: z.uuid({ version: "v4" }),
+export const GetUserParamSchema = z.object({
+  userId: z.uuid({ version: 'v4' }),
 });
 
-export type GetUserQueryType = z.infer<typeof GetUserQuerySchema>;
+export const GetUserQuerySchema = z.object({
+  email: z.email().optional(),
+});
 
 export const CreateUserSchema = z.object({
   name: z.string().min(3),
@@ -180,7 +258,10 @@ export const CreateUserSchema = z.object({
   password: z.string().min(8),
 });
 
+export type GetUserParamType = z.infer<typeof GetUserParamSchema>;
+export type GetUserQueryType = z.infer<typeof GetUserQuerySchema>;
 export type CreateUserType = z.infer<typeof CreateUserSchema>;
+
 
 ```
 
