@@ -4,19 +4,25 @@ import { ValidationError } from '../common/errors';
 
 type ValidateProps = {
   schema: z.Schema<any>;
-  target: 'BODY' | 'PARAMS';
+  target: 'BODY' | 'PARAMS' | 'QUERY';
 };
 
 const validate = (props: ValidateProps) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     const { schema, target } = props;
 
-    const validation = schema.safeParse(
-      target === 'BODY' ? req.body : req.params
-    );
-  
+    // Get the correct data source based on target
+    const dataToValidate =
+      target === 'BODY'
+        ? req.body
+        : target === 'PARAMS'
+          ? req.params
+          : req.query;
+
+    const validation = schema.safeParse(dataToValidate);
+
     if (!validation.success) {
-      console.log("Validation Errors:", validation.error.issues);
+      console.log('Validation Errors:', validation.error.issues);
       const formattedErrors = validation.error.issues.map((err) => ({
         path: err.path.join('.'),
         message: err.message,
@@ -25,10 +31,13 @@ const validate = (props: ValidateProps) => {
       return next(new ValidationError(formattedErrors));
     }
 
+    // Store validated data in the correct request property
     if (target === 'BODY') {
       req.validatedBody = validation.data;
-    } else {
+    } else if (target === 'PARAMS') {
       req.validatedParams = validation.data;
+    } else if (target === 'QUERY') {
+      req.validatedQuery = validation.data;
     }
 
     next();
@@ -42,6 +51,13 @@ const validateRequestParams = (schema: z.Schema<any>) => {
   });
 };
 
+const validateRequestQuery = (schema: z.Schema<any>) => {
+  return validate({
+    schema,
+    target: 'QUERY',
+  });
+};
+
 const validateRequestBody = (schema: z.Schema<any>) => {
   return validate({
     schema,
@@ -49,4 +65,4 @@ const validateRequestBody = (schema: z.Schema<any>) => {
   });
 };
 
-export { validateRequestBody, validateRequestParams };
+export { validateRequestBody, validateRequestQuery, validateRequestParams };

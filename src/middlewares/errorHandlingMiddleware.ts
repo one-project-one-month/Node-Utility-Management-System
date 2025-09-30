@@ -1,5 +1,5 @@
 import { CustomError } from '../common/errors';
-import e, { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 export const errorHandler = (
   err: Error,
@@ -9,8 +9,10 @@ export const errorHandler = (
 ) => {
   if (err instanceof CustomError) {
     res.status(err.statusCode).json({
-      error: err.message,
-      details: err.generateErrors(),
+      success: false,
+      message: err.message,
+      status: err.statusCode,
+      // details: err.generateErrors()
     });
   } else {
     res.status(500).json({
