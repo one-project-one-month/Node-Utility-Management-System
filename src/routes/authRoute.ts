@@ -14,8 +14,8 @@ import { loginLimiter } from "../common/utils/loginLimitter";
 
 const router = Router();
 
-router.post("/login", validateRequestBody(SignInSchema), loginLimiter, signInController);
-router.post("/logout", isAuthenticated, signOutController);
+router.post("/signin", validateRequestBody(SignInSchema), loginLimiter, signInController);
+router.post("/signout", isAuthenticated, signOutController);
 router.post("/refresh-token", refreshTokenController);
 
 export default router;
