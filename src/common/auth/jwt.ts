@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { UserRole } from '../../../generated/prisma';
 
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || '';
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || '';
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
@@ -11,10 +11,6 @@ export interface TokenPayload {
   user_id: string;
   email: string;
   role: UserRole;
-}
-
-if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
-  throw new Error('JWT secrets are not defined in environment variables');
 }
 
 export function generateAccessToken(payload: TokenPayload): string {
