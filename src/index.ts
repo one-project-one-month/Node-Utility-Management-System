@@ -3,6 +3,11 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
+import swaggerDocs from './config/swagger';
+
+// ROUTE IMPORTS
+import authRoute from './routes/authRoute';
+import userRoute from './routes/userRoute';
 
 dotenv.config();
 
@@ -16,7 +21,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* ROUTES */
+// API DOCUMENTATION
+swaggerDocs(app, port || 3000);
+
+// ROUTES
+app.use('/api/v1/auth', authRoute);
+app.use('/api/v1/users', userRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
