@@ -7,7 +7,6 @@ export const CreateTenantSchema = z.object({
   phone_nos: z.array(z.string().min(6)),
   emergency_nos: z.array(z.string().min(6)),
   room_id: z.uuid({ version: 'v4' }),
-  user_id: z.uuid({ version: 'v4' }),
 });
 
 export type CreateTenantType = z.infer<typeof CreateTenantSchema>;
