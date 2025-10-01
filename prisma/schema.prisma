@@ -8,6 +8,48 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PaymentMethod {
+  Cash
+  Mobile_Banking
+}
+
+enum InvoiceStatus {
+  Overdue
+  Paid
+  Pending
+}
+
+enum Category {
+  Complain
+  Maintenance
+  Other
+}
+
+enum ServiceStatus {
+  Pending
+  Ongoing
+  Resolved
+}
+
+enum PriorityLevel {
+  Low
+  Medium
+  High
+}
+
+enum RoomStatus {
+  Available
+  Rented
+  Purchased
+  InMaintenance
+}
+
+enum UserRole {
+  Tenant
+  Admin
+  Staff
+}
+
 model User {
   id            String   @id @default(uuid())
   user_name     String
@@ -26,10 +68,22 @@ model User {
   @@map("users")
 }
 
-enum UserRole {
-  Tenant
-  Admin
-  Staff
+model Tenant {
+  id            String   @id @default(uuid())
+  names         String[]
+  emails        String[]
+  nrcs          String[]
+  phone_nos     String[]
+  emergency_nos String[]
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // relations
+  room    Room   @relation(fields: [room_id], references: [id])
+  room_id String @unique
+  user    User?
+
+  @@map("tenants")
 }
 
 model Room {
@@ -54,29 +108,19 @@ model Room {
   @@map("rooms")
 }
 
-enum RoomStatus {
-  Available
-  Rented
-  Purchased
-  InMaintenance
-}
+model Contract {
+  id           String   @id @default(uuid())
+  contract_id  String
+  expiry_date  DateTime
+  created_date DateTime
+  updated_date DateTime
 
-model Tenant {
-  id            String   @id @default(uuid())
-  names         String[]
-  emails        String[]
-  nrcs          String[]
-  phone_nos     String[]
-  emergency_nos String[]
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  // Relations
+  room_id       String       @unique
+  room          Room         @relation(fields: [room_id], references: [id])
+  contract_type ContractType @relation(fields: [contract_id], references: [id])
 
-  // relations
-  room    Room   @relation(fields: [room_id], references: [id])
-  room_id String @unique
-  user    User?
-
-  @@map("tenants")
+  @@map("contracts")
 }
 
 model ContractType {
@@ -93,21 +137,6 @@ model ContractType {
   @@map("contract_types")
 }
 
-model Contract {
-  id           String   @id @default(uuid())
-  contract_id  String
-  expiry_date  DateTime
-  created_date DateTime
-  updated_date DateTime
-
-  // Relations
-  room_id       String       @unique
-  room          Room         @relation(fields: [room_id], references: [id])
-  contract_type ContractType @relation(fields: [contract_id], references: [id])
-
-  @@map("contracts")
-}
-
 model CustomerService {
   id             String        @id @default(uuid())
   description    String
@@ -120,24 +149,6 @@ model CustomerService {
   room_id String
 
   @@map("customer_services")
-}
-
-enum Category {
-  Complain
-  Maintenance
-  Other
-}
-
-enum ServiceStatus {
-  Pending
-  Ongoing
-  Resolved
-}
-
-enum PriorityLevel {
-  Low
-  Medium
-  High
 }
 
 model Bill {
@@ -188,12 +199,6 @@ model Invoice {
   @@map("invoices")
 }
 
-enum InvoiceStatus {
-  Overdue
-  Paid
-  Pending
-}
-
 model Receipt {
   id             String        @id @default(uuid())
   payment_method PaymentMethod
@@ -202,9 +207,4 @@ model Receipt {
   invoice_id String  @unique
 
   @@map("receipts")
-}
-
-enum PaymentMethod {
-  Cash
-  Mobile_Banking
 }
