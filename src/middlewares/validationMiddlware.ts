@@ -22,7 +22,6 @@ const validate = (props: ValidateProps) => {
     const validation = schema.safeParse(dataToValidate);
 
     if (!validation.success) {
-      console.log('Validation Errors:', validation.error.issues);
       const formattedErrors = validation.error.issues.map((err) => ({
         path: err.path.join('.'),
         message: err.message,

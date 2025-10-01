@@ -1,5 +1,6 @@
 import { CustomError } from '../common/errors';
 import { NextFunction, Request, Response } from 'express';
+import { logEvents } from '../common/utils/customLogger';
 
 export const errorHandler = (
   err: Error,
@@ -7,6 +8,9 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
+
+  logEvents(`${err.name}: ${err.message}\t${_req.method}\t${_req.url}\t${_req.headers.origin}`, 'errLog.log');
+  
   if (err instanceof CustomError) {
     res.status(err.statusCode).json({
       success: false,
