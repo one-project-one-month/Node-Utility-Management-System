@@ -11,7 +11,7 @@ export const CreateUserSchema = z.object({
       "Role must be one of 'Admin', 'Staff', or 'Tenant'"
     )
     .default(UserRole.Tenant),
-  tenant_id: z.string().optional(),
+  tenant_id: z.string().optional().nullable(),
 });
 
 export type CreateUserType = z.infer<typeof CreateUserSchema>;
