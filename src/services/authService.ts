@@ -44,6 +44,7 @@ export async function signInService(data: SignInType) {
       id: true,
       user_name: true,
       role: true,
+      tenant_id: true,
       is_active: true,
       created_at: true,
       updated_at: true,
