@@ -9,7 +9,7 @@ export class ValidationError extends CustomError {
   statusCode = 400;
 
   constructor(public details: ValidationErrorDetail[]) {
-    super("Validation failed");
+    super(details.map(d => d.message).join(", "));
   }
 
   generateErrors() {
