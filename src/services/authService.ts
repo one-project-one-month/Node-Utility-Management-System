@@ -6,7 +6,11 @@ import {
   TokenPayload,
 } from '../common/auth/jwt';
 import { comparePassword } from '../common/auth/password';
-import { UnauthorizedError } from '../common/errors';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from '../common/errors';
 import { SignInType } from '../validations/authSchema';
 
 export async function signInService(data: SignInType) {
@@ -27,7 +31,8 @@ export async function signInService(data: SignInType) {
 
   // Generate tokens
   const tokenPayload: TokenPayload = {
-    userId: user.id,
+    tenant_id: user.tenant_id,
+    user_id: user.id,
     email: user.email,
     role: user.role,
   };
@@ -35,7 +40,7 @@ export async function signInService(data: SignInType) {
   const accessToken = generateAccessToken(tokenPayload);
   const refreshToken = generateRefreshToken(tokenPayload);
 
-  // Update refresh token in database and return user data without password and refresh_token
+  // Store refresh token in database and return user data without password and refresh_token
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: { refresh_token: refreshToken },
@@ -69,13 +74,14 @@ export async function refreshTokenService(refreshToken: string) {
 
   // Find user and verify refresh token matches
   const user = await prisma.user.findUnique({
-    where: { id: payload.userId },
+    where: { id: payload.user_id },
     select: {
       id: true,
       email: true,
       role: true,
+      tenant_id: true,
       refresh_token: true,
-    }
+    },
   });
 
   if (!user || user.refresh_token !== refreshToken) {
@@ -84,7 +90,8 @@ export async function refreshTokenService(refreshToken: string) {
 
   // Generate new tokens
   const tokenPayload: TokenPayload = {
-    userId: user.id,
+    tenant_id: user.tenant_id,
+    user_id: user.id,
     email: user.email,
     role: user.role,
   };
@@ -105,6 +112,15 @@ export async function refreshTokenService(refreshToken: string) {
 }
 
 export async function signOutService(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+
   await prisma.user.update({
     where: { id: userId },
     data: { refresh_token: null },

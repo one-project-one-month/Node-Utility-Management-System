@@ -6,4 +6,3 @@ export const SignInSchema = z.object({
 });
 
 export type SignInType = z.infer<typeof SignInSchema>;
-

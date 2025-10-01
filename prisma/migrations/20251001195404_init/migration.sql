@@ -1,78 +1,39 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "public"."PaymentMethod" AS ENUM ('Cash', 'Mobile_Banking');
 
-  - You are about to drop the `Billing` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Contract` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `ContractType` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `CustomerService` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Invoice` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Receipt` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Room` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Tenant` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `TotalUnits` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-  - A unique constraint covering the columns `[tenant_id]` on the table `users` will be added. If there are existing duplicate values, this will fail.
+-- CreateEnum
+CREATE TYPE "public"."InvoiceStatus" AS ENUM ('Overdue', 'Paid', 'Pending');
 
-*/
--- DropForeignKey
-ALTER TABLE "public"."Billing" DROP CONSTRAINT "Billing_room_id_fkey";
+-- CreateEnum
+CREATE TYPE "public"."Category" AS ENUM ('Complain', 'Maintenance', 'Other');
 
--- DropForeignKey
-ALTER TABLE "public"."Contract" DROP CONSTRAINT "Contract_contract_id_fkey";
+-- CreateEnum
+CREATE TYPE "public"."ServiceStatus" AS ENUM ('Pending', 'Ongoing', 'Resolved');
 
--- DropForeignKey
-ALTER TABLE "public"."Contract" DROP CONSTRAINT "Contract_room_id_fkey";
+-- CreateEnum
+CREATE TYPE "public"."PriorityLevel" AS ENUM ('Low', 'Medium', 'High');
 
--- DropForeignKey
-ALTER TABLE "public"."CustomerService" DROP CONSTRAINT "CustomerService_room_id_fkey";
+-- CreateEnum
+CREATE TYPE "public"."RoomStatus" AS ENUM ('Available', 'Rented', 'Purchased', 'InMaintenance');
 
--- DropForeignKey
-ALTER TABLE "public"."Invoice" DROP CONSTRAINT "Invoice_billing_id_fkey";
+-- CreateEnum
+CREATE TYPE "public"."UserRole" AS ENUM ('Tenant', 'Admin', 'Staff');
 
--- DropForeignKey
-ALTER TABLE "public"."Receipt" DROP CONSTRAINT "Receipt_invoice_id_fkey";
+-- CreateTable
+CREATE TABLE "public"."users" (
+    "id" TEXT NOT NULL,
+    "user_name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "public"."UserRole" NOT NULL,
+    "refresh_token" TEXT,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "tenant_id" TEXT,
 
--- DropForeignKey
-ALTER TABLE "public"."Tenant" DROP CONSTRAINT "Tenant_room_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "public"."Tenant" DROP CONSTRAINT "Tenant_user_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "public"."TotalUnits" DROP CONSTRAINT "TotalUnits_billing_id_fkey";
-
--- AlterTable
-ALTER TABLE "public"."users" ADD COLUMN     "tenant_id" TEXT;
-
--- DropTable
-DROP TABLE "public"."Billing";
-
--- DropTable
-DROP TABLE "public"."Contract";
-
--- DropTable
-DROP TABLE "public"."ContractType";
-
--- DropTable
-DROP TABLE "public"."CustomerService";
-
--- DropTable
-DROP TABLE "public"."Invoice";
-
--- DropTable
-DROP TABLE "public"."Receipt";
-
--- DropTable
-DROP TABLE "public"."Room";
-
--- DropTable
-DROP TABLE "public"."Tenant";
-
--- DropTable
-DROP TABLE "public"."TotalUnits";
-
--- DropTable
-DROP TABLE "public"."User";
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "public"."tenants" (
@@ -194,6 +155,12 @@ CREATE TABLE "public"."receipts" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "public"."users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_tenant_id_key" ON "public"."users"("tenant_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "tenants_room_id_key" ON "public"."tenants"("room_id");
 
 -- CreateIndex
@@ -213,9 +180,6 @@ CREATE UNIQUE INDEX "invoices_bill_id_key" ON "public"."invoices"("bill_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "receipts_invoice_id_key" ON "public"."receipts"("invoice_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "users_tenant_id_key" ON "public"."users"("tenant_id");
 
 -- AddForeignKey
 ALTER TABLE "public"."users" ADD CONSTRAINT "users_tenant_id_fkey" FOREIGN KEY ("tenant_id") REFERENCES "public"."tenants"("id") ON DELETE SET NULL ON UPDATE CASCADE;

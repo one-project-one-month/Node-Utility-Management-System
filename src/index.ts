@@ -2,8 +2,10 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import { errorHandler } from './middlewares/errorHandlingMiddleware';
 import swaggerDocs from './config/swagger';
+import { customLogger } from './common/utils/customLogger';
+import { errorHandler } from './middlewares/errorHandlingMiddleware';
+import { isAuthenticated } from './middlewares/authMiddleware';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
@@ -16,6 +18,7 @@ const app = express();
 const port = process.env.PORT;
 
 // GLOBAL MIDDLEWARES
+app.use(customLogger('API_Logger'));
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
@@ -26,7 +29,7 @@ swaggerDocs(app, port || 3000);
 
 // ROUTES
 app.use('/api/v1/auth', authRoute);
-app.use('/api/v1/users', userRoute);
+app.use('/api/v1/users', isAuthenticated, userRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
