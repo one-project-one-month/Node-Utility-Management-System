@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
+import serviceRoute from "./routes/serviceRoute"
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* ROUTES */
-
+app.use('/api/v1/tenants', serviceRoute)
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
 
