@@ -1,17 +1,12 @@
-// src/services/userService.ts
-
-import { BadRequestError, NotFoundError } from '../common/errors';
-import prisma from '../lib/prismaClient';
-
-import {
-  CreateUserType,
-  GetUserQueryType,
-} from '../validations/userSchema';
 import bcrypt from 'bcrypt';
+import { BadRequestError, NotFoundError } from '../common/errors';
+import { hashPassword } from '../common/auth/password';
+import prisma from '../lib/prismaClient';
+import { CreateUserType, GetUserQueryType } from '../validations/userSchema';
 
 export async function getAllUsersService(query: GetUserQueryType) {
-  const whereClause: any = {}
-  // OR 
+  const whereClause: any = {};
+  // OR
   // const whereClause: Prisma.UserWhereInput = {} // for type safety
 
   if (query.email) {
@@ -28,7 +23,7 @@ export async function getAllUsersService(query: GetUserQueryType) {
       created_at: true,
       role: true,
       // Exclude password field from the result
-    }
+    },
   });
 }
 
@@ -50,7 +45,7 @@ export async function getUserService(userId: string) {
 }
 
 export async function createUserService(data: CreateUserType) {
-  // Check if user already exists
+  // Check if user with the same email already exists
   const existingUser = await prisma.user.findUnique({
     where: { email: data.email },
   });
@@ -59,61 +54,82 @@ export async function createUserService(data: CreateUserType) {
     throw new BadRequestError('User with this email already exists');
   }
 
-  const salt = await bcrypt.genSalt(12);
-  const hashedPassword = await bcrypt.hash(data.password, salt);
+  // Hash password
+  const hashedPassword = await hashPassword(data.password);
 
-  return await prisma.user.create({
+  // Create new user and Return user data without password and refreshToken
+  const newUser = await prisma.user.create({
     data: {
-      ...data,
+      user_name: data.user_name,
+      email: data.email,
       password: hashedPassword,
+      role: data.role,
     },
     select: {
       id: true,
       user_name: true,
       email: true,
+
+      role: true,
+      is_active: true,
       created_at: true,
       updated_at: true,
-      role: true,
-      // Exclude password from response
     },
   });
+
+  return {
+    user: newUser,
+  };
 }
 
-export async function updateUserService(userId: string, data: Partial<CreateUserType>) {
+export async function updateUserService(
+  userId: string,
+  data: Partial<CreateUserType>
+) {
+  // Find if user exists
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+    },
   });
 
   if (!existingUser) {
     throw new NotFoundError('User not found');
   }
 
+  // Check email is taken if provided
   if (data.email && data.email !== existingUser.email) {
     const emailTaken = await prisma.user.findUnique({
       where: { email: data.email },
+      select: { id: true },
     });
     if (emailTaken) {
       throw new BadRequestError('Email is already taken');
     }
   }
 
+  // Hash password if provided
   if (data.password) {
-    const salt = await bcrypt.genSalt(12);
-    data.password = await bcrypt.hash(data.password, salt);
+    data.password = await hashPassword(data.password);
   }
 
-  return await prisma.user.update({
+  const updatedUser = await prisma.user.update({
     where: { id: userId },
     data,
     select: {
       id: true,
       user_name: true,
       email: true,
+      role: true,
+      is_active: true,
       created_at: true,
       updated_at: true,
-      // Exclude password from response
     },
   });
+
+  return { user: updatedUser };
 }
 
 export async function deleteUserService(userId: string) {
@@ -131,9 +147,10 @@ export async function deleteUserService(userId: string) {
       id: true,
       user_name: true,
       email: true,
+      role: true,
+      is_active: true,
       created_at: true,
       updated_at: true,
-      // Exclude password from response
     },
   });
 }

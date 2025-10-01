@@ -1,8 +1,8 @@
-import * as z from 'zod';
+import z from 'zod';
 
-export const LoginSchema = z.object({
-  email: z.email(),
-  password: z.string().min(8),
+export const SignInSchema = z.object({
+  email: z.email('Invalid email address').min(1, 'Email is required'),
+  password: z.string().min(1, 'Password is required'),
 });
 
-export type LoginType = z.infer<typeof LoginSchema>;
+export type SignInType = z.infer<typeof SignInSchema>;

@@ -5,14 +5,16 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf ./dist && tsc",
-    "start": "npm run build && node ./dist/index.js",
+    "start": "node ./dist/index.js",
     "dev": "tsx watch --env-file=.env ./src/index.ts",
     "dev:no-watch": "tsx --env-file=.env ./src/index.ts",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "seed": "tsx prisma/seed.ts"
+    "migrate:deploy": "prisma migrate deploy",
+    "seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -34,7 +36,9 @@
     "express-rate-limit": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "rimraf": "^6.0.1",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^13.0.0",
+    "yamljs": "^0.3.0",
     "zod": "^4.1.11"
   },
   "devDependencies": {
@@ -46,7 +50,9 @@
     "@types/express-rate-limit": "^5.1.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.5.2",
+    "@types/swagger-ui-express": "^4.1.8",
     "@types/uuid": "^10.0.0",
+    "@types/yamljs": "^0.2.34",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",

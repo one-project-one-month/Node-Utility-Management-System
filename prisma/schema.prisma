@@ -181,7 +181,7 @@ model TotalUnits {
   water_units       Decimal
   created_at        Decimal
 
-  Bill    Bill   @relation(fields: [bill_id], references: [id])
+  bill    Bill   @relation(fields: [bill_id], references: [id])
   bill_id String @unique
 
   @@map("total_units")

@@ -2,11 +2,14 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import { errorHandler } from './middlewares/errorHandlingMiddleware';
-import userRoute from './routes/userRoute'
-import { verifyToken } from './middlewares/authMiddleware';
-import authRoute from './routes/authRoute';
+import swaggerDocs from './config/swagger';
 import { customLogger } from './common/utils/customLogger';
+import { errorHandler } from './middlewares/errorHandlingMiddleware';
+import { isAuthenticated } from './middlewares/authMiddleware';
+
+// ROUTE IMPORTS
+import authRoute from './routes/authRoute';
+import userRoute from './routes/userRoute';
 
 dotenv.config();
 
@@ -21,9 +24,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* ROUTES */
-app.use("/api/v1/auth", authRoute)
-app.use("/api/v1/users", verifyToken, userRoute)
+// API DOCUMENTATION
+swaggerDocs(app, port || 3000);
+
+// ROUTES
+app.use('/api/v1/auth', authRoute);
+app.use('/api/v1/users', isAuthenticated, userRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

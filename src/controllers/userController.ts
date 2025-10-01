@@ -1,12 +1,10 @@
-// src/controllers/userController.ts
-
 import { NextFunction, Request, Response } from 'express';
 import {
   getAllUsersService,
   getUserService,
   createUserService,
   updateUserService,
-  deleteUserService
+  deleteUserService,
 } from '../services/userService';
 import { NotFoundError } from '../common/errors';
 import { successResponse } from '../common/apiResponse';
@@ -19,13 +17,13 @@ export async function getAllUsersController(
   try {
     const filters = req.validatedQuery;
     const user = await getAllUsersService(filters);
-    
+
     if (!user || !user.length) {
       throw new NotFoundError('No users found');
     }
     successResponse(res, 'Users fetched successfully', user);
   } catch (error) {
-    console.log("Error in getAllUsersController:", error);
+    console.log('Error in getAllUsersController:', error);
     next(error);
   }
 }
@@ -47,15 +45,16 @@ export async function getUserController(
     next(error);
   }
 }
+
 export async function createUserController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const user = await createUserService(req.validatedBody);
+    const newUser = await createUserService(req.validatedBody);
 
-    successResponse(res, 'User created successfully', user, 201);
+    successResponse(res, 'User created successfully', newUser, 201);
   } catch (error) {
     next(error);
   }
@@ -68,7 +67,10 @@ export async function updateUserController(
 ): Promise<void> {
   try {
     // Implementation for updating a user
-    const updatedUser = await updateUserService(req.validatedParams.userId, req.validatedBody);
+    const updatedUser = await updateUserService(
+      req.validatedParams.userId,
+      req.validatedBody
+    );
 
     successResponse(res, 'User updated successfully', updatedUser);
   } catch (error) {

@@ -1,22 +1,27 @@
-import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
 import { UnauthorizedError } from '../common/errors';
-import { verifyAccessToken } from '../common/auth/jwtToken';
+import { verifyAccessToken } from '../common/auth/jwt';
 import { UserRole } from '../../generated/prisma';
 
-export const verifyToken = (req: Request, _res: Response, next: NextFunction) => {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) {
-        return next(new UnauthorizedError('No token provided'));
-    }
+export function isAuthenticated(
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
-    try {
-        const verifyPayload = verifyAccessToken(token);
-        req.user = verifyPayload;
-        next();
-    } catch (error) {
-        return next(new UnauthorizedError('Invalid or Expired token'));
-    }
+  if (!token) {
+    throw new UnauthorizedError('Access token is required');
+  }
+
+  try {
+    const decoded = verifyAccessToken(token);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    throw new UnauthorizedError('Invalid or expired token');
+  }
 }
 
 export function hasRole(allowedRoles: UserRole[]) {

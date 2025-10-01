@@ -1,111 +1,128 @@
-import { LoginType } from "../validations/authSchema";
-import { BadRequestError, NotFoundError, UnauthorizedError } from '../common/errors';
 import prisma from '../lib/prismaClient';
-import bcrypt from 'bcrypt';
-import { generateAccessToken, generateRefreshToken, TokenPayload, verifyRefreshToken } from "../common/auth/jwtToken";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+  TokenPayload,
+} from '../common/auth/jwt';
+import { comparePassword } from '../common/auth/password';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from '../common/errors';
+import { SignInType } from '../validations/authSchema';
 
-export async function loginService(data: LoginType) {
-    // Check if user exists
-    const user = await prisma.user.findUnique({
-        where: { email: data.email },
-    });
+export async function signInService(data: SignInType) {
+  // Find user by email
+  const user = await prisma.user.findUnique({
+    where: { email: data.email },
+  });
 
-    if(user)
-    {
-        // password verification
-        const isPasswordValid = await bcrypt.compare(data.password, user.password);
-        if (!isPasswordValid) {
-           throw new UnauthorizedError('Invalid email or password');
-        }
-        const payload: TokenPayload = {
-            userId: user.id,
-            email: user.email,
-            role: user.role,
-        };
+  if (!user) {
+    throw new UnauthorizedError('Invalid email or password');
+  }
 
-        // tokens generation
-        const accessToken = generateAccessToken(payload);
-        const refreshToken = generateRefreshToken(payload);
+  // Check password
+  const isPasswordValid = await comparePassword(data.password, user.password);
+  if (!isPasswordValid) {
+    throw new UnauthorizedError('Invalid email or password');
+  }
 
-        // let's store refresh token in db
-        const updatedUser = await prisma.user.update({
-            where: { id: user.id },
-            data: { refresh_token: refreshToken },
-            select: {
-                id: true,
-                user_name: true,
-                email: true,
-                role: true,
-            }
-        });
+  // Generate tokens
+  const tokenPayload: TokenPayload = {
+    tenant_id: user.tenant_id,
+    user_id: user.id,
+    email: user.email,
+    role: user.role,
+  };
 
-        return {
-            user: updatedUser,
-            accessToken,
-            refreshToken
-        };
+  const accessToken = generateAccessToken(tokenPayload);
+  const refreshToken = generateRefreshToken(tokenPayload);
 
-    }
+  // Store refresh token in database and return user data without password and refresh_token
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: { refresh_token: refreshToken },
+    select: {
+      email: true,
+      id: true,
+      user_name: true,
+      role: true,
+      tenant_id: true,
+      is_active: true,
+      created_at: true,
+      updated_at: true,
+    },
+  });
+
+  return {
+    user: updatedUser,
+    accessToken,
+    refreshToken,
+  };
+}
+
+export async function refreshTokenService(refreshToken: string) {
+  // Verify refresh token
+  let payload: TokenPayload;
+  try {
+    payload = verifyRefreshToken(refreshToken);
+  } catch (error) {
+    throw new UnauthorizedError('Invalid refresh token');
+  }
+
+  // Find user and verify refresh token matches
+  const user = await prisma.user.findUnique({
+    where: { id: payload.user_id },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      tenant_id: true,
+      refresh_token: true,
+    },
+  });
+
+  if (!user || user.refresh_token !== refreshToken) {
+    throw new UnauthorizedError('Invalid refresh token');
+  }
+
+  // Generate new tokens
+  const tokenPayload: TokenPayload = {
+    tenant_id: user.tenant_id,
+    user_id: user.id,
+    email: user.email,
+    role: user.role,
+  };
+
+  const newAccessToken = generateAccessToken(tokenPayload);
+  const newRefreshToken = generateRefreshToken(tokenPayload);
+
+  // Update refresh token in database
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { refresh_token: newRefreshToken },
+  });
+
+  return {
+    newAccessToken,
+    newRefreshToken,
+  };
+}
+
+export async function signOutService(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+
+  if (!user) {
     throw new NotFoundError('User not found');
-}
+  }
 
-export async function logoutService(userId: string) {
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
-    });
-
-    if(!user) {
-        throw new NotFoundError('User not found');
-    }
-
-    // remove refresh token from db
-    await prisma.user.update({
-        where: { id: userId },
-        data: { refresh_token: '' },
-    });
-
-    return;
-}
-
-export async function refreshTokenService(token: string) {
-    let verified: TokenPayload;
-
-    try{
-         verified =  await verifyRefreshToken(token);
-    }
-    catch(error)
-    {
-        throw new UnauthorizedError('Invalid refresh token');
-    }
-
-    const user = await prisma.user.findUnique({
-        where: { id : verified?.userId },
-        select: {
-            id: true,
-            email: true,
-            role: true,
-            refresh_token: true,
-        }
-    });
-
-    if(!user || user.refresh_token !== token) {
-        throw new UnauthorizedError('Unauthorized Access');
-    }
-
-    const payload: TokenPayload = {
-            userId: user.id,
-            email: user.email,
-            role: user.role,
-    }
-
-    const newAccessToken = generateAccessToken(payload);
-    const newRefreshToken = generateRefreshToken(payload);
-
-    // update refresh token in db
-    await prisma.user.update({
-        where: { id: user.id },
-        data: { refresh_token: newRefreshToken },
-    });
-    
-    return {newAccessToken, newRefreshToken};
+  await prisma.user.update({
+    where: { id: userId },
+    data: { refresh_token: null },
+  });
 }

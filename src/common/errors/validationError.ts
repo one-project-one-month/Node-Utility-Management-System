@@ -1,4 +1,4 @@
-import { CustomError } from "./customError";
+import { CustomError } from './customError';
 
 interface ValidationErrorDetail {
   path: string;

@@ -1,75 +1,97 @@
 import { NextFunction, Request, Response } from 'express';
 import {
-  loginService,
-  logoutService,
+  signInService,
   refreshTokenService,
+  signOutService,
 } from '../services/authService';
-import { NotFoundError } from '../common/errors';
+import { UnauthorizedError } from '../common/errors';
 import { successResponse } from '../common/apiResponse';
 
-const COOKIE_OPTIONS = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    SameSite: 'None',
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+// Cookie configuration
+const REFRESH_TOKEN_COOKIE_CONFIG = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production', // HTTPS in production
+  sameSite: 'strict' as const,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
-export async function loginController(
+export async function signInController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const data = req.validatedBody;
-    const {user, accessToken, refreshToken} = await loginService(data);
+    const { user, accessToken, refreshToken } = await signInService(
+      req.validatedBody
+    );
 
-    res.cookie('jwt', refreshToken, COOKIE_OPTIONS);
+    // Set refresh token in HTTP-only cookie
+    res.cookie('refreshToken', refreshToken, REFRESH_TOKEN_COOKIE_CONFIG);
 
-    successResponse(res, 'Login successful', {user, accessToken});
+    successResponse(
+      res,
+      'Sign in successful',
+      {
+        user,
+        accessToken,
+      },
+      200
+    );
   } catch (error) {
     next(error);
   }
 }
 
-export async function logoutController(
+export async function refreshTokenController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = req.user?.userId;
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      throw new UnauthorizedError('Refresh token is required');
+    }
+
+    const { newAccessToken, newRefreshToken } =
+      await refreshTokenService(refreshToken);
+
+    // Set new refresh token in HTTP-only cookie
+    res.cookie('refreshToken', newRefreshToken, REFRESH_TOKEN_COOKIE_CONFIG);
+
+    successResponse(
+      res,
+      'Token refreshed successfully',
+      {
+        accessToken: newAccessToken,
+      },
+      200
+    );
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function signOutController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const userId = req.user?.user_id;
+
     if (!userId) {
-      throw new NotFoundError('User not found');
+      throw new UnauthorizedError('User not authenticated');
     }
 
-    await logoutService(userId);
+    await signOutService(userId);
 
-    res.clearCookie('jwt', COOKIE_OPTIONS);
+    // Clear the refresh token cookie
+    res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_CONFIG);
 
-    successResponse(res, 'Logout successful');
+    successResponse(res, 'Sign out successfully', null, 200);
   } catch (error) {
     next(error);
   }
-}
-
-export async function refreshController(
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise<void> {
-    try {
-        
-        const cookies = req.cookies;
-        if (!cookies?.jwt) {
-            throw new NotFoundError('No refresh token found');
-        }
-        const refreshToken = cookies.jwt;
-
-        const {newAccessToken, newRefreshToken} = await refreshTokenService(refreshToken);
-        res.cookie('jwt', newRefreshToken, COOKIE_OPTIONS );
-
-        successResponse(res, 'Token refreshed successfully', {accessToken: newAccessToken});
-    } catch (error) {
-        next(error);
-    }
 }

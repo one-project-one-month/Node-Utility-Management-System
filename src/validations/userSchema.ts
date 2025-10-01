@@ -1,6 +1,5 @@
-// src/validations/userSchema.ts
-
 import z from 'zod';
+import { UserRole } from '../../generated/prisma';
 
 export const GetUserParamSchema = z.object({
   userId: z.uuid({ version: 'v4' }),
@@ -11,11 +10,16 @@ export const GetUserQuerySchema = z.object({
 });
 
 export const CreateUserSchema = z.object({
-  user_name: z.string().min(3),
-  email: z.email(),
-  password: z.string().min(8),
-  role: z.enum(['Admin', 'Tenant', 'Staff']),
-  is_active: z.boolean(),
+  user_name: z.string().min(1, 'Username is required'),
+  email: z.email('Invalid email address').min(1, 'Email is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
+  role: z
+    .enum(
+      [UserRole.Admin, UserRole.Staff, UserRole.Tenant],
+      "Role must be one of 'Admin', 'Staff', or 'Tenant'"
+    )
+    .default(UserRole.Tenant),
+  tenant_id: z.string().optional().nullable(),
 });
 
 export type GetUserParamType = z.infer<typeof GetUserParamSchema>;

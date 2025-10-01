@@ -3,11 +3,12 @@ import { UserRole } from '../../../generated/prisma';
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || '';
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || '';
-const ACCESS_TOKEN_EXPIRY =  '15m';
+const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
 export interface TokenPayload {
-  userId: string;
+  tenant_id: string | null;
+  user_id: string;
   email: string;
   role: UserRole;
 }
@@ -17,7 +18,9 @@ if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
 }
 
 export function generateAccessToken(payload: TokenPayload): string {
-  return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
+  return jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+    expiresIn: ACCESS_TOKEN_EXPIRY,
+  });
 }
 
 export function generateRefreshToken(payload: TokenPayload): string {
