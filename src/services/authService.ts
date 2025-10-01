@@ -27,7 +27,8 @@ export async function signInService(data: SignInType) {
 
   // Generate tokens
   const tokenPayload: TokenPayload = {
-    userId: user.id,
+    tenant_id: user.tenant_id,
+    user_id: user.id,
     email: user.email,
     role: user.role,
   };
@@ -69,11 +70,12 @@ export async function refreshTokenService(refreshToken: string) {
 
   // Find user and verify refresh token matches
   const user = await prisma.user.findUnique({
-    where: { id: payload.userId },
+    where: { id: payload.user_id },
     select: {
       id: true,
       email: true,
       role: true,
+      tenant_id: true,
       refresh_token: true,
     }
   });
@@ -84,7 +86,8 @@ export async function refreshTokenService(refreshToken: string) {
 
   // Generate new tokens
   const tokenPayload: TokenPayload = {
-    userId: user.id,
+    tenant_id: user.tenant_id,
+    user_id: user.id,
     email: user.email,
     role: user.role,
   };
