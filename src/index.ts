@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
+import swaggerDocs from './config/swagger';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
@@ -19,6 +20,9 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// API DOCUMENTATION
+swaggerDocs(app, port || 3000);
 
 // ROUTES
 app.use('/api/v1/auth', authRoute);
