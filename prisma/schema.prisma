@@ -20,7 +20,8 @@ model User {
   updated_at    DateTime @updatedAt
 
   // relations
-  tenant Tenant?
+  tenant    Tenant? @relation(fields: [tenant_id], references: [id])
+  tenant_id String? @unique
 
   @@map("users")
 }
@@ -73,8 +74,7 @@ model Tenant {
   // relations
   room    Room   @relation(fields: [room_id], references: [id])
   room_id String @unique
-  user    User   @relation(fields: [user_id], references: [id])
-  user_id String @unique
+  user    User?
 
   @@map("tenants")
 }
