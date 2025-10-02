@@ -1,5 +1,23 @@
 # Node-Utility-Management-System
 
+A comprehensive utility management system built with Node.js, TypeScript, and PostgreSQL for managing rental properties, tenants, billing, and customer services.
+
+## Features
+- **Multi-role User Management** - Admin, Staff, and Tenant roles
+- **Property Management** - Room tracking with status and pricing
+- **Tenant Management** - Complete tenant profiles and registration
+- **Contract Management** - Flexible rental agreements with different types
+- **Billing System** - Comprehensive billing including utilities and fees
+- **Customer Service** - Issue tracking and maintenance requests
+- **Invoice & Receipt Generation** - Complete payment workflow
+
+## Tech Stack
+- **Backend**: Node.js + Express.js + TypeScript
+- **Database**: PostgreSQL with Prisma ORM
+- **Validation**: Zod schemas
+- **Authentication**: JWT + bcrypt
+- **Development**: Hot reload with tsx
+
 ---
 ## Requirements
 Make sure you have the following installed before starting:
@@ -25,10 +43,10 @@ Quick reference to your `package.json` scripts:
 ## Available Scripts
 - `npm run dev` – start in development with hot reload
 - `npm start` – build & run in production
-- `npm run prisma:generate` – regenerate Prisma client
-- `npm run prisma:push` – push schema changes to DB
-- `npm run prisma:migrate` – create new migration
-- `npm run prisma:studio` – open Prisma Studio
+- `npm run db:generate` – regenerate Prisma client
+- `npm run db:push` – push schema changes to DB
+- `npm run db:migrate` – create new migration
+- `npm run db:studio` – open Prisma Studio
 - `npm run seed` – seed initial data
 ```
 
@@ -36,8 +54,8 @@ Quick reference to your `package.json` scripts:
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/ZawHlaingPhyoTsuki/ums-starter.git
-cd ums-starter
+git clone https://github.com/one-project-one-month/Node-Utility-Management-System.git
+cd Node-Utility-Management-System
 ```
 
 ### 2. Install dependencies
@@ -54,7 +72,7 @@ cp .env.example .env
 Default:
 ```env
 PORT=3000
-DATABASE_URL="postgresql://username:password@localhost:5432/mydb?schema=public"
+DATABASE_URL="postgresql://username:password@localhost:5433/mydb?schema=public"
 ```
 
 ### 4. Start PostgreSQL with Docker (Optional)
@@ -65,8 +83,8 @@ docker compose up -d
 
 ### 5. Setup database
 ```bash
-npm run prisma:generate
-npm run prisma:push
+npm run db:generate
+npm run db:push
 npm run seed   # optional, seed sample data
 ```
 
@@ -91,6 +109,9 @@ src/
  ├── middlewares/         # Validation/auth middlewares
  ├── lib/                 # Prisma client setup
  ├── validations/         # Zod schemas
- ├── docker-compose.yml   # Docker compose file for postgresql
+ ├── common/              # Error classes & API responses
+ ├── types/               # TypeScript definitions
  └── index.ts             # App entrypoint
+prisma/                   # Database schema & migrations
+docker-compose.yml        # Docker compose file for postgresql
 ```
