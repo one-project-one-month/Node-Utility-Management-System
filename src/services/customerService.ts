@@ -12,7 +12,7 @@ export const createCustomerService = async (data: createServiceType) => {
 export const updateCustomerService = async (data: CustomerService) => {
     const existingService = await prisma.customerService.findUnique({ where: { id: data.id } })
     if (!existingService) {
-        throw new NotFoundError('User not found');
+        throw new NotFoundError('Invalid customer service id.');
     }
 
     return await prisma.customerService.update({ where: { id: data.id }, data })
