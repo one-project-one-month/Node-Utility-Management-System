@@ -81,7 +81,7 @@ export async function createUserService(data: CreateUserType) {
 
 export async function updateUserService(
   userId: string,
-  data: Partial<UpdateUserType>
+  data: UpdateUserType
 ) {
   // Find if user exists
   const existingUser = await prisma.user.findUnique({
@@ -130,6 +130,7 @@ export async function updateUserService(
 export async function deleteUserService(userId: string) {
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
+    select: { id: true },
   });
 
   if (!existingUser) {
