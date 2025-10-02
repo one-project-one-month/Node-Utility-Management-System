@@ -14,6 +14,7 @@ import {
 import { hasRole } from '../middlewares/authMiddleware';
 import {
   CreateUserSchema,
+  UpdateUserSchema,
   GetUserParamSchema,
   GetUserQuerySchema,
 } from '../validations/userSchema';
@@ -42,7 +43,7 @@ router.put(
   '/:userId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetUserParamSchema),
-  validateRequestBody(CreateUserSchema),
+  validateRequestBody(UpdateUserSchema),
   updateUserController
 );
 router.delete(

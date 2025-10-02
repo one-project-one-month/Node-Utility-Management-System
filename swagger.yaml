@@ -133,7 +133,7 @@ components:
         tenant_id:
           type: string
           nullable: true
-          example: 8a9ddf9682d3-974cbaf3-78b9-41f0-b6e9
+          example: 
 
 paths:
   # Authentication Endpoints
@@ -537,7 +537,9 @@ paths:
                         type: object
                         properties:
                           user:
-                            $ref: '#/components/schemas/User'
+                            oneOf:
+                              - $ref: '#/components/schemas/AdminUser'
+                              - $ref: '#/components/schemas/TenantUser'
         400:
           description: Bad Request - Validation error or email already taken
           content:
@@ -631,4 +633,3 @@ paths:
                         example: User not found
 
   # Customer Service Endpoints
-  
