@@ -1,18 +1,15 @@
-import prisma from '../lib/prismaClient';
 import {
   generateAccessToken,
   generateRefreshToken,
-  verifyRefreshToken,
   TokenPayload,
+  verifyRefreshToken,
 } from '../common/auth/jwt';
 import { comparePassword } from '../common/auth/password';
-import {
-  NotFoundError,
-  UnauthorizedError,
-} from '../common/errors';
-import { LogInType } from '../validations/authSchema';
+import { NotFoundError, UnauthorizedError } from '../common/errors';
+import prisma from '../lib/prismaClient';
+import { LoginType } from '../validations/authSchema';
 
-export async function loginService(data: LogInType) {
+export async function loginService(data: LoginType) {
   // Find user by email
   const user = await prisma.user.findUnique({
     where: { email: data.email },

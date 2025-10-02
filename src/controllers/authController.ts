@@ -31,7 +31,11 @@ export async function loginController(
 
     successResponse(
       res,
+<<<<<<< HEAD
       'log in successful',
+=======
+      'Login successful',
+>>>>>>> acd6a94 (Auth&User API merge checked)
       {
         user,
         accessToken,
@@ -92,7 +96,11 @@ export async function logoutController(
     // Clear the refresh token cookie
     res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_CONFIG);
 
+<<<<<<< HEAD
     successResponse(res, 'Log out successfully', null, 200);
+=======
+    successResponse(res, 'Logout successfully', null, 200);
+>>>>>>> acd6a94 (Auth&User API merge checked)
   } catch (error) {
     next(error);
   }

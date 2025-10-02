@@ -2,6 +2,7 @@ import { hashPassword } from '../src/common/auth/password';
 import prisma from '../src/lib/prismaClient';
 
 async function main() {
+<<<<<<< HEAD
   console.log('Starting database seeding...');
 
   // Clear existing data (in reverse order of dependencies)
@@ -365,6 +366,24 @@ async function main() {
   - ${totalUnits.length} total units records
   - ${invoices.length} invoices
   - ${receipts.length} receipts`);
+=======
+  // Seed admin user
+  console.log('Seeding admin user...');
+  const adminEmail = 'admin@gmail.com';
+  const adminUsername = 'admin';
+  const adminPassword = 'admin123';
+
+  const hashedPassword = await hashPassword(adminPassword);
+  await prisma.user.create({
+    data: {
+      user_name: adminUsername,
+      email: adminEmail,
+      password: hashedPassword,
+      role: 'Admin',
+    },
+  });
+  console.log('Admin user seeded successfully.');
+>>>>>>> acd6a94 (Auth&User API merge checked)
 }
 
 main()
