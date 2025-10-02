@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { CookieOptions, NextFunction, Request, Response } from 'express';
 import {
   signInService,
   refreshTokenService,
@@ -8,10 +8,10 @@ import { UnauthorizedError } from '../common/errors';
 import { successResponse } from '../common/apiResponse';
 
 // Cookie configuration
-const REFRESH_TOKEN_COOKIE_CONFIG = {
+const REFRESH_TOKEN_COOKIE_CONFIG: CookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production', // HTTPS in production
-  sameSite: 'lax' as const,
+  sameSite: 'none',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
