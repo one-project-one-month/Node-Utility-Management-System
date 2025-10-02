@@ -19,7 +19,14 @@ const port = process.env.PORT;
 
 // GLOBAL MIDDLEWARES
 app.use(customLogger('API_Logger'));
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      callback(null, origin || true);
+    },
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
