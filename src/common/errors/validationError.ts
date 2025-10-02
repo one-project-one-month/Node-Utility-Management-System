@@ -1,4 +1,4 @@
-import { CustomError } from "./customError";
+import { CustomError } from './customError';
 
 interface ValidationErrorDetail {
   path: string;
@@ -9,7 +9,7 @@ export class ValidationError extends CustomError {
   statusCode = 400;
 
   constructor(public details: ValidationErrorDetail[]) {
-    super(details.map(d => d.message).join(", "));
+    super(details.map((d) => d.message).join(', '));
   }
 
   generateErrors() {
