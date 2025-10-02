@@ -6,10 +6,27 @@ import path from 'path';
 const swaggerPath = path.join(__dirname, '../../swagger.yaml');
 
 function swaggerDocs(app: Express, port: number | string) {
-  app.use('/docs', swaggerUi.serve, (req: Request, res: Response, next: NextFunction) => {
-    const swaggerDocument = YAML.load(swaggerPath);
-    return swaggerUi.setup(swaggerDocument)(req, res, next);
-  });
+  // Serve Swagger UI
+  app.use(
+    '/docs',
+    swaggerUi.serve,
+    (req: Request, res: Response, next: NextFunction) => {
+      const swaggerDocument = YAML.load(swaggerPath);
+
+      const swaggerUiOptions = {
+        swaggerOptions: {
+          withCredentials: true, // This enables sending cookies
+          requestInterceptor: (request: any) => {
+            // Ensure credentials are included in all requests
+            request.credentials = 'include';
+            return request;
+          },
+        },
+      };
+
+      return swaggerUi.setup(swaggerDocument, swaggerUiOptions)(req, res, next);
+    }
+  );
 
   app.get('/docs.json', (_req: Request, res: Response) => {
     const swaggerDocument = YAML.load(swaggerPath);
