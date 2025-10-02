@@ -20,6 +20,24 @@ export const idSchema = z.object({
     id: z.uuid()
 })
 
+
+export const paginationQuerySchema = z.object({
+    page: z
+        .string()
+        .regex(/^\d+$/, "Page must be a number") // ensure numeric string
+        .transform(Number)                       // convert to number
+        .refine((val) => val > 0, "Page must be greater than 0")
+        .default(1),
+    limit: z
+        .string()
+        .regex(/^\d+$/, "Limit must be a number")
+        .transform(Number)
+        .refine((val) => val > 0 && val <= 100, "Limit must be between 1 and 100")
+        .default(10),
+});
+
+
+
 export type createServiceType = z.infer<typeof createCustomerServiceSchema>
 export type updateServiceType = z.infer<typeof updateCustomerServiceSchema>
-export type id = z.infer<typeof idSchema>
+export type paginationQueryType = z.infer<typeof paginationQuerySchema>
