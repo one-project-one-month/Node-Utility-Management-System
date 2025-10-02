@@ -1,10 +1,14 @@
 import { Router } from "express";
-import { validateRequestBody } from "../middlewares/validationMiddlware";
-import { serviceController } from "../controllers/serviceController";
-import { customerServiceSchema } from "../validations/serviceSchema";
+import { validateRequestBody, validateRequestParams } from "../middlewares/validationMiddlware";
+import { createCustomerServiceSchema, customerServiceID, updateCustomerServiceSchema } from "../validations/serviceSchema";
+import { createServiceController, updateServiceController } from "../controllers/serviceController";
+
 
 const router = Router()
 
-router.post("/:id/customer-services/create", validateRequestBody(customerServiceSchema), serviceController)
+router.post("/tenants/:id/customer-services/create", validateRequestBody(createCustomerServiceSchema), createServiceController) // create customer service from client
+router.put("/customer-services/:id", validateRequestParams(customerServiceID), validateRequestBody(updateCustomerServiceSchema), updateServiceController) // update customer service from dashboard
+// router.post("/tenants/:id/customer-services/create", validateRequestBody(createCustomerServiceSchema), createServiceController)
+// router.post("/tenants/:id/customer-services/create", validateRequestBody(createCustomerServiceSchema), createServiceController)
 
 export default router
