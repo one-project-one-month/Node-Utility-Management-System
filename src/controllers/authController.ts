@@ -1,8 +1,8 @@
 import { CookieOptions, NextFunction, Request, Response } from 'express';
 import {
-  signInService,
+  loginService,
   refreshTokenService,
-  signOutService,
+  logoutService,
 } from '../services/authService';
 import { UnauthorizedError } from '../common/errors';
 import { successResponse } from '../common/apiResponse';
@@ -10,18 +10,19 @@ import { successResponse } from '../common/apiResponse';
 // Cookie configuration
 const REFRESH_TOKEN_COOKIE_CONFIG: CookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', // HTTPS in production
+  // secure: process.env.NODE_ENV === 'production', // HTTPS in production
+  secure: true,
   sameSite: 'none',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
-export async function signInController(
+export async function loginController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const { user, accessToken, refreshToken } = await signInService(
+    const { user, accessToken, refreshToken } = await loginService(
       req.validatedBody
     );
 
@@ -73,7 +74,7 @@ export async function refreshTokenController(
   }
 }
 
-export async function signOutController(
+export async function logoutController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -85,7 +86,7 @@ export async function signOutController(
       throw new UnauthorizedError('User not authenticated');
     }
 
-    await signOutService(userId);
+    await logoutService(userId);
 
     // Clear the refresh token cookie
     res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_CONFIG);

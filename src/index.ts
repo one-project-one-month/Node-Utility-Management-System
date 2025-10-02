@@ -12,6 +12,7 @@ import corsOptions from './common/auth/corsOptions';
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
 import userRoute from './routes/userRoute';
+import serviceRoute from './routes/serviceRoute'
 
 dotenv.config();
 
@@ -21,14 +22,6 @@ const port = process.env.PORT;
 
 // GLOBAL MIDDLEWARES
 app.use(customLogger('API_Logger'));
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       callback(null, origin || true);
-//     },
-//     credentials: true,
-//   })
-// );
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -41,6 +34,7 @@ swaggerDocs(app, port || 3000);
 // ROUTES
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
+app.use('/api/v1', serviceRoute)  //customer service end point
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

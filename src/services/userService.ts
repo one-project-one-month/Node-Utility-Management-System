@@ -19,9 +19,11 @@ export async function getAllUsersService(query: GetUserQueryType) {
       id: true,
       user_name: true,
       email: true,
+      role: true,
+      tenant_id: true,
+      is_active: true,
       updated_at: true,
       created_at: true,
-      role: true,
       // Exclude password field from the result
     },
   });
@@ -34,9 +36,11 @@ export async function getUserService(userId: string) {
       id: true,
       user_name: true,
       email: true,
+      role: true,
+      tenant_id: true,
+      is_active: true,
       created_at: true,
       updated_at: true,
-      role: true,
       // Exclude password from results
     },
   });
@@ -71,6 +75,7 @@ export async function createUserService(data: CreateUserType) {
       email: true,
 
       role: true,
+      tenant_id: true,
       is_active: true,
       created_at: true,
       updated_at: true,
@@ -82,6 +87,7 @@ export async function createUserService(data: CreateUserType) {
   };
 }
 
+// todo: tenant_id check
 export async function updateUserService(
   userId: string,
   data: Partial<CreateUserType>
@@ -123,6 +129,7 @@ export async function updateUserService(
       user_name: true,
       email: true,
       role: true,
+      tenant_id: true,
       is_active: true,
       created_at: true,
       updated_at: true,
@@ -148,6 +155,7 @@ export async function deleteUserService(userId: string) {
       user_name: true,
       email: true,
       role: true,
+      tenant_id: true,
       is_active: true,
       created_at: true,
       updated_at: true,

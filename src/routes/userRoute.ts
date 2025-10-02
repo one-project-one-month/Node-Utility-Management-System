@@ -28,7 +28,7 @@ router.get(
 );
 router.get(
   '/:userId',
-  hasRole(['Admin']),
+  hasRole(['Admin', 'Staff']),
   validateRequestParams(GetUserParamSchema),
   getUserController
 );
