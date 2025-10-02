@@ -202,7 +202,11 @@ model Invoice {
 model Receipt {
   id             String        @id @default(uuid())
   payment_method PaymentMethod
+  paid_date      DateTime
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
 
+  //relations
   invoice    Invoice @relation(fields: [invoice_id], references: [id])
   invoice_id String  @unique
 
