@@ -22,14 +22,13 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* ROUTES */
-app.use('/api/v1/tenants', tenantRoute);
 // API DOCUMENTATION
 swaggerDocs(app, port || 3000);
 
 // ROUTES
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', userRoute);
+app.use('/api/v1/tenants', tenantRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

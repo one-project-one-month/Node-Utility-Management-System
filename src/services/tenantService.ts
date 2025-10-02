@@ -1,8 +1,14 @@
 import { BadRequestError } from '../common/errors/badRequestError';
+import { NotFoundError } from '../common/errors/notFoundError';
+import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
 import prisma from '../lib/prismaClient';
-import { CreateTenantType } from '../validations/tenantSchema';
+import {
+  CreateTenantType,
+  UpdateTenantType,
+} from '../validations/tenantSchema';
 
 export async function createTenantService(data: CreateTenantType) {
+  //Check if room exists
   const room = await prisma.room.findUnique({ where: { id: data.room_id } });
   if (!room) {
     throw new BadRequestError('Room not found');
@@ -11,24 +17,39 @@ export async function createTenantService(data: CreateTenantType) {
   const existingTenantForRoom = await prisma.tenant.findUnique({
     where: { room_id: data.room_id },
   });
+
   if (existingTenantForRoom)
     throw new BadRequestError('Room already has a tenant');
 
-  const checkDuplicateTenantEmails = await prisma.tenant.findFirst({
-    where: { emails: { hasSome: data.emails } },
-  });
-  if (checkDuplicateTenantEmails) {
-    throw new BadRequestError('Some emails are already registered');
-  }
-
-  const tenantWithDuplicateNrcs = await prisma.tenant.findFirst({
-    where: { nrcs: { hasSome: data.nrcs } },
-  });
-  if (tenantWithDuplicateNrcs) {
-    throw new BadRequestError('Some NRC numbers are already registered');
-  }
+  //Check for duplicate emails & nrcs before creating
+  await checkDuplicateTenantData(data.emails, data.nrcs);
 
   return await prisma.tenant.create({
     data,
+  });
+}
+
+export async function updateTenantService(
+  tenantId: string,
+  data: UpdateTenantType
+) {
+  //check tenant
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+  if (!tenant) throw new NotFoundError('Tenant not found');
+
+  //Check for duplicates excluding the current tenant
+  await checkDuplicateTenantData(data.emails, data.nrcs, tenantId);
+
+  // Finally update
+  return await prisma.tenant.update({
+    where: { id: tenantId },
+    data: {
+      ...(data.names && { names: { set: data.names } }),
+      ...(data.emails && { emails: { set: data.emails } }),
+      ...(data.nrcs && { nrcs: { set: data.nrcs } }),
+      ...(data.phone_nos && { phone_nos: { set: data.phone_nos } }),
+      ...(data.emergency_nos && { emergency_nos: { set: data.emergency_nos } }),
+      updated_at: new Date(),
+    },
   });
 }
