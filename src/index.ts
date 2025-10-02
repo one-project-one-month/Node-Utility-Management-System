@@ -11,6 +11,8 @@ import { isAuthenticated } from './middlewares/authMiddleware';
 import authRoute from './routes/authRoute';
 import userRoute from './routes/userRoute';
 import serviceRoute from './routes/serviceRoute'
+import { crediential } from './common/auth/credential';
+import corsOptions from './common/auth/corsOptions';
 
 dotenv.config();
 
@@ -20,10 +22,11 @@ const port = process.env.PORT;
 
 // GLOBAL MIDDLEWARES
 app.use(customLogger('API_Logger'));
-app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(crediential);
+app.use(cors(corsOptions));
 
 // API DOCUMENTATION
 swaggerDocs(app, port || 3000);
