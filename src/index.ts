@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import swaggerDocs from './config/swagger';
 import { customLogger } from './common/utils/customLogger';
+import { crediential } from './common/auth/credential';
+import corsOptions from './common/auth/corsOptions';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
 import { isAuthenticated } from './middlewares/authMiddleware';
 
@@ -11,8 +13,6 @@ import { isAuthenticated } from './middlewares/authMiddleware';
 import authRoute from './routes/authRoute';
 import userRoute from './routes/userRoute';
 import serviceRoute from './routes/serviceRoute'
-import { crediential } from './common/auth/credential';
-import corsOptions from './common/auth/corsOptions';
 
 dotenv.config();
 
