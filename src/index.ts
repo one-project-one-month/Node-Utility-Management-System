@@ -6,6 +6,8 @@ import swaggerDocs from './config/swagger';
 import { customLogger } from './common/utils/customLogger';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
 import { isAuthenticated } from './middlewares/authMiddleware';
+import { crediential } from './common/auth/credential';
+import corsOptions from './common/auth/corsOptions';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
@@ -19,17 +21,19 @@ const port = process.env.PORT;
 
 // GLOBAL MIDDLEWARES
 app.use(customLogger('API_Logger'));
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      callback(null, origin || true);
-    },
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       callback(null, origin || true);
+//     },
+//     credentials: true,
+//   })
+// );
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(crediential);
+app.use(cors(corsOptions));
 
 // API DOCUMENTATION
 swaggerDocs(app, port || 3000);
