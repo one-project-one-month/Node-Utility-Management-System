@@ -1,11 +1,8 @@
+import bcrypt from 'bcrypt';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import { hashPassword } from '../common/auth/password';
 import prisma from '../lib/prismaClient';
-import {
-  CreateUserType,
-  GetUserQueryType,
-  UpdateUserType,
-} from '../validations/userSchema';
+import { CreateUserType, GetUserQueryType } from '../validations/userSchema';
 
 export async function getAllUsersService(query: GetUserQueryType) {
   const whereClause: any = {};
@@ -31,7 +28,7 @@ export async function getAllUsersService(query: GetUserQueryType) {
 }
 
 export async function getUserService(userId: string) {
-  return await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
@@ -43,13 +40,14 @@ export async function getUserService(userId: string) {
       // Exclude password from results
     },
   });
+
+  return user;
 }
 
 export async function createUserService(data: CreateUserType) {
   // Check if user with the same email already exists
   const existingUser = await prisma.user.findUnique({
     where: { email: data.email },
-    select: { id: true },
   });
 
   if (existingUser) {
@@ -60,7 +58,7 @@ export async function createUserService(data: CreateUserType) {
   const hashedPassword = await hashPassword(data.password);
 
   // Create new user and Return user data without password and refreshToken
-  return await prisma.user.create({
+  const newUser = await prisma.user.create({
     data: {
       user_name: data.user_name,
       email: data.email,
@@ -71,17 +69,22 @@ export async function createUserService(data: CreateUserType) {
       id: true,
       user_name: true,
       email: true,
+
       role: true,
       is_active: true,
       created_at: true,
       updated_at: true,
     },
   });
+
+  return {
+    user: newUser,
+  };
 }
 
 export async function updateUserService(
   userId: string,
-  data: Partial<UpdateUserType>
+  data: Partial<CreateUserType>
 ) {
   // Find if user exists
   const existingUser = await prisma.user.findUnique({
@@ -112,7 +115,7 @@ export async function updateUserService(
     data.password = await hashPassword(data.password);
   }
 
-  return await prisma.user.update({
+  const updatedUser = await prisma.user.update({
     where: { id: userId },
     data,
     select: {
@@ -125,6 +128,8 @@ export async function updateUserService(
       updated_at: true,
     },
   });
+
+  return { user: updatedUser };
 }
 
 export async function deleteUserService(userId: string) {

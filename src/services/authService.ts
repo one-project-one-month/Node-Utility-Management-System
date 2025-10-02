@@ -7,12 +7,13 @@ import {
 } from '../common/auth/jwt';
 import { comparePassword } from '../common/auth/password';
 import {
+  BadRequestError,
   NotFoundError,
   UnauthorizedError,
 } from '../common/errors';
 import { SignInType } from '../validations/authSchema';
 
-export async function loginService(data: SignInType) {
+export async function signInService(data: SignInType) {
   // Find user by email
   const user = await prisma.user.findUnique({
     where: { email: data.email },
@@ -110,7 +111,7 @@ export async function refreshTokenService(refreshToken: string) {
   };
 }
 
-export async function logoutService(userId: string) {
+export async function signOutService(userId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { id: true },

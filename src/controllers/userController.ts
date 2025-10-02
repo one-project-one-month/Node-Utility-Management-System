@@ -16,12 +16,12 @@ export async function getAllUsersController(
 ): Promise<void> {
   try {
     const filters = req.validatedQuery;
-    const users = await getAllUsersService(filters);
+    const user = await getAllUsersService(filters);
 
-    if (!users || !users.length) {
+    if (!user || !user.length) {
       throw new NotFoundError('No users found');
     }
-    successResponse(res, 'Users fetched successfully', { users });
+    successResponse(res, 'Users fetched successfully', user);
   } catch (error) {
     console.log('Error in getAllUsersController:', error);
     next(error);
@@ -37,10 +37,10 @@ export async function getUserController(
     const user = await getUserService(req.validatedParams.userId);
 
     if (!user) {
-      throw new NotFoundError('User not found');
+      throw new NotFoundError('No users found');
     }
 
-    successResponse(res, 'User fetched successfully', { user });
+    successResponse(res, 'User fetched successfully', user);
   } catch (error) {
     next(error);
   }
@@ -54,7 +54,7 @@ export async function createUserController(
   try {
     const newUser = await createUserService(req.validatedBody);
 
-    successResponse(res, 'User created successfully', { user: newUser }, 201);
+    successResponse(res, 'User created successfully', newUser, 201);
   } catch (error) {
     next(error);
   }
@@ -72,7 +72,7 @@ export async function updateUserController(
       req.validatedBody
     );
 
-    successResponse(res, 'User updated successfully', { user: updatedUser });
+    successResponse(res, 'User updated successfully', updatedUser);
   } catch (error) {
     next(error);
   }
@@ -87,7 +87,7 @@ export async function deleteUserController(
     // Implementation for deleting a user
     const deletedUser = await deleteUserService(req.validatedParams.userId);
 
-    successResponse(res, 'User deleted successfully', {user: deletedUser});
+    successResponse(res, 'User deleted successfully', deletedUser);
   } catch (error) {
     next(error);
   }
