@@ -16,6 +16,7 @@ import {
   CreateUserSchema,
   GetUserParamSchema,
   GetUserQuerySchema,
+  UpdateUserSchema,
 } from '../validations/userSchema';
 
 const router = Router();
@@ -42,7 +43,7 @@ router.put(
   '/:userId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetUserParamSchema),
-  validateRequestBody(CreateUserSchema),
+  validateRequestBody(UpdateUserSchema),
   updateUserController
 );
 router.delete(
