@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { successResponse } from "../common/apiResponse";
-import { createCustomerService, updateCustomerService } from "../services/customerService";
+import { createCustomerService, getAllCustomerService, updateCustomerService } from "../services/customerService";
 
 export const createServiceController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -29,3 +29,17 @@ export const updateServiceController = async (req: Request, res: Response, next:
 
 
 }
+
+//get all customer services 
+export const getAllServiceController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+    try {
+        const service = await getAllCustomerService()
+        successResponse(res, "Get all customer serivice successfull.", { service }, 200)
+    } catch (error) {
+        next(error)
+    }
+
+}
+
+//

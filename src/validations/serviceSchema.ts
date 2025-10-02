@@ -16,10 +16,10 @@ export const updateCustomerServiceSchema = z.object({
     room_id: z.uuid()
 })
 
-export const customerServiceID = z.object({
+export const idSchema = z.object({
     id: z.uuid()
 })
 
 export type createServiceType = z.infer<typeof createCustomerServiceSchema>
 export type updateServiceType = z.infer<typeof updateCustomerServiceSchema>
-export type customerServiceID = z.infer<typeof customerServiceID>
+export type id = z.infer<typeof idSchema>
