@@ -39,7 +39,7 @@ export async function loginController(
       200
     );
   } catch (error) {
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_CONFIG);
     next(error);
   }
 }
