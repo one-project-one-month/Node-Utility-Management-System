@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { successResponse } from '../common/apiResponse';
 import {
   createCustomerService,
+  cutomerServiceHistory,
   getAllCustomerService,
   getCustomerServiceById,
   updateCustomerService,
@@ -30,6 +31,20 @@ export const createServiceController = async (
     next(error);
   }
 };
+
+export const serviceHistoryController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const result = await cutomerServiceHistory(req.validatedParams, req.validatedQuery);
+    successResponse(res, "Get service history successfull.", result, 200)
+  } catch (error) {
+    next(error)
+  }
+}
+
 
 // update customer service
 export const updateServiceController = async (
