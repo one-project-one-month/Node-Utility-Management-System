@@ -11,8 +11,12 @@ import { errorHandler } from './middlewares/errorHandlingMiddleware';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
+
+// ROUTE IMPORTS
+
 import receiptRoute from './routes/receiptRoute';
 import serviceRoute from './routes/serviceRoute';
+
 import tenantRoute from './routes/tenantRoute';
 import userRoute from './routes/userRoute';
 
@@ -38,6 +42,7 @@ app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
 app.use('/api/v1/tenants', tenantRoute);
 app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
+app.use('/api/v1', serviceRoute); //customer service end point
 app.use('/api/v1/receipts', receiptRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
