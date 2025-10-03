@@ -25,7 +25,7 @@ export async function loginService(data: LogInType) {
   // Check password
   const isPasswordValid = await comparePassword(data.password, user.password);
   if (!isPasswordValid) {
-    throw new UnauthorizedError('Invalid email or password');
+    throw new UnauthorizedError('Password is incorrect');
   }
 
   // Generate tokens
