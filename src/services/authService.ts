@@ -11,7 +11,6 @@ import { LogInType } from '../validations/authSchema';
 
 export async function loginService(data: LogInType) {
   // Find user by email
-  console.log("In login service");
   const user = await prisma.user.findUnique({
     where: { email: data.email },
   });
