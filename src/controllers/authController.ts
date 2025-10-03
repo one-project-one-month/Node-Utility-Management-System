@@ -56,14 +56,14 @@ export async function refreshTokenController(
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      throw new UnauthorizedError('Refresh token is required');
+      return next(new UnauthorizedError('Refresh token is required'));
     }
 
     const { newAccessToken, newRefreshToken } =
       await refreshTokenService(refreshToken);
 
     if (!newAccessToken || !newRefreshToken) {
-      throw new UnauthorizedError('Failed to generate tokens');
+      return next(new UnauthorizedError('Failed to generate tokens'));
     }
 
     // Set new refresh token in HTTP-only cookie
@@ -92,7 +92,7 @@ export async function logoutController(
     const userId = req.user?.user_id;
 
     if (!userId) {
-      throw new UnauthorizedError('User not authenticated');
+      return next(new UnauthorizedError('User not authenticated'));
     }
 
     await logoutService(userId);
