@@ -38,7 +38,6 @@ const validate = (props: ValidateProps) => {
     } else if (target === 'QUERY') {
       req.validatedQuery = validation.data;
     }
-
     next();
   };
 };

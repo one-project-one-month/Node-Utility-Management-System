@@ -3,6 +3,7 @@ import prisma from '../src/lib/prismaClient';
 
 async function main() {
   // Seed admin user
+  console.log('Seeding admin user...');
   const adminEmail = 'admin@gmail.com';
   const adminUsername = 'admin';
   const adminPassword = 'admin123';
@@ -16,6 +17,7 @@ async function main() {
       role: 'Admin',
     },
   });
+  console.log('Admin user seeded successfully.');
 }
 
 main()
