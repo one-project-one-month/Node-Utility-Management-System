@@ -9,13 +9,11 @@ import swaggerDocs from './config/swagger';
 import { isAuthenticated } from './middlewares/authMiddleware';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
 
-import tenantRoute from './routes/tenantRoute';
-
 // ROUTE IMPORTS
-
 import authRoute from './routes/authRoute';
 import serviceRoute from './routes/serviceRoute';
 import userRoute from './routes/userRoute';
+import tenantRoute from './routes/tenantRoute';
 
 dotenv.config();
 
