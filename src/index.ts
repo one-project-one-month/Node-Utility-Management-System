@@ -11,9 +11,10 @@ import { errorHandler } from './middlewares/errorHandlingMiddleware';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
+import receiptRoute from './routes/receiptRoute';
 import serviceRoute from './routes/serviceRoute';
-import userRoute from './routes/userRoute';
 import tenantRoute from './routes/tenantRoute';
+import userRoute from './routes/userRoute';
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
 app.use('/api/v1/tenants', tenantRoute);
 app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
+app.use('/api/v1/receipts', receiptRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
