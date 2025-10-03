@@ -10,15 +10,9 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '../common/errors';
-<<<<<<< HEAD
-import { LoginType } from '../validations/authSchema';
-
-export async function loginService(data: LoginType) {
-=======
 import { LogInType } from '../validations/authSchema';
 
 export async function loginService(data: LogInType) {
->>>>>>> dev
   // Find user by email
   const user = await prisma.user.findUnique({
     where: { email: data.email },
