@@ -2,8 +2,10 @@ import { Router } from 'express';
 import {
   createReceiptController,
   getAllReceiptsController,
+  getLatestReceiptsByTenantIdController,
   getReceiptByIdController,
   getReceiptByInvoiceIdController,
+  getReceiptHistoriesByTenantIdController,
   updateReceiptController,
 } from '../controllers/receiptController';
 import {
@@ -14,35 +16,50 @@ import {
   CreateReceiptSchema,
   GetReceiptParamSchema,
   GetReceiptByInvoiceParamSchema,
+  GetReceiptByTenantParamSchema,
   UpdateReceiptSchema,
 } from '../validations/receiptSchema';
 
 const router = Router();
 
-router.get('/', getAllReceiptsController);
+router.get('/receipts', getAllReceiptsController);
 
-// Get receipt by invoice ID
+// Get latest receipts by tenant id
 router.get(
-  '/invoice/:invoiceId',
+  '/tenants/:tenantId/receipts/latest',
+  validateRequestParams(GetReceiptByTenantParamSchema),
+  getLatestReceiptsByTenantIdController
+);
+
+// Get receipts history by tenant id
+router.get(
+  '/tenants/:tenantId/receipts/history',
+  validateRequestParams(GetReceiptByTenantParamSchema),
+  getReceiptHistoriesByTenantIdController
+);
+
+// Get receipt by invoice Id
+router.get(
+  '/receipts/invoice/:invoiceId',
   validateRequestParams(GetReceiptByInvoiceParamSchema),
   getReceiptByInvoiceIdController
 );
 
-// Get receipt by receipt ID
+// Get receipt by receipt Id
 router.get(
-  '/:id',
+  '/receipts/:id',
   validateRequestParams(GetReceiptParamSchema),
   getReceiptByIdController
 );
 
 router.post(
-  '/',
+  '/receipts',
   validateRequestBody(CreateReceiptSchema),
   createReceiptController
 );
 
 router.put(
-  '/:id',
+  '/receipts/:id',
   validateRequestParams(GetReceiptParamSchema),
   validateRequestBody(UpdateReceiptSchema),
   updateReceiptController

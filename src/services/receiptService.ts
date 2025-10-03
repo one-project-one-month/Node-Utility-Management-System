@@ -10,10 +10,6 @@ export async function getAllReceiptsService() {
   // OR
   // const whereClause: Prisma.UserWhereInput = {} // for type safety
 
-  // if (query.email) {
-  //   whereClause.email = query.email;
-  // }
-
   return await prisma.receipt.findMany({
     where: whereClause,
   });
@@ -55,6 +51,7 @@ export async function createReceiptService(data: CreateReceiptType) {
     data: {
       invoice_id: data.invoice_id,
       payment_method: data.payment_method,
+      paid_date: data.paid_date,
     },
     select: {
       id: true,
@@ -105,5 +102,43 @@ export async function updateReceiptService(
       payment_method: true,
       invoice_id: true,
     },
+  });
+}
+
+export async function getLatestReceiptsByTenantIdService(tenantId: string) {
+  if (!tenantId) throw new NotFoundError('Tenant id not found');
+
+  return await prisma.receipt.findMany({
+    where: {
+      invoice: {
+        bill: {
+          room: {
+            tenant: {
+              id: tenantId,
+            },
+          },
+        },
+      },
+    },
+    orderBy: { created_at: 'desc' },
+  });
+}
+
+export async function getReceiptHistoriesByTenantIdService(tenantId: string) {
+  if (!tenantId) throw new NotFoundError('Tenant id not found');
+
+  return await prisma.receipt.findMany({
+    where: {
+      invoice: {
+        bill: {
+          room: {
+            tenant: {
+              id: tenantId,
+            },
+          },
+        },
+      },
+    },
+    orderBy: { created_at: 'desc' },
   });
 }

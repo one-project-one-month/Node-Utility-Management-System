@@ -36,7 +36,11 @@ swaggerDocs(app, port || 3000);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
 app.use('/api/v1', serviceRoute)  //customer service end point
-app.use('/api/v1/receipts', receiptRoute);
+
+// Receipt
+app.use('/api/v1', receiptRoute);
+// app.use('/api/v1/tenants/:tenantId/receipts/latest', receiptRoute);
+// app.use('/api/v1/tenants/:tenantId/receipts/history', receiptRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
