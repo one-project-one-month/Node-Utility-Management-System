@@ -10,8 +10,8 @@ import { successResponse } from '../common/apiResponse';
 // Cookie configuration
 const REFRESH_TOKEN_COOKIE_CONFIG: CookieOptions = {
   httpOnly: true,
-  // secure: process.env.NODE_ENV === 'production', // HTTPS in production
-  secure: true,
+  secure: process.env.NODE_ENV === 'production', // HTTPS in production
+  // secure: true, // always true for cookie to work in swagger developemnt
   sameSite: 'none',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
@@ -39,6 +39,7 @@ export async function loginController(
       200
     );
   } catch (error) {
+    res.clearCookie('refreshToken');
     next(error);
   }
 }
