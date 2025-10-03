@@ -25,10 +25,17 @@ export async function loginController(
     const { user, accessToken, refreshToken } = await loginService(
       req.validatedBody
     );
+    console.log("In login controller");
+    
+    if (!refreshToken || !accessToken) {
+      return next(new UnauthorizedError('Failed to generate tokens'));
+    }
 
     // Set refresh token in HTTP-only cookie
     res.cookie('refreshToken', refreshToken, REFRESH_TOKEN_COOKIE_CONFIG);
 
+    console.log("After setting cookie");
+    
     successResponse(
       res,
       'log in successful',
@@ -39,7 +46,7 @@ export async function loginController(
       200
     );
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -58,6 +65,10 @@ export async function refreshTokenController(
     const { newAccessToken, newRefreshToken } =
       await refreshTokenService(refreshToken);
 
+    if (!newAccessToken || !newRefreshToken) {
+      throw new UnauthorizedError('Failed to generate tokens');
+    }
+
     // Set new refresh token in HTTP-only cookie
     res.cookie('refreshToken', newRefreshToken, REFRESH_TOKEN_COOKIE_CONFIG);
 
@@ -70,7 +81,7 @@ export async function refreshTokenController(
       200
     );
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -94,6 +105,6 @@ export async function logoutController(
 
     successResponse(res, 'Log out successfully', null, 200);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }

@@ -11,6 +11,8 @@ const validate = (props: ValidateProps) => {
   return (req: Request, _res: Response, next: NextFunction) => {
     const { schema, target } = props;
 
+    console.log("In validation middleware");
+
     // Get the correct data source based on target
     const dataToValidate =
       target === 'BODY'
@@ -22,6 +24,7 @@ const validate = (props: ValidateProps) => {
     const validation = schema.safeParse(dataToValidate);
     
     if (!validation.success) {
+      console.log("Validation failed");
       const formattedErrors = validation.error.issues.map((err) => ({
         path: err.path.join('.'),
         message: err.message,
@@ -38,7 +41,6 @@ const validate = (props: ValidateProps) => {
     } else if (target === 'QUERY') {
       req.validatedQuery = validation.data;
     }
-
     next();
   };
 };
