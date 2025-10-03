@@ -22,6 +22,7 @@ import {
 
 const router = Router();
 
+// Get all receipts
 router.get('/receipts', getAllReceiptsController);
 
 // Get latest receipts by tenant id
@@ -38,6 +39,7 @@ router.get(
   getReceiptHistoriesByTenantIdController
 );
 
+// Dashboard
 // Get receipt by invoice Id
 router.get(
   '/receipts/invoice/:invoiceId',
