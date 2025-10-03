@@ -189,20 +189,22 @@ async function main() {
   const contracts = await Promise.all([
     prisma.contract.create({
       data: {
-        contract_id: contractTypes[1].id, // 12 months
+        contract_type_id: contractTypes[1].id, // 12 months
         expiry_date: new Date('2025-10-01'),
         created_date: new Date('2024-10-01'),
         updated_date: new Date('2024-10-01'),
         room_id: rooms[0].id,
+        tenant_id: tenants[0].id,
       },
     }),
     prisma.contract.create({
       data: {
-        contract_id: contractTypes[0].id, // 6 months
+        contract_type_id: contractTypes[0].id, // 6 months
         expiry_date: new Date('2025-04-01'),
         created_date: new Date('2024-10-01'),
         updated_date: new Date('2024-10-01'),
         room_id: rooms[1].id,
+        tenant_id: tenants[1].id,
       },
     }),
   ]);
@@ -216,6 +218,7 @@ async function main() {
         status: 'Ongoing',
         priority_level: 'High',
         room_id: rooms[0].id,
+        issued_date: new Date('2024-10-15'),
       },
     }),
     prisma.customerService.create({
@@ -225,6 +228,7 @@ async function main() {
         status: 'Pending',
         priority_level: 'Medium',
         room_id: rooms[1].id,
+        issued_date: new Date('2024-10-10'),
       },
     }),
     prisma.customerService.create({
@@ -234,6 +238,7 @@ async function main() {
         status: 'Resolved',
         priority_level: 'Low',
         room_id: rooms[0].id,
+        issued_date: new Date('2024-10-05'),
       },
     }),
   ]);
@@ -286,8 +291,8 @@ async function main() {
         wifi_fee: 1000,
         total_amount: 1000,
         due_date: new Date('2025-12-01'),
-        created_at: new Date('2025-9-01'),
-        updated_at: new Date('2025-9-01'),
+        created_at: new Date('2025-09-01'),
+        updated_at: new Date('2025-09-01'),
         room_id: rooms[2].id,
       },
     }),
@@ -299,7 +304,8 @@ async function main() {
       data: {
         electricity_units: 125.5,
         water_units: 45.2,
-        created_at: 1696118400, // Unix timestamp
+        created_at: new Date('2024-10-01'),
+        updated_at: new Date('2024-10-01'),
         bill_id: bills[0].id,
       },
     }),
@@ -307,7 +313,8 @@ async function main() {
       data: {
         electricity_units: 150.8,
         water_units: 62.1,
-        created_at: 1696118400, // Unix timestamp
+        created_at: new Date('2024-10-01'),
+        updated_at: new Date('2024-10-01'),
         bill_id: bills[1].id,
       },
     }),
@@ -319,18 +326,24 @@ async function main() {
       data: {
         status: 'Paid',
         bill_id: bills[0].id,
+        created_at: new Date('2024-10-01'),
+        updated_at: new Date('2024-10-01'),
       },
     }),
     prisma.invoice.create({
       data: {
         status: 'Pending',
         bill_id: bills[1].id,
+        created_at: new Date('2024-10-01'),
+        updated_at: new Date('2024-10-01'),
       },
     }),
     prisma.invoice.create({
       data: {
         status: 'Paid',
         bill_id: bills[2].id,
+        created_at: new Date('2024-09-01'),
+        updated_at: new Date('2024-09-01'),
       },
     }),
   ]);
@@ -341,6 +354,8 @@ async function main() {
       data: {
         payment_method: 'Mobile_Banking',
         paid_date: new Date('2025-10-02'),
+        created_at: new Date('2025-10-02'),
+        updated_at: new Date('2025-10-02'),
         invoice_id: invoices[0].id,
       },
     }),
@@ -348,7 +363,9 @@ async function main() {
       data: {
         payment_method: 'Cash',
         paid_date: new Date('2025-10-01'),
-        invoice_id: invoices[1].id,
+        created_at: new Date('2025-10-01'),
+        updated_at: new Date('2025-10-01'),
+        invoice_id: invoices[2].id, // Changed to invoices[2] since invoices[1] is pending
       },
     }),
   ]);
