@@ -20,7 +20,7 @@ export const createCustomerService = async (
   if (!tenant) {
     throw new NotFoundError('Tenant not found');
   }
-
+ 
   // Check if room_id exists
   const room = await prisma.room.findUnique({
     where: { id: data.room_id },
@@ -41,7 +41,7 @@ export const updateCustomerService = async (data: CustomerService) => {
     select: { id: true },
   });
   if (!existingService) {
-    throw new NotFoundError('Invalid customer service id.');
+    throw new NotFoundError(`No customer service found for this-${data.id}`);
   }
 
   return await prisma.customerService.update({ where: { id: data.id }, data });
@@ -73,7 +73,7 @@ export const getAllCustomerService = async (data: paginationQueryType) => {
 export const getCustomerServiceById = async (id: string) => {
   const service = await prisma.customerService.findUnique({ where: { id } });
   if (!service) {
-    throw new NotFoundError('Invalid customer service id!');
+    throw new NotFoundError(`No customer service found for this-${id}`);
   }
   return service;
 };
