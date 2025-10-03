@@ -31,7 +31,7 @@ export async function loginController(
 
     successResponse(
       res,
-      'Sign in successful',
+      'log in successful',
       {
         user,
         accessToken,
@@ -80,6 +80,7 @@ export async function logoutController(
   next: NextFunction
 ): Promise<void> {
   try {
+  
     const userId = req.user?.user_id;
 
     if (!userId) {
@@ -91,7 +92,7 @@ export async function logoutController(
     // Clear the refresh token cookie
     res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_CONFIG);
 
-    successResponse(res, 'Sign out successfully', null, 200);
+    successResponse(res, 'Log out successfully', null, 200);
   } catch (error) {
     next(error);
   }
