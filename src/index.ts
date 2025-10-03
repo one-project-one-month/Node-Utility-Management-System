@@ -8,8 +8,6 @@ import { crediential } from './common/auth/credential';
 import corsOptions from './common/auth/corsOptions';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
 import { isAuthenticated } from './middlewares/authMiddleware';
-import { crediential } from './common/auth/credential';
-import corsOptions from './common/auth/corsOptions';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
@@ -41,8 +39,6 @@ app.use('/api/v1', serviceRoute)  //customer service end point
 
 // Receipt
 app.use('/api/v1', receiptRoute);
-// app.use('/api/v1/tenants/:tenantId/receipts/latest', receiptRoute);
-// app.use('/api/v1/tenants/:tenantId/receipts/history', receiptRoute);
 app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
