@@ -145,6 +145,10 @@ export const getAllCustomerService = async (data: paginationQueryType) => {
     ]);
 <<<<<<< HEAD
 
+    if (!services || services.length === 0) {
+        throw new NotFoundError("No customer services found.");
+    }
+
     //Total pages for pagination
     const totalPages = Math.ceil(total / limit);
 

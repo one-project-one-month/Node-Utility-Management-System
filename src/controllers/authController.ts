@@ -25,6 +25,11 @@ export async function loginController(
     const { user, accessToken, refreshToken } = await loginService(
       req.validatedBody
     );
+    console.log('In login controller');
+
+    if (!refreshToken || !accessToken) {
+      return next(new UnauthorizedError('Failed to generate tokens'));
+    }
 
     if (!refreshToken || !accessToken) {
       return next(new UnauthorizedError('Failed to generate tokens'));
@@ -32,6 +37,8 @@ export async function loginController(
 
     // Set refresh token in HTTP-only cookie
     res.cookie('refreshToken', refreshToken, REFRESH_TOKEN_COOKIE_CONFIG);
+
+    console.log('After setting cookie');
 
     successResponse(
       res,
