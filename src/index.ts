@@ -8,11 +8,14 @@ import { crediential } from './common/auth/credential';
 import corsOptions from './common/auth/corsOptions';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
 import { isAuthenticated } from './middlewares/authMiddleware';
+import { crediential } from './common/auth/credential';
+import corsOptions from './common/auth/corsOptions';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
 import userRoute from './routes/userRoute';
 import serviceRoute from './routes/serviceRoute';
+
 
 dotenv.config();
 
