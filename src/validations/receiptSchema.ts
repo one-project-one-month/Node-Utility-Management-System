@@ -9,7 +9,11 @@ export const GetReceiptByInvoiceParamSchema = z.object({
   invoiceId: z.uuid({ version: 'v4' }),
 });
 
-// export const GetUserQuerySchema = z.object({
+export const GetReceiptByTenantParamSchema = z.object({
+  tenantId: z.uuid({ version: 'v4' }),
+});
+
+// export const GetReceiptQuerySchema = z.object({
 //   email: z.email().optional(),
 // });
 
@@ -18,7 +22,7 @@ export const CreateReceiptSchema = z.object({
     [PaymentMethod.Cash, PaymentMethod.Mobile_Banking],
     "Payment method must be one of 'Cash' or 'Mobile Banking'"
   ),
-  // .default(PaymentMethod.Mobile_Banking),
+  paid_date: z.coerce.date(),
   invoice_id: z.string(),
 });
 
@@ -28,7 +32,7 @@ export const UpdateReceiptSchema = z
       [PaymentMethod.Cash, PaymentMethod.Mobile_Banking],
       "Payment method must be one of 'Cash' or 'Mobile Banking'"
     ),
-    // .default(PaymentMethod.Mobile_Banking),
+    paid_date: z.coerce.date(),
     invoice_id: z.string(),
   })
   .refine((data) => Object.keys(data).length > 0, {
@@ -36,7 +40,12 @@ export const UpdateReceiptSchema = z
   });
 
 export type GetReceiptParamType = z.infer<typeof GetReceiptParamSchema>;
-export type GetReceiptByInvoiceParamType = z.infer<typeof GetReceiptByInvoiceParamSchema>;
-// export type GetUserQueryType = z.infer<typeof GetUserQuerySchema>;
+export type GetReceiptByInvoiceParamType = z.infer<
+  typeof GetReceiptByInvoiceParamSchema
+>;
+export type GetReceiptByTenantParamType = z.infer<
+  typeof GetReceiptByTenantParamSchema
+>;
+// export type GetReceiptQueryType = z.infer<typeof GetUserQuerySchema>;
 export type CreateReceiptType = z.infer<typeof CreateReceiptSchema>;
 export type UpdateReceiptType = z.infer<typeof UpdateReceiptSchema>;
