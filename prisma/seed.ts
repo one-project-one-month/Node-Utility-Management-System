@@ -1,7 +1,5 @@
-import { PrismaClient } from '../generated/prisma';
 import { hashPassword } from '../src/common/auth/password';
-
-const prisma = new PrismaClient();
+import prisma from '../src/lib/prismaClient';
 
 async function main() {
   // Seed admin user

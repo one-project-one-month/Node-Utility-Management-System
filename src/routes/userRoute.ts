@@ -14,9 +14,9 @@ import {
 import { hasRole } from '../middlewares/authMiddleware';
 import {
   CreateUserSchema,
+  UpdateUserSchema,
   GetUserParamSchema,
   GetUserQuerySchema,
-  UpdateUserSchema,
 } from '../validations/userSchema';
 
 const router = Router();
@@ -29,7 +29,7 @@ router.get(
 );
 router.get(
   '/:userId',
-  hasRole(['Admin']),
+  hasRole(['Admin', 'Staff']),
   validateRequestParams(GetUserParamSchema),
   getUserController
 );
