@@ -4,6 +4,7 @@ import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
 import prisma from '../lib/prismaClient';
 import {
   CreateTenantType,
+  GetAllTenantsQueryType,
   UpdateTenantType,
 } from '../validations/tenantSchema';
 
@@ -53,3 +54,38 @@ export async function updateTenantService(
     },
   });
 }
+
+export const getByIdTenantService = async (tenantId: string) => {
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+  if (!tenant) {
+    throw new NotFoundError('Tenant Not Found');
+  }
+  return tenant;
+};
+
+export const getAllTenantService = async (data: GetAllTenantsQueryType) => {
+  const { page, limit } = data;
+  const skip = (page - 1) * limit;
+
+  const [tenants, total] = await Promise.all([
+    prisma.tenant.findMany({
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+      include: {
+        room: true,
+      },
+    }),
+    prisma.tenant.count(),
+  ]);
+
+  return {
+    tenants,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
