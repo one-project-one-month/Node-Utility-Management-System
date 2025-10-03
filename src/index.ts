@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import swaggerDocs from './config/swagger';
 import { customLogger } from './common/utils/customLogger';
+import { crediential } from './common/auth/credential';
+import corsOptions from './common/auth/corsOptions';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
 import { isAuthenticated } from './middlewares/authMiddleware';
 import { crediential } from './common/auth/credential';
@@ -41,6 +43,7 @@ app.use('/api/v1', serviceRoute)  //customer service end point
 app.use('/api/v1', receiptRoute);
 // app.use('/api/v1/tenants/:tenantId/receipts/latest', receiptRoute);
 // app.use('/api/v1/tenants/:tenantId/receipts/history', receiptRoute);
+app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

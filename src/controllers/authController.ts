@@ -25,13 +25,17 @@ export async function loginController(
     const { user, accessToken, refreshToken } = await loginService(
       req.validatedBody
     );
+    
+    if (!refreshToken || !accessToken) {
+      return next(new UnauthorizedError('Failed to generate tokens'));
+    }
 
     // Set refresh token in HTTP-only cookie
     res.cookie('refreshToken', refreshToken, REFRESH_TOKEN_COOKIE_CONFIG);
-
+    
     successResponse(
       res,
-      'Sign in successful',
+      'log in successful',
       {
         user,
         accessToken,
@@ -39,7 +43,7 @@ export async function loginController(
       200
     );
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -52,11 +56,15 @@ export async function refreshTokenController(
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      throw new UnauthorizedError('Refresh token is required');
+      return next(new UnauthorizedError('Refresh token is required'));
     }
 
     const { newAccessToken, newRefreshToken } =
       await refreshTokenService(refreshToken);
+
+    if (!newAccessToken || !newRefreshToken) {
+      return next(new UnauthorizedError('Failed to generate tokens'));
+    }
 
     // Set new refresh token in HTTP-only cookie
     res.cookie('refreshToken', newRefreshToken, REFRESH_TOKEN_COOKIE_CONFIG);
@@ -70,7 +78,7 @@ export async function refreshTokenController(
       200
     );
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -80,10 +88,11 @@ export async function logoutController(
   next: NextFunction
 ): Promise<void> {
   try {
+  
     const userId = req.user?.user_id;
 
     if (!userId) {
-      throw new UnauthorizedError('User not authenticated');
+      return next(new UnauthorizedError('User not authenticated'));
     }
 
     await logoutService(userId);
@@ -91,8 +100,8 @@ export async function logoutController(
     // Clear the refresh token cookie
     res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_CONFIG);
 
-    successResponse(res, 'Sign out successfully', null, 200);
+    successResponse(res, 'Log out successfully', null, 200);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
