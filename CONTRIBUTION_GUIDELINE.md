@@ -7,9 +7,16 @@ Thank you for contributing to this project! Please follow the rules below to kee
 ## 🚀 Branch Naming
 
 - Use the following format for branch names:
+  - `feature/[description]` - For new features
+  - `fix/[description]` - For bug fixes
+  - `docs/[description]` - For documentation updates
+  - `refactor/[description]` - For code refactoring
+
 **Examples:**
 - `feature/add-authentication`
-- `feature/update-user-profile`
+- `feature/user-management`
+- `fix/billing-calculation`
+- `docs/api-documentation`
 
 ---
 
@@ -20,9 +27,16 @@ We follow the **conventional commit** style for consistency:
 - `feat:` → For new features  
 - `fix:` → For bug fixes  
 - `docs:` → For documentation changes  
-- `refactor:` → For code refactoring without changing functionality    
+- `refactor:` → For code refactoring without changing functionality
+- `style:` → For formatting changes
+- `test:` → For adding or updating tests
+- `chore:` → For maintenance tasks
 
 **Examples:**
+- `feat: add user authentication system`
+- `fix: resolve billing calculation error`
+- `docs: update API documentation`
+- `refactor: optimize database queries`
 
 ---
 
@@ -35,17 +49,13 @@ We follow the **conventional commit** style for consistency:
 
 ## 📂 Specific File Type Conventions
 
-- Controllers: [entity]Controller.ts (e.g., `userController.ts`, `productController.ts`)
-
-- Services: [entity]Service.ts (e.g., `userService.ts`, `authService.ts`)
-
-- Routes: [entity]Routes.ts (e.g., `userRoutes.ts`, `adminRoutes.ts`)
-
-- Middlewares: [purpose]Middleware.ts (e.g., `validationMiddleware.ts`, `authMiddleware.ts`)
-
-- Validations: [entity]Schema.ts (e.g., `userSchema.ts`, `productSchema.ts`)
-
-- Types: [domain].d.ts or [entity]Types.ts (e.g., `express.d.ts`, `userTypes.ts`)
+- **Controllers**: [entity]Controller.ts (e.g., `userController.ts`, `roomController.ts`, `tenantController.ts`)
+- **Services**: [entity]Service.ts (e.g., `userService.ts`, `authService.ts`, `billingService.ts`)
+- **Routes**: [entity]Route.ts (e.g., `userRoute.ts`, `roomRoute.ts`, `contractRoute.ts`)
+- **Middlewares**: [purpose]Middleware.ts (e.g., `validationMiddleware.ts`, `authMiddleware.ts`)
+- **Validations**: [entity]Schema.ts (e.g., `userSchema.ts`, `roomSchema.ts`, `tenantSchema.ts`)
+- **Types**: [domain].d.ts or [entity]Types.ts (e.g., `express.d.ts`, `userTypes.ts`)
+- **Errors**: [type]Error.ts (e.g., `badRequestError.ts`, `notFoundError.ts`)
 
 ---
 
@@ -261,14 +271,108 @@ export const CreateUserSchema = z.object({
 export type GetUserParamType = z.infer<typeof GetUserParamSchema>;
 export type GetUserQueryType = z.infer<typeof GetUserQuerySchema>;
 export type CreateUserType = z.infer<typeof CreateUserSchema>;
-
-
 ```
 
+---
 
+## 📊 Database Guidelines
+
+### Prisma Schema Conventions
+- Use `snake_case` for database column names
+- Use `PascalCase` for model names
+- Always include `created_at` and `updated_at` timestamps
+- Use meaningful enum names (e.g., `UserRole`, `RoomStatus`)
+
+### Migration Best Practices
+```bash
+# Create a new migration
+npm run db:migrate
+
+# Push schema changes without migration (development only)
+npm run db:push
+
+# Generate Prisma client after schema changes
+npm run db:generate
+```
+
+---
+
+## 🔒 Security Guidelines
+
+- **Never commit sensitive data** (API keys, passwords, tokens)
+- **Always hash passwords** using bcrypt before storing
+- **Use JWT tokens** for authentication with proper expiration
+- **Validate all inputs** using Zod schemas
+- **Sanitize database queries** using Prisma (prevents SQL injection)
+- **Use HTTPS** in production environments
+
+---
+
+## 🧨 Testing Guidelines
+
+- Write unit tests for services and utilities
+- Write integration tests for API endpoints
+- Test error handling scenarios
+- Mock external dependencies in tests
+- Maintain at least 80% code coverage
+
+```bash
+# Run tests (when implemented)
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+---
+
+## 📝 API Response Format
+
+All API responses should follow this consistent format:
+
+```typescript
+// Success Response
+{
+  "success": true,
+  "message": "Operation successful",
+  "content": { /* data */ },
+  "status": 200
+}
+
+// Error Response
+{
+  "success": false,
+  "message": "Error description",
+  "status": 400
+}
+```
+
+---
+
+## 🚫 Common Mistakes to Avoid
+
+- Don't expose sensitive data in API responses (passwords, tokens)
+- Don't use `any` type in TypeScript - be specific with types
+- Don't skip input validation - always validate with Zod
+- Don't commit `.env` files - use `.env.example` instead
+- Don't write business logic in controllers - use services
+- Don't forget error handling in async functions
+
+---
 
 ## 🤝 Pull Requests
 
-- Keep PRs small and focused on a single feature or fix.  
-- Link related issues in the PR description.  
-- Request at least one reviewer before merging.
+- Keep PRs small and focused on a single feature or fix
+- Link related issues in the PR description
+- Request at least one reviewer before merging
+- Ensure all tests pass before submitting
+- Update documentation if needed
+- Follow the PR template (if available)
+
+### PR Checklist
+- [ ] Code follows the style guidelines
+- [ ] Self-review of the code completed
+- [ ] Code is commented where necessary
+- [ ] Tests added/updated for new functionality
+- [ ] Documentation updated if needed
+- [ ] No breaking changes (or clearly documented)

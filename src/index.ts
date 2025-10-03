@@ -2,15 +2,17 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
+import corsOptions from './common/auth/corsOptions';
+import { crediential } from './common/auth/credential';
 import { customLogger } from './common/utils/customLogger';
 import swaggerDocs from './config/swagger';
 import { isAuthenticated } from './middlewares/authMiddleware';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
+
 import tenantRoute from './routes/tenantRoute';
 
 // ROUTE IMPORTS
-import corsOptions from './common/auth/corsOptions';
-import { crediential } from './common/auth/credential';
+
 import authRoute from './routes/authRoute';
 import serviceRoute from './routes/serviceRoute';
 import userRoute from './routes/userRoute';
@@ -34,9 +36,9 @@ swaggerDocs(app, port || 3000);
 
 // ROUTES
 app.use('/api/v1/auth', authRoute);
-app.use('/api/v1/tenants', tenantRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
-app.use('/api/v1', serviceRoute); //customer service end point
+app.use('/api/v1/tenants', tenantRoute);
+app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

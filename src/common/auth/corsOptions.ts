@@ -1,8 +1,10 @@
-import { allowedOrigins } from "./allowedOrigins";
-import { Request, Response, NextFunction } from "express";
+import { allowedOrigins } from './allowedOrigins';
 
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {

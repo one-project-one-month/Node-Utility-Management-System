@@ -37,7 +37,7 @@ export async function getUserController(
     const user = await getUserService(req.validatedParams.userId);
 
     if (!user) {
-      throw new NotFoundError('User not found');
+      throw new NotFoundError('No users found');
     }
 
     successResponse(res, 'User fetched successfully', { user });
@@ -87,7 +87,7 @@ export async function deleteUserController(
     // Implementation for deleting a user
     const deletedUser = await deleteUserService(req.validatedParams.userId);
 
-    successResponse(res, 'User deleted successfully', {user: deletedUser});
+    successResponse(res, 'User deleted successfully', { user: deletedUser });
   } catch (error) {
     next(error);
   }
