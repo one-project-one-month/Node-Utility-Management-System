@@ -54,13 +54,15 @@ export async function getLatestReceiptsByTenantIdController(
   try {
     const latestReceipts = await getLatestReceiptsByTenantIdService(
       req.validatedParams.tenantId
-    );    
-    if (!latestReceipts || !latestReceipts.length)
-      throw new NotFoundError('Latest receipts are not found');
-
-    successResponse(res, 'Latest receipts by tenant id fetched successfully', {
-      latestReceipts,
-    });
+    );
+    // if (!latestReceipts || !latestReceipts.length)
+   if (!latestReceipts)
+     // throw new NotFoundError('Latest receipts are not found');
+     throw new NotFoundError('Latest receipt not found');
+     
+     successResponse(res, 'Latest receipts by tenant id fetched successfully', {
+       latestReceipts,
+     });
   } catch (error) {
     next(error);
   }

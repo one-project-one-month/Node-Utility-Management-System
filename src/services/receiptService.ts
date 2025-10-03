@@ -53,11 +53,11 @@ export async function createReceiptService(data: CreateReceiptType) {
       payment_method: data.payment_method,
       paid_date: data.paid_date,
     },
-    select: {
-      id: true,
-      payment_method: true,
-      invoice_id: true,
-    },
+    // select: {
+    //   id: true,
+    //   payment_method: true,
+    //   invoice_id: true,
+    // },
   });
 }
 
@@ -76,6 +76,9 @@ export async function updateReceiptService(
 
   if (!existingReceipt) throw new NotFoundError('Receipt not found');
 
+  // if invoice_id is being updated,
+  // update the status of new invoice from Pending to Paid
+  // and update the status of previous invoice from Paid to Pending
   // If invoice_id is being updated, check if new invoice exists
   if (data.invoice_id && data.invoice_id !== existingReceipt.invoice_id) {
     const newInvoice = await prisma.invoice.findUnique({
@@ -97,18 +100,65 @@ export async function updateReceiptService(
   return await prisma.receipt.update({
     where: { id: receiptId },
     data,
-    select: {
-      id: true,
-      payment_method: true,
-      invoice_id: true,
-    },
+    // select: {
+    //   id: true,
+    //   payment_method: true,
+    //   invoice_id: true,
+    // },
   });
 }
 
+// export async function getLatestReceiptsByTenantIdService(tenantId: string) {
+//   if (!tenantId) throw new NotFoundError('Tenant id not found');
+
+//   return await prisma.receipt.findMany({
+//     where: {
+//       invoice: {
+//         bill: {
+//           room: {
+//             tenant: {
+//               id: tenantId,
+//             },
+//           },
+//         },
+//       },
+//     },
+//     orderBy: { created_at: 'desc' },
+//   });
+// }
+
+// export async function getReceiptHistoriesByTenantIdService(tenantId: string) {
+//   if (!tenantId) throw new NotFoundError('Tenant id not found');
+
+//   return await prisma.receipt.findMany({
+//     where: {
+//       invoice: {
+//         bill: {
+//           room: {
+//             tenant: {
+//               id: tenantId,
+//             },
+//           },
+//         },
+//       },
+//     },
+//     orderBy: { created_at: 'desc' },
+//   });
+// }
+
+// Get latest receipt by tenant id (single most recent receipt)
 export async function getLatestReceiptsByTenantIdService(tenantId: string) {
   if (!tenantId) throw new NotFoundError('Tenant id not found');
 
-  return await prisma.receipt.findMany({
+  // Check if tenant exists
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { id: true },
+  });
+
+  if (!tenant) throw new NotFoundError('Tenant not found');
+
+  return await prisma.receipt.findFirst({
     where: {
       invoice: {
         bill: {
@@ -124,8 +174,17 @@ export async function getLatestReceiptsByTenantIdService(tenantId: string) {
   });
 }
 
+// Get receipt history by tenant id (all receipts)
 export async function getReceiptHistoriesByTenantIdService(tenantId: string) {
   if (!tenantId) throw new NotFoundError('Tenant id not found');
+
+  // Check if tenant exists
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { id: true },
+  });
+
+  if (!tenant) throw new NotFoundError('Tenant not found');
 
   return await prisma.receipt.findMany({
     where: {

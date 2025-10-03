@@ -28,12 +28,14 @@ export const CreateReceiptSchema = z.object({
 
 export const UpdateReceiptSchema = z
   .object({
-    payment_method: z.enum(
-      [PaymentMethod.Cash, PaymentMethod.Mobile_Banking],
-      "Payment method must be one of 'Cash' or 'Mobile Banking'"
-    ),
-    paid_date: z.coerce.date(),
-    invoice_id: z.string(),
+    payment_method: z
+      .enum(
+        [PaymentMethod.Cash, PaymentMethod.Mobile_Banking],
+        "Payment method must be one of 'Cash' or 'Mobile Banking'"
+      )
+      .optional(),
+    paid_date: z.coerce.date().optional(),
+    invoice_id: z.string().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
