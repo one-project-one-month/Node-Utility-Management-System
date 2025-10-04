@@ -93,6 +93,7 @@ export async function updateReceiptService(
       where: { invoice_id: data.invoice_id },
       select: { id: true },
     });
+    
     if (invoiceHasReceipt)
       throw new BadRequestError('Invoice already has a receipt');
   }
