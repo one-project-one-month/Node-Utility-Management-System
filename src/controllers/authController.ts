@@ -33,8 +33,6 @@ export async function loginController(
     // Set refresh token in HTTP-only cookie
     res.cookie('refreshToken', refreshToken, REFRESH_TOKEN_COOKIE_CONFIG);
 
-    console.log('After setting cookie');
-
     successResponse(
       res,
       'log in successful',
