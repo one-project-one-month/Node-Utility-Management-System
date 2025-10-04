@@ -31,6 +31,7 @@ app.use(customLogger('API_Logger'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.set('trust proxy', 1 /* number of proxies between user and server */) // To solve 'X-Forwarded-For' header error in production
 app.use(crediential);
 app.use(cors(corsOptions));
 
