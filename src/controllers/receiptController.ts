@@ -19,12 +19,11 @@ export async function getAllReceiptsController(
   try {
     const receipts = await getAllReceiptsService();
     if (!receipts || !receipts.length)
-      throw new NotFoundError('No receipts found');
+      return next(new NotFoundError('No receipts found'));
 
     successResponse(res, 'Receipts fetched successfully', { receipts });
   } catch (error) {
-    console.log('Error in getAllReceiptsController:', error);
-    next(error);
+    return next(error);
   }
 }
 
@@ -36,11 +35,11 @@ export async function getReceiptByIdController(
 ): Promise<void> {
   try {
     const receipt = await getReceiptByIdService(req.validatedParams.id);
-    if (!receipt) throw new NotFoundError('Receipt not found');
+    if (!receipt) return next(new NotFoundError('Receipt not found'));
 
     successResponse(res, 'Receipt fetched successfully', { receipt });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -55,16 +54,15 @@ export async function getLatestReceiptsByTenantIdController(
     const latestReceipts = await getLatestReceiptsByTenantIdService(
       req.validatedParams.tenantId
     );
-    // if (!latestReceipts || !latestReceipts.length)
-   if (!latestReceipts)
-     // throw new NotFoundError('Latest receipts are not found');
-     throw new NotFoundError('Latest receipt not found');
-     
-     successResponse(res, 'Latest receipts by tenant id fetched successfully', {
-       latestReceipts,
-     });
+
+    if (!latestReceipts)
+      return next(new NotFoundError('Latest receipt not found'));
+      
+      successResponse(res, 'Latest receipts by tenant id fetched successfully', {
+        latestReceipts,
+      });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -80,13 +78,13 @@ export async function getReceiptHistoriesByTenantIdController(
       req.validatedParams.tenantId
     );    
     if (!receiptHistories || !receiptHistories.length)
-      throw new NotFoundError('Receipt histories are not found');
+      return next(new NotFoundError('Receipt histories are not found'));
 
     successResponse(res, 'Receipt histories by tenant id fetched successfully', {
       receiptHistories,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -102,13 +100,13 @@ export async function getReceiptByInvoiceIdController(
     );
 
     if (!receiptByInvoiceId)
-      throw new NotFoundError('Receipt not found for this invoice');
+      return next(new NotFoundError('Receipt not found for this invoice'));
 
     successResponse(res, 'Receipt fetched successfully', {
       receipt: receiptByInvoiceId,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -126,8 +124,9 @@ export async function createReceiptController(
       { receipt: newReceipt },
       201
     );
+    
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -146,6 +145,6 @@ export async function updateReceiptController(
       receipt: updatedReceipt,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
