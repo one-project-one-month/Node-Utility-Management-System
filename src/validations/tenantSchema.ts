@@ -33,6 +33,19 @@ export const UpdateTenantSchema = z
       .optional(),
     room_id: z.uuid({ version: 'v4' }).optional(),
   })
+  //at least one field must be provided
+  .refine(
+    (data) =>
+      data.names ||
+      data.emails ||
+      data.nrcs ||
+      data.phone_nos ||
+      data.emergency_nos ||
+      data.room_id,
+    {
+      message: 'At least one field must be provided for update',
+    }
+  )
   .refine(
     (data) => {
       // if none of the array fields are provided, it's valid
