@@ -16,6 +16,7 @@ import {
   paginationQuerySchema,
   updateCustomerServiceSchema,
 } from '../validations/serviceSchema';
+import { hasRole } from '../middlewares/authMiddleware';
 
 const router = Router();
 
@@ -29,16 +30,19 @@ router.post(
 // Dashboard
 router.get(
   '/customer-services/',
+  hasRole(['Admin', 'Staff']),
   validateRequestQuery(paginationQuerySchema),
   getAllServiceController
 );
 router.get(
   '/customer-services/:id',
+  hasRole(['Admin', 'Staff']),
   validateRequestParams(idSchema),
   getServiceById
 );
 router.put(
   '/customer-services/:id',
+  hasRole(['Admin', 'Staff']),
   validateRequestParams(idSchema),
   validateRequestBody(updateCustomerServiceSchema),
   updateServiceController

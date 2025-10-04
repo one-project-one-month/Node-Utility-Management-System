@@ -9,7 +9,6 @@ declare global {
       validatedBody?: any;
       validatedQuery?: any;
       validatedParams?: any;
-      user?: TokenPayload;
     }
   }
 }

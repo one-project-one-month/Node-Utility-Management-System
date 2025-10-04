@@ -69,14 +69,10 @@ export const UpdateTenantSchema = z
         'Some array fields (names, emails and nrcs) must have the same length',
     }
   );
-export type CreateTenantType = z.infer<typeof CreateTenantSchema>;
-export type UpdateTenantType = z.infer<typeof UpdateTenantSchema>;
 
 export const GetTenantParamSchema = z.object({
   tenantId: z.uuid({ version: 'v4' }),
 });
-
-export type GetUserParamType = z.infer<typeof GetTenantParamSchema>;
 
 export const GetAllTenantsQuerySchema = z
   .object({
@@ -98,4 +94,7 @@ export const GetAllTenantsQuerySchema = z
   })
   .strict();
 
+export type CreateTenantType = z.infer<typeof CreateTenantSchema>;
+export type UpdateTenantType = z.infer<typeof UpdateTenantSchema>;
+export type GetUserParamType = z.infer<typeof GetTenantParamSchema>;
 export type GetAllTenantsQueryType = z.infer<typeof GetAllTenantsQuerySchema>;

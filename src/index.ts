@@ -11,12 +11,8 @@ import { errorHandler } from './middlewares/errorHandlingMiddleware';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
-
-// ROUTE IMPORTS
-
 import receiptRoute from './routes/receiptRoute';
 import serviceRoute from './routes/serviceRoute';
-
 import tenantRoute from './routes/tenantRoute';
 import userRoute from './routes/userRoute';
 
@@ -41,15 +37,9 @@ swaggerDocs(app, port || 3000);
 // ROUTES
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
-app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
 app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
-
-app.use('/api/v1/receipts', receiptRoute);
-
-// Receipt
+app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
 app.use('/api/v1', receiptRoute);
-// app.use('/api/v1/tenants/:tenantId/receipts/latest', receiptRoute);
-// app.use('/api/v1/tenants/:tenantId/receipts/history', receiptRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

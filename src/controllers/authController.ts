@@ -25,11 +25,6 @@ export async function loginController(
     const { user, accessToken, refreshToken } = await loginService(
       req.validatedBody
     );
-    console.log('In login controller');
-
-    if (!refreshToken || !accessToken) {
-      return next(new UnauthorizedError('Failed to generate tokens'));
-    }
 
     if (!refreshToken || !accessToken) {
       return next(new UnauthorizedError('Failed to generate tokens'));
