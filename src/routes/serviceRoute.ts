@@ -1,5 +1,11 @@
 import { Router } from 'express';
 import {
+  createServiceController,
+  getAllServiceController,
+  getServiceById,
+  updateServiceController,
+} from '../controllers/serviceController';
+import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
@@ -10,12 +16,7 @@ import {
   paginationQuerySchema,
   updateCustomerServiceSchema,
 } from '../validations/serviceSchema';
-import {
-  createServiceController,
-  getAllServiceController,
-  getServiceById,
-  updateServiceController,
-} from '../controllers/serviceController';
+import { hasRole } from '../middlewares/authMiddleware';
 
 const router = Router();
 
@@ -29,16 +30,19 @@ router.post(
 // Dashboard
 router.get(
   '/customer-services/',
+  hasRole(['Admin', 'Staff']),
   validateRequestQuery(paginationQuerySchema),
   getAllServiceController
 );
 router.get(
   '/customer-services/:id',
+  hasRole(['Admin', 'Staff']),
   validateRequestParams(idSchema),
   getServiceById
 );
 router.put(
   '/customer-services/:id',
+  hasRole(['Admin', 'Staff']),
   validateRequestParams(idSchema),
   validateRequestBody(updateCustomerServiceSchema),
   updateServiceController

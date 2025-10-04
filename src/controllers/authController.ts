@@ -1,11 +1,11 @@
 import { CookieOptions, NextFunction, Request, Response } from 'express';
+import { successResponse } from '../common/apiResponse';
+import { UnauthorizedError } from '../common/errors';
 import {
   loginService,
-  refreshTokenService,
   logoutService,
+  refreshTokenService,
 } from '../services/authService';
-import { UnauthorizedError } from '../common/errors';
-import { successResponse } from '../common/apiResponse';
 
 // Cookie configuration
 const REFRESH_TOKEN_COOKIE_CONFIG: CookieOptions = {
@@ -25,14 +25,14 @@ export async function loginController(
     const { user, accessToken, refreshToken } = await loginService(
       req.validatedBody
     );
-    
+
     if (!refreshToken || !accessToken) {
       return next(new UnauthorizedError('Failed to generate tokens'));
     }
 
     // Set refresh token in HTTP-only cookie
     res.cookie('refreshToken', refreshToken, REFRESH_TOKEN_COOKIE_CONFIG);
-    
+
     successResponse(
       res,
       'log in successful',
@@ -88,7 +88,6 @@ export async function logoutController(
   next: NextFunction
 ): Promise<void> {
   try {
-  
     const userId = req.user?.user_id;
 
     if (!userId) {

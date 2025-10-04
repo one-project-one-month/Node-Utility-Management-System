@@ -38,13 +38,15 @@ export const serviceHistoryController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await cutomerServiceHistory(req.validatedParams, req.validatedQuery);
-    successResponse(res, "Get service history successfull.", result, 200)
+    const result = await cutomerServiceHistory(
+      req.validatedParams,
+      req.validatedQuery
+    );
+    successResponse(res, 'Get service history successfull.', result, 200);
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
-
+};
 
 // update customer service
 export const updateServiceController = async (

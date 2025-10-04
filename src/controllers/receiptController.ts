@@ -49,7 +49,6 @@ export async function getLatestReceiptsByTenantIdController(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  
   try {
     const latestReceipts = await getLatestReceiptsByTenantIdService(
       req.validatedParams.tenantId
@@ -57,10 +56,10 @@ export async function getLatestReceiptsByTenantIdController(
 
     if (!latestReceipts)
       return next(new NotFoundError('Latest receipt not found'));
-      
-      successResponse(res, 'Latest receipts by tenant id fetched successfully', {
-        latestReceipts,
-      });
+
+    successResponse(res, 'Latest receipts by tenant id fetched successfully', {
+      latestReceipts,
+    });
   } catch (error) {
     return next(error);
   }
@@ -72,17 +71,20 @@ export async function getReceiptHistoriesByTenantIdController(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  
   try {
     const receiptHistories = await getReceiptHistoriesByTenantIdService(
       req.validatedParams.tenantId
-    );    
+    );
     if (!receiptHistories || !receiptHistories.length)
       return next(new NotFoundError('Receipt histories are not found'));
 
-    successResponse(res, 'Receipt histories by tenant id fetched successfully', {
-      receiptHistories,
-    });
+    successResponse(
+      res,
+      'Receipt histories by tenant id fetched successfully',
+      {
+        receiptHistories,
+      }
+    );
   } catch (error) {
     return next(error);
   }
@@ -124,7 +126,6 @@ export async function createReceiptController(
       { receipt: newReceipt },
       201
     );
-    
   } catch (error) {
     return next(error);
   }

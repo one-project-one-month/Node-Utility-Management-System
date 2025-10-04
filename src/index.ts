@@ -1,19 +1,20 @@
-import express, { Request, Response } from 'express';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import dotenv from 'dotenv';
-import swaggerDocs from './config/swagger';
-import { customLogger } from './common/utils/customLogger';
-import { crediential } from './common/auth/credential';
+import express, { Request, Response } from 'express';
 import corsOptions from './common/auth/corsOptions';
-import { errorHandler } from './middlewares/errorHandlingMiddleware';
+import { crediential } from './common/auth/credential';
+import { customLogger } from './common/utils/customLogger';
+import swaggerDocs from './config/swagger';
 import { isAuthenticated } from './middlewares/authMiddleware';
+import { errorHandler } from './middlewares/errorHandlingMiddleware';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
-import userRoute from './routes/userRoute';
-import serviceRoute from './routes/serviceRoute'
 import receiptRoute from './routes/receiptRoute';
+import serviceRoute from './routes/serviceRoute';
+import tenantRoute from './routes/tenantRoute';
+import userRoute from './routes/userRoute';
 
 dotenv.config();
 
@@ -36,7 +37,8 @@ swaggerDocs(app, port || 3000);
 // ROUTES
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
-app.use('/api/v1', serviceRoute)  //customer service end point
+app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
+app.use('/api/v1', isAuthenticated, serviceRoute)  //customer service end point
 app.use('/api/v1', receiptRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
