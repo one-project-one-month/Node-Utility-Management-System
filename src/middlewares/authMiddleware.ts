@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { UnauthorizedError } from '../common/errors';
+import { UnauthorizedError, ForbiddenError } from '../common/errors';
 import { verifyAccessToken } from '../common/auth/jwt';
 import { UserRole } from '../../generated/prisma';
 
@@ -27,7 +27,7 @@ export function isAuthenticated(
 export function hasRole(allowedRoles: UserRole[]) {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user?.role || !allowedRoles.includes(req.user.role)) {
-      throw new UnauthorizedError(`Required roles: ${allowedRoles.join(', ')}`);
+      throw new ForbiddenError(`Required roles: ${allowedRoles.join(', ')}`);
     }
     next();
   };
