@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { PaginationQuerySchema } from './paginationSchema';
 
 export const CreateTenantSchema = z
   .object({

@@ -12,6 +12,7 @@ components:
       bearerFormat: JWT
 
   schemas:
+    # Api Response Format
     ApiSuccessResponse:
       type: object
       properties:
@@ -38,6 +39,7 @@ components:
         status:
           type: number
           example: 401
+    # User Schema
     AdminUser:
       type: object
       properties:
@@ -133,7 +135,8 @@ components:
         tenant_id:
           type: string
           nullable: true
-          example:
+          example: null
+    # Customer Service Schema
     CreateCustomerServiceRequest:
       type: object
       required: [description, category, status, priority_level, room_id]
@@ -214,6 +217,176 @@ components:
         updated_at:
           type: string
           example: '2025-10-05T09:30:00.000Z'
+    # Tenant Schema
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+        names:
+          type: array
+          items:
+            type: string
+          example: ['Lyle Willms', 'Maxine Ankunding IV']
+        emails:
+          type: array
+          items:
+            type: string
+            format: email
+          example:
+            ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
+        nrcs:
+          type: array
+          items:
+            type: string
+          example: ['12/ABCD(N)854324', '12/ABCD(N)895764']
+        phone_nos:
+          type: array
+          items:
+            type: string
+          example: ['+959452897714', '+959553996447']
+        emergency_nos:
+          type: array
+          items:
+            type: string
+          example: ['+959202435118']
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        room_id:
+          type: string
+          format: uuid
+          example: d44605d3-4f8e-4057-b778-201111db860d
+        room:
+          $ref: '#/components/schemas/Room'
+    CreateTenantRequest:
+      type: object
+      required: [names, emails, nrcs, phone_nos, emergency_nos, room_id]
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          minItems: 1
+          example: ['Lyle Willms', 'Maxine Ankunding IV']
+        emails:
+          type: array
+          items:
+            type: string
+            format: email
+          minItems: 1
+          example:
+            ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
+        nrcs:
+          type: array
+          items:
+            type: string
+            minLength: 3
+          minItems: 1
+          example: ['12/ABCD(N)854324', '12/ABCD(N)895764']
+        phone_nos:
+          type: array
+          items:
+            type: string
+            minLength: 6
+          example: ['+959452897714', '+959553996447']
+        emergency_nos:
+          type: array
+          items:
+            type: string
+            minLength: 6
+          example: ['+959202435118']
+        room_id:
+          type: string
+          format: uuid
+          example: d44605d3-4f8e-4057-b778-201111db860d
+    UpdateTenantRequest:
+      type: object
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          example: ['Lyle Willms', 'Maxine Ankunding IV']
+        emails:
+          type: array
+          items:
+            type: string
+            format: email
+          example:
+            ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
+        nrcs:
+          type: array
+          items:
+            type: string
+            minLength: 3
+          example: ['12/ABCD(N)854324', '12/ABCD(N)895764']
+        phone_nos:
+          type: array
+          items:
+            type: string
+            minLength: 6
+          example: ['+959452897714', '+959553996447']
+        emergency_nos:
+          type: array
+          items:
+            type: string
+            minLength: 6
+          example: ['+959202435118']
+        room_id:
+          type: string
+          format: uuid
+          example: d44605d3-4f8e-4057-b778-201111db860d
+    # Room Schema
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d44605d3-4f8e-4057-b778-201111db860d
+        room_no:
+          type: integer
+          example: 414
+        floor:
+          type: integer
+          example: 4
+        dimension:
+          type: string
+          example: 14x20 ft
+        no_of_bed_room:
+          type: integer
+          example: 2
+        status:
+          type: string
+          enum: [Available, Rented, Maintenance]
+          example: Rented
+        selling_price:
+          type: string
+          example: '1352275'
+        max_no_of_people:
+          type: integer
+          example: 2
+        description:
+          type: string
+          example: City view with balcony
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.158Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.158Z
 
 paths:
   # Authentication Endpoints
@@ -352,44 +525,37 @@ paths:
       description: Retrieves a list of all users with pagination and filtering support. Accessible only only to Admin and Staff users.
       security:
         - bearerAuth: []
-      # parameters:
-      #   - name: page
-      #     in: query
-      #     description: Page number for pagination
-      #     required: false
-      #     schema:
-      #       type: integer
-      #       minimum: 1
-      #       example: 1
-      #   - name: limit
-      #     in: query
-      #     description: Number of items per page
-      #     required: false
-      #     schema:
-      #       type: integer
-      #       minimum: 1
-      #       maximum: 100
-      #       example: 10
-      #   - name: search
-      #     in: query
-      #     description: Search term for user names or emails
-      #     required: false
-      #     schema:
-      #       type: string
-      #       example: 'admin'
-      #   - name: role
-      #     in: query
-      #     description: Filter by user role
-      #     required: false
-      #     schema:
-      #       $ref: '#/components/schemas/UserRole'
-      #   - name: is_active
-      #     in: query
-      #     description: Filter by active status
-      #     required: false
-      #     schema:
-      #       type: boolean
-      #       example: true
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            example: 10
+        - name: role
+          in: query
+          description: Filter by user role
+          required: false
+          schema:
+            $ref: '#/components/schemas/UserRole'
+        - name: is_active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+            example: true
       responses:
         200:
           description: Users fetched successfully
@@ -412,18 +578,34 @@ paths:
                               oneOf:
                                 - $ref: '#/components/schemas/AdminUser'
                                 - $ref: '#/components/schemas/TenantUser'
-                          # pagination:
-                          #   type: object
-                          #   properties:
-                          #     page:
-                          #       type: integer
-                          #       example: 1
-                          #     limit:
-                          #       type: integer
-                          #       example: 10
-                          #     total:
-                          #       type: integer
-                          #       example: 50
+                          pagination:
+                            type: object
+                            properties:
+                              count:
+                                type: integer
+                                example: 2
+                              prevPage:
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
+                                example: false
+                              nextPage:
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
+                                example: false
+                              page:
+                                type: integer
+                                example: 1
+                              limit:
+                                type: integer
+                                example: 10
+                              totalPages:
+                                type: integer
+                                example: 1
+                              totalCount:
+                                type: integer
+                                example: 2
         401:
           description: Unauthorized
           content:
@@ -846,11 +1028,18 @@ paths:
                           pagination:
                             type: object
                             properties:
+                              count:
+                                type: integer
+                                example: 1
                               prevPage:
-                                type: boolean
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
                                 example: false
                               nextPage:
-                                type: boolean
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
                                 example: false
                               page:
                                 type: integer
@@ -859,6 +1048,9 @@ paths:
                                 type: integer
                                 example: 10
                               totalPages:
+                                type: integer
+                                example: 1
+                              totalCount:
                                 type: integer
                                 example: 1
                       status:
@@ -925,11 +1117,18 @@ paths:
                           pagination:
                             type: object
                             properties:
+                              count:
+                                type: integer
+                                example: 1
                               prevPage:
-                                type: boolean
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
                                 example: false
                               nextPage:
-                                type: boolean
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
                                 example: false
                               page:
                                 type: integer
@@ -937,10 +1136,12 @@ paths:
                               limit:
                                 type: integer
                                 example: 10
-                              total:
+                              totalPages:
                                 type: integer
                                 example: 1
-
+                              totalCount:
+                                type: integer
+                                example: 1
         401:
           description: Unauthorized
           content:
@@ -1094,3 +1295,343 @@ paths:
                         example: No customer service found for Id-c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
                       status:
                         example: 404
+
+  # Tenant Endpoints
+  /api/v1/tenants:
+    get:
+      tags:
+        - Tenants
+      summary: Get all tenants (Admin & Staff only)
+      description: Retrieves a list of all tenants with pagination support. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            example: 10
+      responses:
+        200:
+          description: Tenants retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All tenants get successfully
+                      content:
+                        type: object
+                        properties:
+                          tenants:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Tenant'
+                          pagination:
+                            type: object
+                            properties:
+                              count:
+                                type: integer
+                                example: 1
+                              prevPage:
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
+                                example: false
+                              nextPage:
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
+                                example: 2
+                              page:
+                                type: integer
+                                example: 1
+                              limit:
+                                type: integer
+                                example: 1
+                              totalPages:
+                                type: integer
+                                example: 67
+                              totalCount:
+                                type: integer
+                                example: 67
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+    post:
+      tags:
+        - Tenants
+      summary: Create a new tenant (Admin & Staff only)
+      description: Create a new tenant with multiple names, emails, NRCs, etc. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTenantRequest'
+      responses:
+        201:
+          description: Tenant created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Tenant created successfully
+                      content:
+                        type: object
+                        properties:
+                          tenant:
+                            $ref: '#/components/schemas/Tenant'
+                      status:
+                        type: number
+                        example: 201
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Validation failed
+                      details:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            path:
+                              type: string
+                              example: names
+                            message:
+                              type: string
+                              example: Array fields must have the same length
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+  /api/v1/tenants/{tenantId}:
+    get:
+      tags:
+        - Tenants
+      summary: Get tenant by ID (Admin & Staff only)
+      description: Retrieve a specific tenant by their ID. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenantId
+          in: path
+          description: Tenant ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+      responses:
+        200:
+          description: Tenant retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Tenant gets successfully
+                      content:
+                        type: object
+                        properties:
+                          tenant:
+                            $ref: '#/components/schemas/Tenant'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: Tenant not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Tenant not found
+    put:
+      tags:
+        - Tenants
+      summary: Update tenant by ID (Admin & Staff only)
+      description: Update tenant information. At least one field must be provided. Accessible to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenantId
+          in: path
+          description: Tenant ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTenantRequest'
+      responses:
+        200:
+          description: Tenant updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Tenants updated successfully
+                      content:
+                        type: object
+                        properties:
+                          tenant:
+                            $ref: '#/components/schemas/Tenant'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: Tenant not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Tenant not found
