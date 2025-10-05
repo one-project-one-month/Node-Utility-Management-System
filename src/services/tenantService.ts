@@ -50,7 +50,7 @@ export async function updateTenantService(
       ...(data.nrcs && { nrcs: { set: data.nrcs } }),
       ...(data.phone_nos && { phone_nos: { set: data.phone_nos } }),
       ...(data.emergency_nos && { emergency_nos: { set: data.emergency_nos } }),
-      updated_at: new Date(),
+      // updated_at: new Date(), we don't need this as prisma will handle it automatically
     },
   });
 }
@@ -67,7 +67,7 @@ export const getAllTenantService = async (data: GetAllTenantsQueryType) => {
   const { page, limit } = data;
   const skip = (page - 1) * limit;
 
-  const [tenants, total] = await Promise.all([
+  const [tenants, count] = await Promise.all([
     prisma.tenant.findMany({
       skip,
       take: limit,
@@ -79,13 +79,20 @@ export const getAllTenantService = async (data: GetAllTenantsQueryType) => {
     prisma.tenant.count(),
   ]);
 
+  if ( Array.isArray(tenants) && tenants.length === 0) {
+    throw new NotFoundError('No tenants found');
+  }
+  
+  const totalPages = Math.ceil(count / limit);
   return {
     tenants,
     pagination: {
-      total,
+      count: tenants.length,
+      prevPage: page > 1,
+      nextPage: page < totalPages,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
+      totalPages,
     },
   };
 };

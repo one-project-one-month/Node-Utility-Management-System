@@ -110,7 +110,7 @@ export const getAllCustomerService = async ({
   const skip = (page - 1) * limit;
 
   //Get sevices and count
-  const [services, total] = await Promise.all([
+  const [services, count] = await Promise.all([
     prisma.customerService.findMany({
       skip,
       take: limit,
@@ -118,16 +118,17 @@ export const getAllCustomerService = async ({
     prisma.customerService.count(),
   ]);
 
-  if (!services || services.length === 0) {
+  if (Array.isArray(services) && services.length === 0) {
     throw new NotFoundError('No customer services found.');
   }
 
   //Total pages for pagination
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.ceil(count / limit);
 
   return {
     services,
     pagination: {
+      count: services.length,
       prevPage: page > 1,
       nextPage: page < totalPages,
       page,

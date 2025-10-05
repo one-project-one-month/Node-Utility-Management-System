@@ -104,7 +104,7 @@ model Room {
   contract         Contract[]
   tenant           Tenant?
   customer_service CustomerService[]
-  bill             Bill?
+  bill             Bill[]
 
   @@map("rooms")
 }
