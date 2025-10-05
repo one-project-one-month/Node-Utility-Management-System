@@ -1,10 +1,10 @@
-import { CustomerService } from '../../generated/prisma';
 import { NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
 import {
   createServiceType,
   paginationQueryType,
   tenantIdAndStatusType,
+  updateServiceType,
 } from '../validations/serviceSchema';
 
 //create customer service
@@ -90,16 +90,16 @@ export const cutomerServiceHistory = async (
 };
 
 //update customer service
-export const updateCustomerService = async (data: CustomerService) => {
+export const updateCustomerService = async (serviceId: string, data: updateServiceType) => {
   const existingService = await prisma.customerService.findUnique({
-    where: { id: data.id },
+    where: { id: serviceId },
     select: { id: true },
   });
   if (!existingService) {
-    throw new NotFoundError(`No customer service found for this-${data.id}`);
+    throw new NotFoundError(`No customer service found.}`);
   }
 
-  return await prisma.customerService.update({ where: { id: data.id }, data });
+  return await prisma.customerService.update({ where: { id: serviceId }, data });
 };
 
 //get all cutomer service
@@ -110,7 +110,7 @@ export const getAllCustomerService = async ({
   const skip = (page - 1) * limit;
 
   //Get sevices and count
-  const [services, total] = await Promise.all([
+  const [services, count] = await Promise.all([
     prisma.customerService.findMany({
       skip,
       take: limit,
@@ -118,16 +118,17 @@ export const getAllCustomerService = async ({
     prisma.customerService.count(),
   ]);
 
-  if (!services || services.length === 0) {
+  if (Array.isArray(services) && services.length === 0) {
     throw new NotFoundError('No customer services found.');
   }
 
   //Total pages for pagination
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.ceil(count / limit);
 
   return {
     services,
     pagination: {
+      count: services.length,
       prevPage: page > 1,
       nextPage: page < totalPages,
       page,
@@ -141,7 +142,7 @@ export const getAllCustomerService = async ({
 export const getCustomerServiceById = async (id: string) => {
   const service = await prisma.customerService.findUnique({ where: { id } });
   if (!service) {
-    throw new NotFoundError(`No customer service found for this-${id}`);
+    throw new NotFoundError(`No customer service found for Id-${id}`);
   }
   return service;
 };

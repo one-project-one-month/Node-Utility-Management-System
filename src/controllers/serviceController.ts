@@ -21,7 +21,7 @@ export const createServiceController = async (
 
     successResponse(
       res,
-      'Create service from  successfully',
+      'Customer service created successfully',
       {
         service,
       },
@@ -42,7 +42,7 @@ export const serviceHistoryController = async (
       req.validatedParams,
       req.validatedQuery
     );
-    successResponse(res, 'Get service history successfull.', result, 200);
+    successResponse(res, 'Fetch service history successfullly', result, 200);
   } catch (error) {
     next(error);
   }
@@ -55,10 +55,9 @@ export const updateServiceController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const data = { id: req.validatedParams.id, ...req.validatedBody };
 
-    const service = await updateCustomerService(data);
-    successResponse(res, 'Service updated successfully', { service }, 200);
+    const service = await updateCustomerService(req.validatedParams.id, req.validatedBody);
+    successResponse(res, 'Customer service updated successfully', { service }, 200);
   } catch (error) {
     next(error);
   }
