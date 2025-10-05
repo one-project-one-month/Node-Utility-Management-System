@@ -1,0 +1,38 @@
+import z from 'zod';
+import { RoomStatus } from '../../generated/prisma';
+
+export const CreateRoomSchema = z.object({
+    room_no: z.number().int().min(1, 'Room number is required and choose a positive number in the list'),
+    floor: z.number().int(),
+    dimension: z.string().min(1, 'Dimension is required'),
+    no_of_bed_room: z.number().int().min(1, 'Number of bedrooms is required and must be at least 1'),
+    status: z.enum([RoomStatus.Available, RoomStatus.Rented, RoomStatus.Purchased, RoomStatus.InMaintenance]),
+    selling_price: z.number().optional(), // Prisma Decimal maps to number in TS
+    max_no_of_people: z.number().int().min(1, 'Maximum number of people is required and must be at least 1'),
+    description: z.string().optional().nullable(),
+    
+    //Relations
+    tenant_id: z.string().optional().nullable(),
+    contract_id: z.string().optional().nullable(),
+    bill_id: z.string().optional().nullable(),
+    customer_service_id: z.string().optional().nullable(),
+
+});
+
+export const UpdateRoomSchema = z.object({
+    room_no: z.number().int().optional(),
+    floor: z.number().int().optional(),
+    dimension: z.string().optional(),
+    no_of_bed_room: z.number().int().optional(),
+    status: z.enum([RoomStatus.Available, RoomStatus.Rented, RoomStatus.Purchased, RoomStatus.InMaintenance]).optional(),
+    selling_price: z.number().optional(), // Prisma Decimal maps to number in TS
+    max_no_of_people: z.number().int().optional(),
+    description: z.string().optional().nullable(),
+
+}).refine((data) => Object.keys(data).length > 0, {
+    message: 'At least one field must be updated',
+});
+
+//Type inference
+export type CreateRoomType = z.infer<typeof CreateRoomSchema>;
+export type UpdateRoomType = z.infer<typeof UpdateRoomSchema>;
