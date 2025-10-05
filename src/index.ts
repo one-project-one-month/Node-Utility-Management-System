@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -28,7 +30,7 @@ app.use(customLogger('API_Logger'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.set('trust proxy', 1 /* number of proxies between user and server */) // To solve 'X-Forwarded-For' header error in production
+app.set('trust proxy', 1 /* number of proxies between user and server */); // To solve 'X-Forwarded-For' header error in production
 app.use(crediential);
 app.use(cors(corsOptions));
 
@@ -39,19 +41,26 @@ swaggerDocs(app, port || 3000);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
-app.use('/api/v1', isAuthenticated, serviceRoute)  //customer service end point
+app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
 app.use('/api/v1', receiptRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
 
 app.get('/', (_req: Request, res: Response) => {
-   const docsLinks = deployedUrls.map((url) => `${url}/docs`);
+  const templatePath = path.join(__dirname, 'templates/status.html');
+  let html = fs.readFileSync(templatePath, 'utf-8');
 
-    res.json({
-      message: '🚀 API is running successfully!',
-      documentation: docsLinks,
-    });
+  const docsLinks = deployedUrls
+    .map(
+      (url) => `<li><a href="${url}/docs" target="_blank">${url}/docs</a></li>`
+    )
+    .join('');
+
+  html = html.replace('<!--DOCS_LINKS-->', docsLinks);
+  res.send(html);
 });
 
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(port, () =>
+  console.log(`Server is running on http://localhost:${port}`)
+);

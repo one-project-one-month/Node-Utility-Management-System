@@ -1,7 +1,6 @@
 export const deployedUrls = [
   'https://node-utility-management-system.onrender.com',
   'https://node-utility-management-system-fye1.onrender.com',
-  'https://node-utility-management-system-production.up.railway.app',
 ];
 
 export const allowedOrigins = [
