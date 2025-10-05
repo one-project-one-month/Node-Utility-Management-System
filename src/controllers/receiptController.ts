@@ -1,0 +1,151 @@
+import { NextFunction, Request, Response } from 'express';
+import { NotFoundError } from '../common/errors';
+import { successResponse } from '../common/apiResponse';
+import {
+  createReceiptService,
+  getAllReceiptsService,
+  getLatestReceiptsByTenantIdService,
+  getReceiptByIdService,
+  getReceiptByInvoiceIdService,
+  getReceiptHistoriesByTenantIdService,
+  updateReceiptService,
+} from '../services/receiptService';
+
+export async function getAllReceiptsController(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const receipts = await getAllReceiptsService();
+    if (!receipts || !receipts.length)
+      return next(new NotFoundError('No receipts found'));
+
+    successResponse(res, 'Receipts fetched successfully', { receipts });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+// Get by id
+export async function getReceiptByIdController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const receipt = await getReceiptByIdService(req.validatedParams.id);
+    if (!receipt) return next(new NotFoundError('Receipt not found'));
+
+    successResponse(res, 'Receipt fetched successfully', { receipt });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+// Get latest by tenant id
+export async function getLatestReceiptsByTenantIdController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const latestReceipts = await getLatestReceiptsByTenantIdService(
+      req.validatedParams.tenantId
+    );
+
+    if (!latestReceipts)
+      return next(new NotFoundError('Latest receipt not found'));
+
+    successResponse(res, 'Latest receipts by tenant id fetched successfully', {
+      latestReceipts,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+// Get receipt history by tenant id
+export async function getReceiptHistoriesByTenantIdController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const receiptHistories = await getReceiptHistoriesByTenantIdService(
+      req.validatedParams.tenantId
+    );
+    if (!receiptHistories || !receiptHistories.length)
+      return next(new NotFoundError('Receipt histories are not found'));
+
+    successResponse(
+      res,
+      'Receipt histories by tenant id fetched successfully',
+      {
+        receiptHistories,
+      }
+    );
+  } catch (error) {
+    return next(error);
+  }
+}
+
+// Get by invoice id
+export async function getReceiptByInvoiceIdController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const receiptByInvoiceId = await getReceiptByInvoiceIdService(
+      req.validatedParams.invoiceId
+    );
+
+    if (!receiptByInvoiceId)
+      return next(new NotFoundError('Receipt not found for this invoice'));
+
+    successResponse(res, 'Receipt fetched successfully', {
+      receipt: receiptByInvoiceId,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function createReceiptController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const newReceipt = await createReceiptService(req.validatedBody);
+
+    successResponse(
+      res,
+      'Receipt created successfully',
+      { receipt: newReceipt },
+      201
+    );
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function updateReceiptController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const updatedReceipt = await updateReceiptService(
+      req.validatedParams.id,
+      req.validatedBody
+    );
+
+    successResponse(res, 'Receipt updated successfully', {
+      receipt: updatedReceipt,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
