@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PaginationQuerySchema } from './paginationSchema';
 
 export const CreateTenantSchema = z
   .object({
@@ -75,27 +76,6 @@ export const GetTenantParamSchema = z.object({
   tenantId: z.uuid({ version: 'v4' }),
 });
 
-export const GetAllTenantsQuerySchema = z
-  .object({
-    page: z
-      .string()
-      .optional()
-      .transform((val) => (val ? Number(val) : 1)) // convert to number or default 1
-      .refine((val) => !isNaN(val) && val > 0, {
-        message: 'Page must be a valid number greater than 0',
-      }),
-
-    limit: z
-      .string()
-      .optional()
-      .transform((val) => (val ? Number(val) : 10)) // convert to number or default 10
-      .refine((val) => !isNaN(val) && val > 0 && val <= 100, {
-        message: 'Limit must be a valid number between 1 and 100',
-      }),
-  })
-  .strict();
-
 export type CreateTenantType = z.infer<typeof CreateTenantSchema>;
 export type UpdateTenantType = z.infer<typeof UpdateTenantSchema>;
 export type GetUserParamType = z.infer<typeof GetTenantParamSchema>;
-export type GetAllTenantsQueryType = z.infer<typeof GetAllTenantsQuerySchema>;

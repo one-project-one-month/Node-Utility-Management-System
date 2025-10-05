@@ -15,10 +15,10 @@ import {
 import { hasRole } from '../middlewares/authMiddleware';
 import {
   CreateTenantSchema,
-  GetAllTenantsQuerySchema,
   GetTenantParamSchema,
   UpdateTenantSchema,
 } from '../validations/tenantSchema';
+import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
 
@@ -32,7 +32,7 @@ router.get(
 router.get(
   '/',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(GetAllTenantsQuerySchema),
+  validateRequestQuery(PaginationQuerySchema),
   getAllTenantController
 );
 

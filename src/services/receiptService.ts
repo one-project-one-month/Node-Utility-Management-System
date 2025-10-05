@@ -1,18 +1,68 @@
+import { Prisma } from '../../generated/prisma';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
+import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateReceiptType,
+  GetAllReceiptsQueryType,
   UpdateReceiptType,
 } from '../validations/receiptSchema';
 
-export async function getAllReceiptsService() {
-  const whereClause: any = {};
-  // OR
-  // const whereClause: Prisma.UserWhereInput = {} // for type safety
+export async function getAllReceiptsService(query: GetAllReceiptsQueryType) {
+  const whereClause: Prisma.ReceiptWhereInput = {};
 
-  return await prisma.receipt.findMany({
+  // Add payment_method filter
+  if (query.payment_method) {
+    whereClause.payment_method = query.payment_method;
+  }
+
+  // Calculate pagination
+  const page = query.page || 1;
+  const limit = query.limit || 10;
+  const skip = (page - 1) * limit;
+
+  // Get total count for pagination
+  const totalCount = await prisma.receipt.count({ where: whereClause });
+  const totalPages = Math.ceil(totalCount / limit);
+
+  // Get receipts with pagination and relations
+  const receipts = await prisma.receipt.findMany({
     where: whereClause,
+    // include: {
+    //   invoice: {
+    //     include: {
+    //       bill: {
+    //         include: {
+    //           room: {
+    //             include: {
+    //               tenant: true,
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
+    skip,
+    take: limit,
+    orderBy: { created_at: 'desc' },
   });
+
+  // Build pagination info
+  const pagination = {
+    count: receipts.length,
+    prevPage: page > 1 ? page - 1 : false,
+    nextPage: page < totalPages ? page + 1 : false,
+    page,
+    limit,
+    totalPages,
+    totalCount,
+  };
+
+  return {
+    receipts,
+    pagination,
+  };
 }
 
 // Get by id
@@ -106,7 +156,10 @@ export async function getLatestReceiptsByTenantIdService(tenantId: string) {
 }
 
 // Get receipt history by tenant id (all receipts)
-export async function getReceiptHistoriesByTenantIdService(tenantId: string) {
+export async function getReceiptHistoriesByTenantIdService(
+  tenantId: string,
+  query: PaginationQueryType
+) {
   if (!tenantId) throw new NotFoundError('Tenant id not found');
 
   // Check if tenant exists
@@ -117,18 +170,64 @@ export async function getReceiptHistoriesByTenantIdService(tenantId: string) {
 
   if (!tenant) throw new NotFoundError('Tenant not found');
 
-  return await prisma.receipt.findMany({
-    where: {
-      invoice: {
-        bill: {
-          room: {
-            tenant: {
-              id: tenantId,
-            },
+  // Calculate pagination
+  const page = query.page || 1;
+  const limit = query.limit || 10;
+  const skip = (page - 1) * limit;
+
+  // Build where clause
+  const whereClause: Prisma.ReceiptWhereInput = {
+    invoice: {
+      bill: {
+        room: {
+          tenant: {
+            id: tenantId,
           },
         },
       },
     },
+  };
+
+  // Get total count for pagination
+  const totalCount = await prisma.receipt.count({ where: whereClause });
+  const totalPages = Math.ceil(totalCount / limit);
+
+  // Get receipts with pagination
+  const receiptHistories = await prisma.receipt.findMany({
+    where: whereClause,
+    // include: {
+    //   invoice: {
+    //     include: {
+    //       bill: {
+    //         include: {
+    //           room: {
+    //             include: {
+    //               tenant: true,
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
+    skip,
+    take: limit,
     orderBy: { created_at: 'desc' },
   });
+
+  // Build pagination info
+  const pagination = {
+    count: receiptHistories.length,
+    prevPage: page > 1 ? page - 1 : false,
+    nextPage: page < totalPages ? page + 1 : false,
+    page,
+    limit,
+    totalPages,
+    totalCount,
+  };
+
+  return {
+    receiptHistories,
+    pagination,
+  };
 }

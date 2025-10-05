@@ -12,16 +12,16 @@ import {
 } from '../services/receiptService';
 
 export async function getAllReceiptsController(
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const receipts = await getAllReceiptsService();
-    if (!receipts || !receipts.length)
+    const result = await getAllReceiptsService(req.validatedQuery);
+    if (!result || !result.receipts || !result.receipts.length)
       return next(new NotFoundError('No receipts found'));
 
-    successResponse(res, 'Receipts fetched successfully', { receipts });
+    successResponse(res, 'Receipts fetched successfully', result);
   } catch (error) {
     return next(error);
   }
@@ -72,19 +72,19 @@ export async function getReceiptHistoriesByTenantIdController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const receiptHistories = await getReceiptHistoriesByTenantIdService(
-      req.validatedParams.tenantId
-    );
-    if (!receiptHistories || !receiptHistories.length)
-      return next(new NotFoundError('Receipt histories are not found'));
+       const result = await getReceiptHistoriesByTenantIdService(
+         req.validatedParams.tenantId,
+         req.validatedQuery
+       );
 
-    successResponse(
-      res,
-      'Receipt histories by tenant id fetched successfully',
-      {
-        receiptHistories,
-      }
-    );
+       if (!result.receiptHistories || !result.receiptHistories.length)
+         return next(new NotFoundError('Receipt histories are not found'));
+
+       successResponse(
+         res,
+         'Receipt histories by tenant id fetched successfully',
+         result
+       );
   } catch (error) {
     return next(error);
   }

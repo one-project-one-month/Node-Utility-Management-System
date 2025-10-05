@@ -3,20 +3,35 @@ import { hashPassword } from '../common/auth/password';
 import prisma from '../lib/prismaClient';
 import {
   CreateUserType,
-  GetUserQueryType,
+  GetAllUsersQueryType,
   UpdateUserType,
 } from '../validations/userSchema';
+import { Prisma } from '../../generated/prisma';
 
-export async function getAllUsersService(query: GetUserQueryType) {
-  const whereClause: any = {};
-  // OR
-  // const whereClause: Prisma.UserWhereInput = {} // for type safety
+export async function getAllUsersService(query: GetAllUsersQueryType) {
+  const whereClause: Prisma.UserWhereInput = {};
 
-  if (query.email) {
-    whereClause.email = query.email;
+  // Add role filter
+  if (query.role) {
+    whereClause.role = query.role;
   }
 
-  return await prisma.user.findMany({
+  // Add is_active filter
+  if (typeof query.is_active !== 'undefined') {
+    whereClause.is_active = query.is_active;
+  }
+
+  // Calculate pagination
+  const page = query.page || 1;
+  const limit = query.limit || 10;
+  const skip = (page - 1) * limit;
+
+  // Get total count for pagination
+  const totalCount = await prisma.user.count({ where: whereClause });
+  const totalPages = Math.ceil(totalCount / limit);
+
+  // Get users with pagination
+  const users = await prisma.user.findMany({
     where: whereClause,
     select: {
       id: true,
@@ -29,7 +44,26 @@ export async function getAllUsersService(query: GetUserQueryType) {
       created_at: true,
       // Exclude password field from the result
     },
+    skip,
+    take: limit,
+    orderBy: { created_at: 'desc' },
   });
+
+  // Build pagination info
+  const pagination = {
+    count: users.length,
+    prevPage: page > 1 ? page - 1 : false,
+    nextPage: page < totalPages ? page + 1 : false,
+    page,
+    limit,
+    totalPages,
+    totalCount,
+  };
+
+  return {
+    users,
+    pagination,
+  };
 }
 
 export async function getUserService(userId: string) {
@@ -85,10 +119,7 @@ export async function createUserService(data: CreateUserType) {
 }
 
 // todo: tenant_id check
-export async function updateUserService(
-  userId: string,
-  data: UpdateUserType
-) {
+export async function updateUserService(userId: string, data: UpdateUserType) {
   // Find if user exists
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },

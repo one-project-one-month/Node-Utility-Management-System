@@ -12,27 +12,28 @@ import {
   validateRequestQuery,
 } from '../middlewares/validationMiddlware';
 import {
-  createCustomerServiceSchema,
-  idSchema,
-  paginationQuerySchema,
-  tenantIdAndStatusSchema,
-  updateCustomerServiceSchema,
+  CreateCustomerServiceSchema,
+  GetAllServiceQuerySchema,
+  IdSchema,
+  TenantIdAndStatusSchema,
+  UpdateCustomerServiceSchema,
 } from '../validations/serviceSchema';
+import { PaginationQuerySchema } from '../validations/paginationSchema';
 import { hasRole } from '../middlewares/authMiddleware';
 
 const router = Router();
 
 router.post(
   '/tenants/:id/customer-services/create',
-  validateRequestParams(idSchema),
-  validateRequestBody(createCustomerServiceSchema),
+  validateRequestParams(IdSchema),
+  validateRequestBody(CreateCustomerServiceSchema),
   createServiceController
 ); // create customer service from client
 
 router.get(
   '/tenants/:id/customer-services/history/:status',
-  validateRequestParams(tenantIdAndStatusSchema),
-  validateRequestQuery(paginationQuerySchema),
+  validateRequestParams(TenantIdAndStatusSchema),
+  validateRequestQuery(PaginationQuerySchema),
   serviceHistoryController
 ); // get customer service history from client
 
@@ -40,20 +41,20 @@ router.get(
 router.get(
   '/customer-services/',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(paginationQuerySchema),
+  validateRequestQuery(GetAllServiceQuerySchema),
   getAllServiceController
 );
 router.get(
   '/customer-services/:id',
   hasRole(['Admin', 'Staff']),
-  validateRequestParams(idSchema),
+  validateRequestParams(IdSchema),
   getServiceById
 );
 router.put(
   '/customer-services/:id',
   hasRole(['Admin', 'Staff']),
-  validateRequestParams(idSchema),
-  validateRequestBody(updateCustomerServiceSchema),
+  validateRequestParams(IdSchema),
+  validateRequestBody(UpdateCustomerServiceSchema),
   updateServiceController
 ); // update customer service from dashboard
 
