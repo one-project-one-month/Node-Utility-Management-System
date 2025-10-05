@@ -1,10 +1,10 @@
-import { CustomerService } from '../../generated/prisma';
 import { NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
 import {
   createServiceType,
   paginationQueryType,
   tenantIdAndStatusType,
+  updateServiceType,
 } from '../validations/serviceSchema';
 
 //create customer service
@@ -90,16 +90,16 @@ export const cutomerServiceHistory = async (
 };
 
 //update customer service
-export const updateCustomerService = async (data: CustomerService) => {
+export const updateCustomerService = async (serviceId: string, data: updateServiceType) => {
   const existingService = await prisma.customerService.findUnique({
-    where: { id: data.id },
+    where: { id: serviceId },
     select: { id: true },
   });
   if (!existingService) {
-    throw new NotFoundError(`No customer service found for Id-${data.id}`);
+    throw new NotFoundError(`No customer service found.}`);
   }
 
-  return await prisma.customerService.update({ where: { id: data.id }, data });
+  return await prisma.customerService.update({ where: { id: serviceId }, data });
 };
 
 //get all cutomer service

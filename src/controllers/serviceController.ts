@@ -55,9 +55,8 @@ export const updateServiceController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const data = { id: req.validatedParams.id, ...req.validatedBody };
 
-    const service = await updateCustomerService(data);
+    const service = await updateCustomerService(req.validatedParams.id, req.validatedBody);
     successResponse(res, 'Customer service updated successfully', { service }, 200);
   } catch (error) {
     next(error);
