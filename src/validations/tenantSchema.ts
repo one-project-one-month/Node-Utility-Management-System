@@ -42,6 +42,7 @@ export const UpdateTenantSchema = z
       data.phone_nos ||
       data.emergency_nos ||
       data.room_id,
+      // Object.keys(data).length > 0, // cmt: Object.keys(data).length > 0 will be more efficient
     {
       message: 'At least one field must be provided for update',
     }
