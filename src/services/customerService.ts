@@ -90,9 +90,9 @@ export const cutomerServiceHistory = async (
 };
 
 //update customer service
-export const updateCustomerService = async (data: CustomerService) => {
+export const updateCustomerService = async (servieId: string, data: CustomerService) => {
   const existingService = await prisma.customerService.findUnique({
-    where: { id: data.id },
+    where: { id: servieId },
     select: { id: true },
   });
   if (!existingService) {
