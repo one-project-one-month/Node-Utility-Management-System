@@ -96,7 +96,7 @@ export const updateCustomerService = async (data: CustomerService) => {
     select: { id: true },
   });
   if (!existingService) {
-    throw new NotFoundError(`No customer service found for this-${data.id}`);
+    throw new NotFoundError(`No customer service found for Id-${data.id}`);
   }
 
   return await prisma.customerService.update({ where: { id: data.id }, data });
@@ -141,7 +141,7 @@ export const getAllCustomerService = async ({
 export const getCustomerServiceById = async (id: string) => {
   const service = await prisma.customerService.findUnique({ where: { id } });
   if (!service) {
-    throw new NotFoundError(`No customer service found for this-${id}`);
+    throw new NotFoundError(`No customer service found for Id-${id}`);
   }
   return service;
 };
