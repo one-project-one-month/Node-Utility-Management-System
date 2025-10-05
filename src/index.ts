@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -48,17 +46,12 @@ app.use('/api/v1', receiptRoute);
 app.use(errorHandler);
 
 app.get('/', (_req: Request, res: Response) => {
-  const templatePath = path.join(__dirname, 'templates/status.html');
-  let html = fs.readFileSync(templatePath, 'utf-8');
+  const docsLinks = deployedUrls.map((url) => `${url}/docs`);
 
-  const docsLinks = deployedUrls
-    .map(
-      (url) => `<li><a href="${url}/docs" target="_blank">${url}/docs</a></li>`
-    )
-    .join('');
-
-  html = html.replace('<!--DOCS_LINKS-->', docsLinks);
-  res.send(html);
+  res.json({
+    message: '🚀 API is running successfully!',
+    documentation: docsLinks,
+  });
 });
 
 app.listen(port, () =>
