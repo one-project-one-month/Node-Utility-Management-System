@@ -61,30 +61,51 @@ export const UpdateTenantSchema = (expectedLengths: {
         .optional(),
       room_id: z.uuid({ message: 'Invalid room ID' }).optional(),
     })
+    //check for required room_id
+    .refine((data) => data.room_id !== undefined, {
+      message: 'room_id is required.',
+      path: ['room_id'],
+    })
     .refine(
       (data) =>
         data.names ||
         data.emails ||
         data.nrcs ||
         data.phone_nos ||
-        data.emergency_nos ||
-        data.room_id,
+        data.emergency_nos,
       {
         message: 'At least one field must be provided for update',
       }
     )
+
     .refine(
       (data) => {
-        if (data.names && data.names.length !== expectedLengths.names)
-          return false;
-        if (data.emails && data.emails.length !== expectedLengths.emails)
-          return false;
-        if (data.nrcs && data.nrcs.length !== expectedLengths.nrcs)
-          return false;
+        const { names, emails, nrcs } = data;
+        const tenantFields = [names, emails, nrcs].filter(
+          (f) => f !== undefined
+        );
+
+        if (tenantFields.length === 3) {
+          // All(names,emails,nrcs) provided → their lengths must match
+          const firstLength = tenantFields[0]!.length;
+          return tenantFields.every((arr) => arr!.length === firstLength);
+        }
+
+        // If 1 or 2 fields(names,emails,nrcs) → lengths must match DB
+        if (tenantFields.length >= 1) {
+          const firstLength = tenantFields[0]!.length;
+          return (
+            tenantFields.every((arr) => arr!.length === firstLength) &&
+            firstLength === expectedLengths.names // match DB tenant count
+          );
+        }
+
+        // No tenant fields provided → valid
         return true;
       },
       {
-        message: 'Array length must match the existing data length.',
+        message:
+          'The number of names, emails, and NRCs you sent does not match the existing tenants. Please make sure all lists are consistent.',
       }
     )
     .strict();

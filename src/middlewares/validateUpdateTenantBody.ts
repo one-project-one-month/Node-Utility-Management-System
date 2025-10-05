@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { NotFoundError } from '../common/errors/notFoundError';
 import { ValidationError } from '../common/errors/validationError';
 import prisma from '../lib/prismaClient';
 import { UpdateTenantSchema } from '../validations/tenantSchema';
@@ -21,7 +22,7 @@ export const validateUpdateTenantBody = async (
     });
 
     if (!existingTenant) {
-      return res.status(404).json({ message: 'Tenant not found' });
+      return next(new NotFoundError('Tenant not found'));
     }
 
     const expectedLengths = {
