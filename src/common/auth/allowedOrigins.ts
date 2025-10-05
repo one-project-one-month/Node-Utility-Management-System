@@ -7,5 +7,6 @@ export const allowedOrigins = [
   'http://localhost:5174',
   'http://localhost:5175',
   'https://node-utility-management-system.onrender.com',
+  'https://node-utility-management-system-fye1.onrender.com',
   'https://node-utility-management-system-production.up.railway.app',
 ];
