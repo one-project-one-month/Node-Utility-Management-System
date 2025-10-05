@@ -27,7 +27,7 @@ app.use(customLogger('API_Logger'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.set('trust proxy', 1 /* number of proxies between user and server */) // To solve 'X-Forwarded-For' header error in production
+app.set('trust proxy', 1 /* number of proxies between user and server */); // To solve 'X-Forwarded-For' header error in production
 app.use(crediential);
 app.use(cors(corsOptions));
 
@@ -38,8 +38,8 @@ swaggerDocs(app, port || 3000);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
-app.use('/api/v1', isAuthenticated, serviceRoute)  //customer service end point
-app.use('/api/v1', receiptRoute);
+app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
+app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

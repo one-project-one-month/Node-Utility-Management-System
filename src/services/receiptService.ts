@@ -71,9 +71,13 @@ export async function updateReceiptService(
 
   if (!existingReceipt) throw new NotFoundError('Receipt not found');
 
+  // Update only payment_method and paid_date
   return await prisma.receipt.update({
     where: { id: receiptId },
-    data,
+    data: {
+      payment_method: data.payment_method,
+      paid_date: data.paid_date,
+    },
   });
 }
 

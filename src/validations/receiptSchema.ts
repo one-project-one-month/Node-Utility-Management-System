@@ -13,10 +13,6 @@ export const GetReceiptByTenantParamSchema = z.object({
   tenantId: z.uuid({ version: 'v4' }),
 });
 
-// export const GetReceiptQuerySchema = z.object({
-//   email: z.email().optional(),
-// });
-
 export const CreateReceiptSchema = z.object({
   payment_method: z.enum(
     [PaymentMethod.Cash, PaymentMethod.Mobile_Banking],
@@ -35,7 +31,6 @@ export const UpdateReceiptSchema = z
       )
       .optional(),
     paid_date: z.coerce.date().optional(),
-    // invoice_id: z.string().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
