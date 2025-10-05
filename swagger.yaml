@@ -133,7 +133,87 @@ components:
         tenant_id:
           type: string
           nullable: true
-          example: 
+          example:
+    CreateCustomerServiceRequest:
+      type: object
+      required: [description, category, status, priority_level, room_id]
+      properties:
+        description:
+          type: string
+          minLength: 10
+          example: 'Air conditioning not working properly'
+        category:
+          type: string
+          enum: [Complain, Maintenance, Other]
+          example: 'Maintenance'
+        status:
+          type: string
+          enum: [Pending, Ongoing, Resolved]
+          example: 'Pending'
+        priority_level:
+          type: string
+          enum: [Low, Medium, High]
+          example: 'High'
+        room_id:
+          type: string
+          format: uuid
+          example: 'b7a2cc9b-9f7b-46cf-b3f9-19cb94d68c73'
+    UpdateCustomerServiceRequest:
+      type: object
+      description: At least `status` and `priority_level` must both be provided.
+      properties:
+        description:
+          type: string
+          minLength: 10
+          example: 'Rechecked the air conditioning issue.'
+        category:
+          type: string
+          enum: [Complain, Maintenance, Other]
+          example: 'Maintenance'
+        status:
+          type: string
+          enum: [Pending, Ongoing, Resolved]
+          example: 'Resolved'
+        priority_level:
+          type: string
+          enum: [Low, Medium, High]
+          example: 'High'
+        room_id:
+          type: string
+          format: uuid
+          example: 'b7a2cc9b-9f7b-46cf-b3f9-19cb94d68c73'
+    CustomerService:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 'c54e9b25-d17f-4c8f-9c73-15fd95a62f1f'
+        description:
+          type: string
+          example: 'Light bulb in room 101 needs replacement.'
+        category:
+          type: string
+          enum: [Complain, Maintenance, Other]
+        status:
+          type: string
+          enum: [Pending, Ongoing, Resolved]
+        priority_level:
+          type: string
+          enum: [Low, Medium, High]
+        room_id:
+          type: string
+          format: uuid
+          example: 'b7a2cc9b-9f7b-46cf-b3f9-19cb94d68c73'
+        issued_date:
+          type: string
+          example: '2025-10-05T07:15:00.000Z'
+        created_at:
+          type: string
+          example: '2025-10-05T07:15:00.000Z'
+        updated_at:
+          type: string
+          example: '2025-10-05T09:30:00.000Z'
 
 paths:
   # Authentication Endpoints
@@ -633,3 +713,384 @@ paths:
                         example: User not found
 
   # Customer Service Endpoints
+  /api/v1/tenants/{id}/customer-services/create:
+    post:
+      tags:
+        - Customer Services
+      summary: Create a new customer service request
+      description: Allows a tenant to create a new customer service request.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Tenant ID (UUID)
+          schema:
+            type: string
+            format: uuid
+            example: 8a9ddf96-82d3-974c-baf3-78b941f0b6e9
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerServiceRequest'
+      responses:
+        201:
+          description: Customer service created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        example: Customer service created successfully
+                      content:
+                        type: object
+                        properties:
+                          service:
+                            $ref: '#/components/schemas/CustomerService'
+                      status:
+                        type: integer
+                        example: 201
+        400:
+          description: Invalid input or validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Validation failed
+        404:
+          description: Tenant not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Tenant not found
+                      status:
+                        example: 404
+  /api/v1/tenants/{id}/customer-services/history/{status}:
+    get:
+      tags:
+        - Customer Services
+      summary: Get customer service history by status
+      description: Retrieves all customer service records for a tenant filtered by status.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Tenant ID (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: path
+          required: true
+          description: Service status filter
+          schema:
+            type: string
+            enum: [Pending, Ongoing, Resolved]
+            example: Pending
+        - name: page
+          in: query
+          required: false
+          description: 'Page number for pagination (default: 1)'
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        - name: limit
+          in: query
+          required: false
+          description: 'Number of items per page (default: 10, max: 100)'
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            example: 10
+      responses:
+        200:
+          description: Customer service history retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Fetch service history successfullly
+                      content:
+                        type: object
+                        properties:
+                          history:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/CustomerService'
+                          pagination:
+                            type: object
+                            properties:
+                              prevPage:
+                                type: boolean
+                                example: false
+                              nextPage:
+                                type: boolean
+                                example: false
+                              page:
+                                type: integer
+                                example: 1
+                              limit:
+                                type: integer
+                                example: 10
+                              totalPages:
+                                type: integer
+                                example: 1
+                      status:
+                        type: integer
+                        example: 200
+        404:
+          description: Tenant not found or no service history found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: No customer service history found.
+                      status:
+                        type: integer
+                        example: 404
+  /api/v1/customer-services:
+    get:
+      tags:
+        - Customer Services
+      summary: Get all customer services (Admin & Staff only)
+      description: Retrieves all customer service records with pagination. Accessible to Admin and Staff users only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Page number for pagination
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          required: false
+          description: Number of items per page
+          schema:
+            type: integer
+            example: 10
+      responses:
+        200:
+          description: Customer services retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Fetch customer services successfully
+                      content:
+                        type: object
+                        properties:
+                          services:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/CustomerService'
+                          pagination:
+                            type: object
+                            properties:
+                              prevPage:
+                                type: boolean
+                                example: false
+                              nextPage:
+                                type: boolean
+                                example: false
+                              page:
+                                type: integer
+                                example: 1
+                              limit:
+                                type: integer
+                                example: 10
+                              total:
+                                type: integer
+                                example: 1
+
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Access token is required'
+        403:
+          description: Forbidden - Admin or Staff only
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
+  /api/v1/customer-services/{id}:
+    get:
+      tags:
+        - Customer Services
+      summary: Get customer service by ID (Admin & Staff only)
+      description: Retrieves a single customer service record by its ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Customer Service ID (UUID)
+          schema:
+            type: string
+            format: uuid
+            example: c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
+      responses:
+        200:
+          description: Customer service retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Fetch customer service by ID successfully
+                      content:
+                        type: object
+                        properties:
+                          service:
+                            $ref: '#/components/schemas/CustomerService'
+        404:
+          description: Customer service not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: No customer service found for Id-c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
+    put:
+      tags:
+        - Customer Services
+      summary: Update a customer service (Admin & Staff only)
+      description: Update the status or priority level of an existing customer service record.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Customer Service ID (UUID)
+          schema:
+            type: string
+            format: uuid
+            example: c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomerServiceRequest'
+      responses:
+        200:
+          description: Customer service updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        example: Customer service updated successfully
+                      content:
+                        properties:
+                          service:
+                            $ref: '#/components/schemas/CustomerService'
+        400:
+          description: Validation error (both status and priority_level required)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        example: Both status AND priority_level must be provided for update
+                      status:
+                        example: 400
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+                      status:
+                        example: 403
+        404:
+          description: Customer service not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: No customer service found for Id-c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
+                      status:
+                        example: 404

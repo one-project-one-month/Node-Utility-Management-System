@@ -19,7 +19,7 @@ export const CreateUserSchema = z.object({
       "Role must be one of 'Admin', 'Staff', or 'Tenant'"
     )
     .default(UserRole.Tenant),
-  tenant_id: z.string().optional().nullable(),
+  tenant_id: z.uuid({ version: 'v4' }).optional().nullable(),
 });
 
 export const UpdateUserSchema = z
@@ -36,7 +36,8 @@ export const UpdateUserSchema = z
         "Role must be one of 'Admin', 'Staff', or 'Tenant'"
       )
       .optional(),
-    tenant_id: z.string().optional().nullable(),
+    tenant_id: z.uuid({ version: 'v4' }).optional().nullable(),
+    is_active: z.boolean().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',

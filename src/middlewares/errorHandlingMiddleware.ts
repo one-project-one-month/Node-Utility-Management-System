@@ -12,14 +12,14 @@ export const errorHandler = (
   logEvents(`${err.name}: ${err.message}\t${_req.method}\t${_req.url}\t${_req.headers.origin}`, 'errLog.log');
   
   if (err instanceof CustomError) {
-    res.status(err.statusCode).json({
+    return res.status(err.statusCode).json({
       success: false,
       message: err.message,
       status: err.statusCode,
       // details: err.generateErrors()
     });
   } else {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: err.message || 'Something went wrong',
       status: 500,

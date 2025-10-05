@@ -79,9 +79,10 @@ model Tenant {
   updated_at    DateTime @updatedAt
 
   // relations
-  room    Room   @relation(fields: [room_id], references: [id])
-  room_id String @unique
-  user    User?
+  room_id   String    @unique
+  room      Room      @relation(fields: [room_id], references: [id])
+  user      User?
+  contracts Contract?
 
   @@map("tenants")
 }
@@ -103,22 +104,24 @@ model Room {
   contract         Contract[]
   tenant           Tenant?
   customer_service CustomerService[]
-  bill             Bill?
+  bill             Bill[]
 
   @@map("rooms")
 }
 
 model Contract {
   id           String   @id @default(uuid())
-  contract_id  String
   expiry_date  DateTime
   created_date DateTime
   updated_date DateTime
 
-  // Relations
-  room_id       String       @unique
-  room          Room         @relation(fields: [room_id], references: [id])
-  contract_type ContractType @relation(fields: [contract_id], references: [id])
+  // relations
+  room_id          String       @unique
+  room             Room         @relation(fields: [room_id], references: [id])
+  tenant_id        String       @unique
+  tenant           Tenant       @relation(fields: [tenant_id], references: [id])
+  contract_type_id String
+  contract_type    ContractType @relation(fields: [contract_type_id], references: [id])
 
   @@map("contracts")
 }
@@ -143,7 +146,9 @@ model CustomerService {
   category       Category
   status         ServiceStatus
   priority_level PriorityLevel
-  issue_date     DateTime      @default(now())
+  issued_date    DateTime      @default(now())
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
 
   room    Room   @relation(fields: [room_id], references: [id])
   room_id String
@@ -176,11 +181,13 @@ model Bill {
 }
 
 model TotalUnits {
-  id                String  @id @default(uuid())
+  id                String   @id @default(uuid())
   electricity_units Decimal
   water_units       Decimal
-  created_at        Decimal
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 
+  // relations
   bill    Bill   @relation(fields: [bill_id], references: [id])
   bill_id String @unique
 
@@ -188,11 +195,14 @@ model TotalUnits {
 }
 
 model Invoice {
-  id      String        @id @default(uuid())
-  status  InvoiceStatus
-  //relations
-  bill    Bill          @relation(fields: [bill_id], references: [id])
-  bill_id String        @unique
+  id     String        @id @default(uuid())
+  status InvoiceStatus
+
+  // relations
+  bill       Bill     @relation(fields: [bill_id], references: [id])
+  bill_id    String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   receipt Receipt?
 
@@ -201,8 +211,8 @@ model Invoice {
 
 model Receipt {
   id             String        @id @default(uuid())
-  payment_method PaymentMethod
-  paid_date      DateTime
+  payment_method PaymentMethod @default(Cash)
+  paid_date      DateTime?
   created_at     DateTime      @default(now())
   updated_at     DateTime      @updatedAt
 
