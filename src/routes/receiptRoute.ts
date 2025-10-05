@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   createReceiptController,
   getAllReceiptsController,
-  getLatestReceiptsByTenantIdController,
+  getLatestReceiptByTenantIdController,
   getReceiptByIdController,
   getReceiptByInvoiceIdController,
   getReceiptHistoriesByTenantIdController,
@@ -30,7 +30,7 @@ const router = Router();
 router.get(
   '/tenants/:tenantId/receipts/latest',
   validateRequestParams(GetReceiptByTenantParamSchema),
-  getLatestReceiptsByTenantIdController
+  getLatestReceiptByTenantIdController
 );
 
 // Get receipts history by tenant id

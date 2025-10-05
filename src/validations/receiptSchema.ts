@@ -18,7 +18,7 @@ export const GetAllReceiptsQuerySchema = PaginationQuerySchema.extend({
   payment_method: z
     .enum(
       PaymentMethod,
-      "Payment method must be one of 'Cash' or 'Mobile Banking'"
+      "Payment method must be one of 'Cash' or 'Mobile_Banking'"
     )
     .optional(),
 }).strict();
@@ -26,7 +26,7 @@ export const GetAllReceiptsQuerySchema = PaginationQuerySchema.extend({
 export const CreateReceiptSchema = z.object({
   payment_method: z.enum(
     PaymentMethod,
-    "Payment method must be one of 'Cash' or 'Mobile Banking'"
+    "Payment method must be one of 'Cash' or 'Mobile_Banking'"
   ),
   paid_date: z.coerce.date(),
   invoice_id: z.uuid({ version: 'v4' }),
@@ -37,7 +37,7 @@ export const UpdateReceiptSchema = z
     payment_method: z
       .enum(
         PaymentMethod,
-        "Payment method must be one of 'Cash' or 'Mobile Banking'"
+        "Payment method must be one of 'Cash' or 'Mobile_Banking'"
       )
       .optional(),
     paid_date: z.coerce.date().optional(),

@@ -4,7 +4,7 @@ import { successResponse } from '../common/apiResponse';
 import {
   createReceiptService,
   getAllReceiptsService,
-  getLatestReceiptsByTenantIdService,
+  getLatestReceiptByTenantIdService,
   getReceiptByIdService,
   getReceiptByInvoiceIdService,
   getReceiptHistoriesByTenantIdService,
@@ -44,21 +44,21 @@ export async function getReceiptByIdController(
 }
 
 // Get latest by tenant id
-export async function getLatestReceiptsByTenantIdController(
+export async function getLatestReceiptByTenantIdController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const latestReceipts = await getLatestReceiptsByTenantIdService(
+    const latestReceipt = await getLatestReceiptByTenantIdService(
       req.validatedParams.tenantId
     );
 
-    if (!latestReceipts)
+    if (!latestReceipt)
       return next(new NotFoundError('Latest receipt not found'));
 
     successResponse(res, 'Latest receipts by tenant id fetched successfully', {
-      latestReceipts,
+      latestReceipt,
     });
   } catch (error) {
     return next(error);

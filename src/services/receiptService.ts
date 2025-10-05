@@ -128,7 +128,7 @@ export async function updateReceiptService(
 }
 
 // Get latest receipt by tenant id (single most recent receipt)
-export async function getLatestReceiptsByTenantIdService(tenantId: string) {
+export async function getLatestReceiptByTenantIdService(tenantId: string) {
   if (!tenantId) throw new NotFoundError('Tenant id not found');
 
   // Check if tenant exists

@@ -387,6 +387,61 @@ components:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.158Z
+    # Receipt Schema
+    Receipt:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 7fc98505-605f-49d2-a3b8-3c6f6eac0ad2
+        payment_method:
+          type: string
+          enum: [Cash, Mobile Banking]
+          example: Cash
+        paid_date:
+          type: string
+          format: date-time
+          example: 2025-10-14T04:07:20.031Z
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-14T04:07:20.031Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-15T10:59:20.031Z
+        invoice_id:
+          type: string
+          format: uuid
+          example: d1ea2e8f-c047-48e0-bd90-d26356674d47
+    CreateReceiptRequest:
+      type: object
+      required: [payment_method, paid_date, invoice_id]
+      properties:
+        payment_method:
+          type: string
+          enum: [Cash, Mobile Banking]
+          example: Cash
+        paid_date:
+          type: string
+          format: date-time
+          example: 2025-10-14T04:07:20.031Z
+        invoice_id:
+          type: string
+          format: uuid
+          example: d1ea2e8f-c047-48e0-bd90-d26356674d47
+    UpdateReceiptRequest:
+      type: object
+      properties:
+        payment_method:
+          type: string
+          enum: [Cash, Mobile Banking]
+          example: Mobile Banking
+        paid_date:
+          type: string
+          format: date-time
+          example: 2025-10-14T04:07:20.031Z
 
 paths:
   # Authentication Endpoints
@@ -1635,3 +1690,601 @@ paths:
                       message:
                         type: string
                         example: Tenant not found
+  
+  # Receipt Endpoints
+  /api/v1/receipts:
+    get:
+      tags:
+        - Receipts
+      summary: Get all receipts (Admin & Staff only)
+      description: Retrieves a list of all receipts with pagination and filtering support. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            example: 10
+        - name: payment_method
+          in: query
+          description: Filter by payment method
+          required: false
+          schema:
+            type: string
+            enum: [Cash, Mobile Banking]
+            example: Cash
+      responses:
+        200:
+          description: Receipts fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipts fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          receipts:
+                            type: array
+                            items:
+                              allOf:
+                                $ref: '#/components/schemas/Receipt'
+                          pagination:
+                            type: object
+                            properties:
+                              count:
+                                type: integer
+                                example: 2
+                              prevPage:
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
+                                example: false
+                              nextPage:
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
+                                example: 2
+                              page:
+                                type: integer
+                                example: 1
+                              limit:
+                                type: integer
+                                example: 2
+                              totalPages:
+                                type: integer
+                                example: 267
+                              totalCount:
+                                type: integer
+                                example: 533
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: No receipts found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: No receipts found
+    post:
+      tags:
+        - Receipts
+      summary: Create a new receipt (Admin & Staff only)
+      description: Create a new receipt for an invoice. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReceiptRequest'
+      responses:
+        201:
+          description: Receipt created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipt created successfully
+                      content:
+                        type: object
+                        properties:
+                          receipt:
+                            $ref: '#/components/schemas/Receipt'
+                      status:
+                        type: number
+                        example: 201
+        400:
+          description: Bad Request - Validation error or receipt already exists
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipt already exists for this invoice
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: Invoice not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Invoice not found
+  /api/v1/receipts/{id}:
+    get:
+      tags:
+        - Receipts
+      summary: Get receipt by ID (Admin & Staff only)
+      description: Retrieve a specific receipt by its ID. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Receipt ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 7fc98505-605f-49d2-a3b8-3c6f6eac0ad2
+      responses:
+        200:
+          description: Receipt fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipt fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          receipt:
+                            $ref: '#/components/schemas/Receipt'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: Receipt not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipt not found
+    put:
+      tags:
+        - Receipts
+      summary: Update receipt by ID (Admin & Staff only)
+      description: Update receipt information. At least one field must be provided. Accessible to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Receipt ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 7fc98505-605f-49d2-a3b8-3c6f6eac0ad2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReceiptRequest'
+      responses:
+        200:
+          description: Receipt updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipt updated successfully
+                      content:
+                        type: object
+                        properties:
+                          receipt:
+                            $ref: '#/components/schemas/Receipt'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: Receipt not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipt not found
+  /api/v1/receipts/invoice/{invoiceId}:
+    get:
+      tags:
+        - Receipts
+      summary: Get receipt by invoice ID (Admin & Staff only)
+      description: Retrieve a receipt by its associated invoice ID. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: invoiceId
+          in: path
+          description: Invoice ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: d1ea2e8f-c047-48e0-bd90-d26356674d47
+      responses:
+        200:
+          description: Receipt fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipt fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          receipt:
+                            $ref: '#/components/schemas/Receipt'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: Receipt not found for this invoice
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipt not found for this invoice
+  /api/v1/tenants/{tenantId}/receipts/latest:
+    get:
+      tags:
+        - Receipts
+      summary: Get latest receipt by tenant ID
+      description: Retrieve the most recent receipt for a specific tenant.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenantId
+          in: path
+          description: Tenant ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+      responses:
+        200:
+          description: Latest receipt fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Latest receipts by tenant id fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          latestReceipt:
+                            $ref: '#/components/schemas/Receipt'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        404:
+          description: Latest receipt not found or tenant not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Latest receipt not found
+  /api/v1/tenants/{tenantId}/receipts/history:
+    get:
+      tags:
+        - Receipts
+      summary: Get receipt history by tenant ID
+      description: Retrieve all receipt history for a specific tenant with pagination.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenantId
+          in: path
+          description: Tenant ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            example: 10
+      responses:
+        200:
+          description: Receipt history fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipt histories by tenant id fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          receiptHistories:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Receipt'
+                          pagination:
+                            type: object
+                            properties:
+                              count:
+                                type: integer
+                                example: 5
+                              prevPage:
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
+                                example: false
+                              nextPage:
+                                oneOf:
+                                  - type: integer
+                                  - type: boolean
+                                example: 2
+                              page:
+                                type: integer
+                                example: 1
+                              limit:
+                                type: integer
+                                example: 10
+                              totalPages:
+                                type: integer
+                                example: 15
+                              totalCount:
+                                type: integer
+                                example: 145
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        404:
+          description: Receipt histories not found or tenant not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Receipt histories are not found
