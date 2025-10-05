@@ -18,7 +18,7 @@ export const CreateReceiptSchema = z.object({
     [PaymentMethod.Cash, PaymentMethod.Mobile_Banking],
     "Payment method must be one of 'Cash' or 'Mobile Banking'"
   ),
-  paid_date: z.coerce.date(),
+  paid_date: z.coerce.date().optional(),
   invoice_id: z.uuid({ version: 'v4' }),
 });
 

@@ -9,9 +9,9 @@ function swaggerDocs(app: Express, port: number | string) {
   // Serve Swagger UI
   app.use(
     '/docs',
-    swaggerUi.serve,
+    swaggerUi.serve, // loading Swagger UI
     (req: Request, res: Response, next: NextFunction) => {
-      const swaggerDocument = YAML.load(swaggerPath);
+      const swaggerDocument = YAML.load(swaggerPath); // the documentation code
 
       const swaggerUiOptions = {
         swaggerOptions: {
@@ -28,6 +28,7 @@ function swaggerDocs(app: Express, port: number | string) {
     }
   );
 
+  // Serve Swagger Json (Optional)
   app.get('/docs.json', (_req: Request, res: Response) => {
     const swaggerDocument = YAML.load(swaggerPath);
     res.setHeader('Content-Type', 'application/json');

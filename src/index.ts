@@ -15,6 +15,7 @@ import receiptRoute from './routes/receiptRoute';
 import serviceRoute from './routes/serviceRoute';
 import tenantRoute from './routes/tenantRoute';
 import userRoute from './routes/userRoute';
+import { deployedUrls } from './common/auth/allowedOrigins';
 
 dotenv.config();
 
@@ -45,7 +46,14 @@ app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
 app.use(errorHandler);
 
 app.get('/', (_req: Request, res: Response) => {
-  res.send('API is running!');
+  const docsLinks = deployedUrls.map((url) => `${url}/docs`);
+
+  res.json({
+    message: '🚀 API is running successfully!',
+    documentation: docsLinks,
+  });
 });
 
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(port, () =>
+  console.log(`Server is running on http://localhost:${port}`)
+);

@@ -7,9 +7,6 @@ import {
 
 export async function getAllReceiptsService() {
   const whereClause: any = {};
-  // OR
-  // const whereClause: Prisma.UserWhereInput = {} // for type safety
-
   return await prisma.receipt.findMany({
     where: whereClause,
   });
@@ -42,17 +39,28 @@ export async function createReceiptService(data: CreateReceiptType) {
     where: { invoice_id: data.invoice_id },
     select: { id: true },
   });
-
   if (existingReceipt)
     throw new BadRequestError('Receipt already exists for this invoice');
 
-  // Create new receipt
-  return await prisma.receipt.create({
-    data: {
-      invoice_id: data.invoice_id,
-      payment_method: data.payment_method,
-      paid_date: data.paid_date,
-    },
+  // Use <transaction> from prisma
+  return await prisma.$transaction(async (tx) => {
+
+    // Create receipt
+    const receipt = await tx.receipt.create({
+      data: {
+        invoice_id: data.invoice_id,
+        payment_method: data.payment_method,
+        paid_date: data.paid_date,
+      },
+    });
+
+    // Update invoice's status
+    await tx.invoice.update({
+      where: { id: data.invoice_id },
+      data: { status: 'Paid' },
+    });
+
+    return receipt;
   });
 }
 
