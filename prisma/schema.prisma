@@ -104,7 +104,7 @@ model Room {
   contract         Contract[]
   tenant           Tenant?
   customer_service CustomerService[]
-  bill             Bill?
+  bill             Bill[]
 
   @@map("rooms")
 }
@@ -211,8 +211,8 @@ model Invoice {
 
 model Receipt {
   id             String        @id @default(uuid())
-  payment_method PaymentMethod
-  paid_date      DateTime
+  payment_method PaymentMethod @default(Cash)
+  paid_date      DateTime?
   created_at     DateTime      @default(now())
   updated_at     DateTime      @updatedAt
 

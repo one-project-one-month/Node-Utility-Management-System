@@ -19,12 +19,11 @@ export async function getAllUsersController(
     const users = await getAllUsersService(filters);
 
     if (!users || !users.length) {
-      throw new NotFoundError('No users found');
+      return next(new NotFoundError('No users found'));
     }
     successResponse(res, 'Users fetched successfully', { users });
   } catch (error) {
-    console.log('Error in getAllUsersController:', error);
-    next(error);
+    return next(error);
   }
 }
 
@@ -37,12 +36,12 @@ export async function getUserController(
     const user = await getUserService(req.validatedParams.userId);
 
     if (!user) {
-      throw new NotFoundError('No users found');
+      return next(new NotFoundError('No users found'));
     }
 
     successResponse(res, 'User fetched successfully', { user });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -56,7 +55,7 @@ export async function createUserController(
 
     successResponse(res, 'User created successfully', { user: newUser }, 201);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -74,7 +73,7 @@ export async function updateUserController(
 
     successResponse(res, 'User updated successfully', { user: updatedUser });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -89,6 +88,6 @@ export async function deleteUserController(
 
     successResponse(res, 'User deleted successfully', { user: deletedUser });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
