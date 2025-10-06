@@ -464,6 +464,71 @@ components:
           type: string
           format: date-time
           example: 2025-10-15T10:59:20.031Z
+    # Total Units Schemas
+    TotalUnits:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        electricity_units:
+          type: number
+          description: Electricity consumption in units
+          example: 125.5
+        water_units:
+          type: number
+          description: Water consumption in units
+          example: 45.2
+        bill_id:
+          type: string
+          format: uuid
+          example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+    CreateTotalUnitsRequest:
+      type: object
+      required: [electricity_units, water_units, bill_id]
+      properties:
+        electricity_units:
+          type: number
+          minimum: 0.1
+          description: Electricity consumption in units (must be positive)
+          example: 125.5
+        water_units:
+          type: number
+          minimum: 0.1
+          description: Water consumption in units (must be positive)
+          example: 45.2
+        bill_id:
+          type: string
+          format: uuid
+          description: Associated bill ID
+          example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+    UpdateTotalUnitsRequest:
+      type: object
+      properties:
+        electricity_units:
+          type: number
+          minimum: 0.1
+          description: Electricity consumption in units (must be positive)
+          example: 130.8
+        water_units:
+          type: number
+          minimum: 0.1
+          description: Water consumption in units (must be positive)
+          example: 48.5
+        bill_id:
+          type: string
+          format: uuid
+          description: Associated bill ID
+          example: b2c3d4e5-f6g7-8901-bcde-f23456789012
 
 paths:
   # Authentication Endpoints
@@ -2285,3 +2350,425 @@ paths:
                       message:
                         type: string
                         example: Receipt histories are not found
+
+  # Total Units Endpoints
+  /api/v1/total-units:
+    get:
+      tags:
+        - Total Units
+      summary: Get all total units (Admin & Staff only)
+      description: Retrieves a list of all total units with pagination support. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            example: 10
+      responses:
+        200:
+          description: Total units fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Total-units fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          totalUnits:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/TotalUnits'
+                          pagination:
+                            type: object
+                            properties:
+                              count:
+                                type: integer
+                                example: 10
+                              hasPrevPage:
+                                type: boolean
+                                example: false
+                              hasNextPage:
+                                type: boolean
+                                example: true
+                              page:
+                                type: integer
+                                example: 1
+                              limit:
+                                type: integer
+                                example: 10
+                              totalPages:
+                                type: integer
+                                example: 80
+                              totalCount:
+                                type: integer
+                                example: 797
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: No total units found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: No total units found
+    post:
+      tags:
+        - Total Units
+      summary: Create new total units (Admin & Staff only)
+      description: Create new total units record for a bill. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTotalUnitsRequest'
+      responses:
+        201:
+          description: Total units created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Total-units created successfully
+                      content:
+                        type: object
+                        properties:
+                          totalUnits:
+                            $ref: '#/components/schemas/TotalUnits'
+                      status:
+                        type: number
+                        example: 201
+        400:
+          description: Bad Request - Validation error or total units already exists
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Total-units already exists for this bill
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: Bill not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Bill not found
+
+  /api/v1/total-units/{id}:
+    get:
+      tags:
+        - Total Units
+      summary: Get total units by ID (Admin & Staff only)
+      description: Retrieve specific total units record by its ID. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Total Units ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+      responses:
+        200:
+          description: Total units fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Total-units by id fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          totalUnits:
+                            $ref: '#/components/schemas/TotalUnits'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: Total units not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Total-units not found
+    put:
+      tags:
+        - Total Units
+      summary: Update total units by ID (Admin & Staff only)
+      description: Update total units information. At least one field must be provided. Accessible to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Total Units ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTotalUnitsRequest'
+      responses:
+        200:
+          description: Total units updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Total-units updated successfully
+                      content:
+                        type: object
+                        properties:
+                          totalUnits:
+                            $ref: '#/components/schemas/TotalUnits'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: Total units not found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Total-units not found
+
+  /api/v1/total-units/bills/{billId}:
+    get:
+      tags:
+        - Total Units
+      summary: Get total units by bill ID (Admin & Staff only)
+      description: Retrieve total units record associated with a specific bill. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: billId
+          in: path
+          description: Bill ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+      responses:
+        200:
+          description: Total units fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Total-units by bill id fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          totalUnits:
+                            $ref: '#/components/schemas/TotalUnits'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Access token is required
+        403:
+          description: Forbidden - Admin or Staff role required
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Required roles: Admin, Staff'
+        404:
+          description: Total units not found for this bill
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Total-units by bill id not found

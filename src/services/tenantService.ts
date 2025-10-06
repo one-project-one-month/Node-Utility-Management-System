@@ -79,7 +79,7 @@ export const getAllTenantService = async (query: PaginationQueryType) => {
     prisma.tenant.count(),
   ]);
 
-  if (Array.isArray(tenants) && tenants.length === 0) {
+  if (tenants.length === 0) {
     throw new NotFoundError('No tenants found');
   }
   const totalPages = Math.ceil(count / limit);
