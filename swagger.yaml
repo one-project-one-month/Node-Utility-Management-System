@@ -661,15 +661,11 @@ paths:
                               count:
                                 type: integer
                                 example: 2
-                              prevPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
+                              hasPrevPage:
+                                type: boolean
                                 example: false
-                              nextPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
+                              hasNextPage:
+                                type: boolean
                                 example: false
                               page:
                                 type: integer
@@ -1108,15 +1104,11 @@ paths:
                               count:
                                 type: integer
                                 example: 1
-                              prevPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
+                              hasPrevPage:
+                                type: boolean
                                 example: false
-                              nextPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
+                              hasNextPage:
+                                type: boolean
                                 example: false
                               page:
                                 type: integer
@@ -1197,15 +1189,11 @@ paths:
                               count:
                                 type: integer
                                 example: 1
-                              prevPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
+                              hasPrevPage:
+                                type: boolean
                                 example: false
-                              nextPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
+                              hasNextPage:
+                                type: boolean
                                 example: false
                               page:
                                 type: integer
@@ -1426,16 +1414,12 @@ paths:
                               count:
                                 type: integer
                                 example: 1
-                              prevPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
+                              hasPrevPage:
+                                type: boolean
                                 example: false
-                              nextPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
-                                example: 2
+                              hasNextPage:
+                                type: boolean
+                                example: true
                               page:
                                 type: integer
                                 example: 1
@@ -1774,16 +1758,12 @@ paths:
                               count:
                                 type: integer
                                 example: 2
-                              prevPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
+                              hasPrevPage:
+                                type: boolean
                                 example: false
-                              nextPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
-                                example: 2
+                              hasNextPage:
+                                type: boolean
+                                example: true
                               page:
                                 type: integer
                                 example: 1
@@ -2263,16 +2243,12 @@ paths:
                               count:
                                 type: integer
                                 example: 5
-                              prevPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
+                              hasPrevPage:
+                                type: boolean
                                 example: false
-                              nextPage:
-                                oneOf:
-                                  - type: integer
-                                  - type: boolean
-                                example: 2
+                              hasNextPage:
+                                type: boolean
+                                example: true
                               page:
                                 type: integer
                                 example: 1

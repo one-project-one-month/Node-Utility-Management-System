@@ -52,8 +52,8 @@ export async function getAllUsersService(query: GetAllUsersQueryType) {
   // Build pagination info
   const pagination = {
     count: users.length,
-    prevPage: page > 1 ? page - 1 : false,
-    nextPage: page < totalPages ? page + 1 : false,
+    hasPrevPage: page > 1,
+    hasNextPage: page < totalPages,
     page,
     limit,
     totalPages,

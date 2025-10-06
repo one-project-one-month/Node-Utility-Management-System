@@ -86,8 +86,8 @@ export const getAllTenantService = async (query: PaginationQueryType) => {
 
   const pagination = {
     count: tenants.length,
-    hasPrevPage: page > 1 ? page - 1 : false,
-    hasNextPage: page < totalPages ? page + 1 : false,
+    hasPrevPage: page > 1,
+    hasNextPage: page < totalPages,
     page,
     limit,
     totalPages,

@@ -78,8 +78,8 @@ export const cutomerServiceHistory = async (
   const totalPages = Math.ceil(total / limit);
 
   const pagination = {
-    prevPage: page > 1 ? page - 1 : false,
-    nextPage: page < totalPages ? page + 1 : false,
+    hasPrevPage: page > 1,
+    hasNextPage: page < totalPages,
     page,
     limit,
     totalPages,
@@ -137,8 +137,8 @@ export const getAllCustomerService = async ({
     services,
     pagination: {
       count: services.length,
-      prevPage: page > 1 ? page - 1 : false,
-      nextPage: page < totalPages ? page + 1 : false,
+      hasPrevPage: page > 1,
+      hasNextPage: page < totalPages,
       page,
       limit,
       totalPages,

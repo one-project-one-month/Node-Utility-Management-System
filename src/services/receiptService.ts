@@ -51,8 +51,8 @@ export async function getAllReceiptsService(query: GetAllReceiptsQueryType) {
   // Build pagination info
   const pagination = {
     count: receipts.length,
-    prevPage: page > 1 ? page - 1 : false,
-    nextPage: page < totalPages ? page + 1 : false,
+    hasPrevPage: page > 1,
+    hasNextPage: page < totalPages,
     page,
     limit,
     totalPages,
@@ -283,8 +283,8 @@ export async function getReceiptHistoriesByTenantIdService(
   // Build pagination info
   const pagination = {
     count: receiptHistories.length,
-    prevPage: page > 1 ? page - 1 : false,
-    nextPage: page < totalPages ? page + 1 : false,
+    hasPrevPage: page > 1,
+    hasNextPage: page < totalPages,
     page,
     limit,
     totalPages,
