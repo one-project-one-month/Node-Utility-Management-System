@@ -4,7 +4,7 @@ import { successResponse } from '../common/apiResponse';
 import {
   createReceiptService,
   getAllReceiptsService,
-  getLatestReceiptsByTenantIdService,
+  getLatestReceiptByTenantIdService,
   getReceiptByIdService,
   getReceiptByInvoiceIdService,
   getReceiptHistoriesByTenantIdService,
@@ -12,16 +12,16 @@ import {
 } from '../services/receiptService';
 
 export async function getAllReceiptsController(
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const receipts = await getAllReceiptsService();
-    if (!receipts || !receipts.length)
+    const result = await getAllReceiptsService(req.validatedQuery);
+    if (!result || !result.receipts || !result.receipts.length)
       return next(new NotFoundError('No receipts found'));
 
-    successResponse(res, 'Receipts fetched successfully', { receipts });
+    successResponse(res, 'Receipts fetched successfully', result);
   } catch (error) {
     return next(error);
   }
@@ -44,21 +44,21 @@ export async function getReceiptByIdController(
 }
 
 // Get latest by tenant id
-export async function getLatestReceiptsByTenantIdController(
+export async function getLatestReceiptByTenantIdController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const latestReceipts = await getLatestReceiptsByTenantIdService(
+    const latestReceipt = await getLatestReceiptByTenantIdService(
       req.validatedParams.tenantId
     );
 
-    if (!latestReceipts)
+    if (!latestReceipt)
       return next(new NotFoundError('Latest receipt not found'));
 
     successResponse(res, 'Latest receipts by tenant id fetched successfully', {
-      latestReceipts,
+      latestReceipt,
     });
   } catch (error) {
     return next(error);
@@ -72,19 +72,19 @@ export async function getReceiptHistoriesByTenantIdController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const receiptHistories = await getReceiptHistoriesByTenantIdService(
-      req.validatedParams.tenantId
-    );
-    if (!receiptHistories || !receiptHistories.length)
-      return next(new NotFoundError('Receipt histories are not found'));
+       const result = await getReceiptHistoriesByTenantIdService(
+         req.validatedParams.tenantId,
+         req.validatedQuery
+       );
 
-    successResponse(
-      res,
-      'Receipt histories by tenant id fetched successfully',
-      {
-        receiptHistories,
-      }
-    );
+       if (!result.receiptHistories || !result.receiptHistories.length)
+         return next(new NotFoundError('Receipt histories are not found'));
+
+       successResponse(
+         res,
+         'Receipt histories by tenant id fetched successfully',
+         result
+       );
   } catch (error) {
     return next(error);
   }

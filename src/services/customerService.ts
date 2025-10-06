@@ -1,16 +1,16 @@
 import { NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
+import { PaginationQueryType } from '../validations/paginationSchema';
 import {
-  createServiceType,
-  paginationQueryType,
-  tenantIdAndStatusType,
-  updateServiceType,
+  CreateServiceType,
+  TenantIdAndStatusType,
+  UpdateServiceType,
 } from '../validations/serviceSchema';
 
 //create customer service
 export const createCustomerService = async (
   tenantId: string,
-  data: createServiceType
+  data: CreateServiceType
 ) => {
   // Check if tenant exists
   const tenant = await prisma.tenant.findUnique({
@@ -37,8 +37,8 @@ export const createCustomerService = async (
 
 //get service history by tenantId
 export const cutomerServiceHistory = async (
-  { id, status }: tenantIdAndStatusType,
-  { page, limit }: paginationQueryType
+  { id, status }: TenantIdAndStatusType,
+  { page, limit }: PaginationQueryType
 ) => {
   const skip = (page - 1) * limit;
   // Check if tenant exists
@@ -77,20 +77,25 @@ export const cutomerServiceHistory = async (
   //Total pages for pagination
   const totalPages = Math.ceil(total / limit);
 
+  const pagination = {
+    hasPrevPage: page > 1,
+    hasNextPage: page < totalPages,
+    page,
+    limit,
+    totalPages,
+  };
+
   return {
     history,
-    pagination: {
-      prevPage: page > 1,
-      nextPage: page < totalPages,
-      page,
-      limit,
-      totalPages,
-    },
+    pagination,
   };
 };
 
 //update customer service
-export const updateCustomerService = async (serviceId: string, data: updateServiceType) => {
+export const updateCustomerService = async (
+  serviceId: string,
+  data: UpdateServiceType
+) => {
   const existingService = await prisma.customerService.findUnique({
     where: { id: serviceId },
     select: { id: true },
@@ -99,14 +104,17 @@ export const updateCustomerService = async (serviceId: string, data: updateServi
     throw new NotFoundError(`No customer service found.}`);
   }
 
-  return await prisma.customerService.update({ where: { id: serviceId }, data });
+  return await prisma.customerService.update({
+    where: { id: serviceId },
+    data,
+  });
 };
 
 //get all cutomer service
 export const getAllCustomerService = async ({
   page,
   limit,
-}: paginationQueryType) => {
+}: PaginationQueryType) => {
   const skip = (page - 1) * limit;
 
   //Get sevices and count
@@ -129,8 +137,8 @@ export const getAllCustomerService = async ({
     services,
     pagination: {
       count: services.length,
-      prevPage: page > 1,
-      nextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      hasNextPage: page < totalPages,
       page,
       limit,
       totalPages,

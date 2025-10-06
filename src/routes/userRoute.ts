@@ -16,7 +16,7 @@ import {
   CreateUserSchema,
   UpdateUserSchema,
   GetUserParamSchema,
-  GetUserQuerySchema,
+  GetAllUsersQuerySchema,
 } from '../validations/userSchema';
 
 const router = Router();
@@ -24,7 +24,7 @@ const router = Router();
 router.get(
   '/',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(GetUserQuerySchema),
+  validateRequestQuery(GetAllUsersQuerySchema),
   getAllUsersController
 );
 router.get(
