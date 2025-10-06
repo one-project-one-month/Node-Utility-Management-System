@@ -8,6 +8,7 @@ import { customLogger } from './common/utils/customLogger';
 import swaggerDocs from './config/swagger';
 import { isAuthenticated } from './middlewares/authMiddleware';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
+import { deployedUrls } from './common/auth/allowedOrigins';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
@@ -15,7 +16,6 @@ import receiptRoute from './routes/receiptRoute';
 import serviceRoute from './routes/serviceRoute';
 import tenantRoute from './routes/tenantRoute';
 import userRoute from './routes/userRoute';
-import contractTypeRoute from './routes/contractTypeRoute';
 
 dotenv.config();
 
@@ -41,13 +41,19 @@ app.use('/api/v1/users', isAuthenticated, userRoute);
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
 app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
 app.use('/api/v1', receiptRoute);
-app.use('/api/v1/contract-types', contractTypeRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
 
 app.get('/', (_req: Request, res: Response) => {
-  res.send('API is running!');
+  const docsLinks = deployedUrls.map((url) => `${url}/docs`);
+
+  res.json({
+    message: '🚀 API is running successfully!',
+    documentation: docsLinks,
+  });
 });
 
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(port, () =>
+  console.log(`Server is running on http://localhost:${port}`)
+);

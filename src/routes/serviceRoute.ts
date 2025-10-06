@@ -3,6 +3,7 @@ import {
   createServiceController,
   getAllServiceController,
   getServiceById,
+  serviceHistoryController,
   updateServiceController,
 } from '../controllers/serviceController';
 import {
@@ -14,6 +15,7 @@ import {
   createCustomerServiceSchema,
   idSchema,
   paginationQuerySchema,
+  tenantIdAndStatusSchema,
   updateCustomerServiceSchema,
 } from '../validations/serviceSchema';
 import { hasRole } from '../middlewares/authMiddleware';
@@ -26,6 +28,13 @@ router.post(
   validateRequestBody(createCustomerServiceSchema),
   createServiceController
 ); // create customer service from client
+
+router.get(
+  '/tenants/:id/customer-services/history/:status',
+  validateRequestParams(tenantIdAndStatusSchema),
+  validateRequestQuery(paginationQuerySchema),
+  serviceHistoryController
+); // get customer service history from client
 
 // Dashboard
 router.get(
