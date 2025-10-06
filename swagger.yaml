@@ -411,10 +411,8 @@ components:
           type: string
           format: date-time
           example: 2025-10-15T10:59:20.031Z
-        invoice_id:
-          type: string
-          format: uuid
-          example: d1ea2e8f-c047-48e0-bd90-d26356674d47
+        invoice:
+          $ref: '#/components/schemas/Invoice'
     CreateReceiptRequest:
       type: object
       required: [payment_method, paid_date, invoice_id]
@@ -442,6 +440,30 @@ components:
           type: string
           format: date-time
           example: 2025-10-14T04:07:20.031Z
+    # Invoice Schema
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d44605d3-4f8e-4057-b778-201111db860d
+        status:
+          type: string
+          enum: ['Paid', 'Pending', 'Overdue']
+          example: Paid
+        bill_id:
+          type: string
+          format: uuid
+          example: 201111db86-4f8e-4057-b778-0dd44605d3
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-14T04:07:20.031Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-15T10:59:20.031Z
 
 paths:
   # Authentication Endpoints
@@ -1690,7 +1712,7 @@ paths:
                       message:
                         type: string
                         example: Tenant not found
-  
+
   # Receipt Endpoints
   /api/v1/receipts:
     get:
@@ -1745,8 +1767,7 @@ paths:
                           receipts:
                             type: array
                             items:
-                              allOf:
-                                $ref: '#/components/schemas/Receipt'
+                              $ref: '#/components/schemas/Receipt'
                           pagination:
                             type: object
                             properties:
