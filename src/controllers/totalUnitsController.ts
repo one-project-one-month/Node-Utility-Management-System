@@ -39,7 +39,7 @@ export async function getTotalUnitsByIdController(
       return next(new NotFoundError('Total-units not found'));
 
     successResponse(res, 'Total-units by id fetched successfully', {
-      totalUnitsById,
+      totalUnits: totalUnitsById,
     });
   } catch (error) {
     return next(error);
@@ -61,7 +61,7 @@ export async function getTotalUnitsByBillIdController(
       return next(new NotFoundError('Total-units by bill id not found'));
 
     successResponse(res, 'Total-units by bill id fetched successfully', {
-      units,
+      totalUnits: units,
     });
   } catch (error) {
     return next(error);

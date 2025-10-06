@@ -14,8 +14,8 @@ import authRoute from './routes/authRoute';
 import receiptRoute from './routes/receiptRoute';
 import serviceRoute from './routes/serviceRoute';
 import tenantRoute from './routes/tenantRoute';
-import userRoute from './routes/userRoute'; 
-import totalUnitsRoute from './routes/totalUnitsRoute'; 
+import userRoute from './routes/userRoute';
+import totalUnitsRoute from './routes/totalUnitsRoute';
 import { deployedUrls } from './common/auth/allowedOrigins';
 
 dotenv.config();
@@ -40,9 +40,9 @@ swaggerDocs(app, port || 3000);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
+app.use('/api/v1/total-units', isAuthenticated, totalUnitsRoute); //total-units endpoint
 app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
 app.use('/api/v1', receiptRoute);
-app.use('/api/v1/total-units', totalUnitsRoute); //total-units endpoint
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

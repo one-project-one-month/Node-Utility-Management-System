@@ -19,7 +19,7 @@ import {
 
 const router = Router();
 
-// Get all receipts
+// Get all total-units
 router.get('/', getAllTotalUnitsController);
 
 // Get total-units by bill id
