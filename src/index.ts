@@ -16,6 +16,8 @@ import receiptRoute from './routes/receiptRoute';
 import serviceRoute from './routes/serviceRoute';
 import tenantRoute from './routes/tenantRoute';
 import userRoute from './routes/userRoute';
+import contractTypeRoute from './routes/contractTypeRoute';
+import totalUnitsRoute from './routes/totalUnitsRoute';
 
 dotenv.config();
 
@@ -39,8 +41,10 @@ swaggerDocs(app, port || 3000);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
+app.use('/api/v1/total-units', isAuthenticated, totalUnitsRoute); //total-units endpoint
 app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
-app.use('/api/v1', receiptRoute);
+app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
+app.use('/api/v1/contract-types', isAuthenticated, contractTypeRoute); // contract type endpoint
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
