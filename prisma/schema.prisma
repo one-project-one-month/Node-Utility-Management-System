@@ -162,18 +162,18 @@ model Bill {
   electricity_fee Decimal
   water_fee       Decimal
   fine_fee        Decimal?
-  service_fee     Decimal
+  service_fee     Decimal?
   ground_fee      Decimal
   car_parking_fee Decimal?
   wifi_fee        Decimal?
   total_amount    Decimal
   due_date        DateTime
-  created_at      DateTime
-  updated_at      DateTime
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
   //relations
   room       Room        @relation(fields: [room_id], references: [id])
-  room_id    String   //remove @@unique   
+  room_id    String
   total_unit TotalUnits?
   invoice    Invoice?
 
