@@ -7,7 +7,6 @@ import {
 } from '../middlewares/validationMiddlware';
 import {
   CreateContractTypeSchema,
-  GetAllContractTypesQuerySchema,
   GetContractTypeParamSchema,
   UpdateContractTypeSchema,
 } from '../validations/contractTypeSchema';
@@ -29,12 +28,7 @@ router.post(
 );
 
 // get all contract types
-router.get(
-  '/',
-  hasRole(['Admin', 'Staff']),
-  validateRequestQuery(GetAllContractTypesQuerySchema),
-  getAllContractTypeController
-);
+router.get('/', hasRole(['Admin', 'Staff']), getAllContractTypeController);
 
 // get contract type by id
 router.get(

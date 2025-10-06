@@ -2,7 +2,6 @@ import { BadRequestError } from '../common/errors';
 import prisma from '../lib/prismaClient';
 import {
   CreateContractTypeSchemaType,
-  GetAllContractTypesQuerySchemaType,
   UpdateContractTypeSchemaType,
 } from '../validations/contractTypeSchema';
 
@@ -12,43 +11,23 @@ export const createContractTypeService = async (
 ) => {
   const exists = await prisma.contractType.findFirst({
     where: { name: data.name },
+    select: { id: true },
   });
-  if (exists) throw new BadRequestError('Contract type already exists');
+  if (exists?.id) throw new BadRequestError('Contract type already exists');
 
   return await prisma.contractType.create({ data });
 };
 
 // @desc get all contract types
-export const getAllContractTypeService = async (
-  data: GetAllContractTypesQuerySchemaType
-) => {
-  const { page, limit } = data;
-  const skip = (page - 1) * limit;
+export const getAllContractTypeService = async () => {
+  const contractTypes = await prisma.contractType.findMany({
+    orderBy: { created_at: 'desc' },
+  });
 
-  const [contractType, count] = await Promise.all([
-    prisma.contractType.findMany({
-      skip,
-      take: limit,
-      orderBy: { created_at: 'desc' },
-    }),
-    prisma.contractType.count(),
-  ]);
+  if (!Array.isArray(contractTypes) || contractTypes.length === 0)
+    throw new BadRequestError('Contract types not found');
 
-  if (Array.isArray(contractType) && contractType.length === 0)
-    throw new BadRequestError('No contract types found');
-
-  const totalPages = Math.ceil(count / limit);
-  return {
-    contractType,
-    pagination: {
-      count: contractType.length,
-      prevPage: page > 1,
-      nextPage: page < totalPages,
-      page,
-      limit,
-      totalPages,
-    },
-  };
+  return contractTypes;
 };
 
 // @desc get contract type by id

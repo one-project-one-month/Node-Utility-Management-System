@@ -37,7 +37,7 @@ export const getAllContractTypeController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const contractTypes = await getAllContractTypeService(req.validatedQuery);
+    const contractTypes = await getAllContractTypeService();
     successResponse(
       res,
       'All Contract types fetched successfully',
