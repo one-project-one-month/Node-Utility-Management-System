@@ -41,8 +41,9 @@ app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
 app.use('/api/v1/total-units', isAuthenticated, totalUnitsRoute); //total-units endpoint
-app.use('/api/v1', isAuthenticated, serviceRoute); //customer service endpoint
-app.use('/api/v1', receiptRoute);
+app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
+app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
+
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
