@@ -8,6 +8,7 @@ import { customLogger } from './common/utils/customLogger';
 import swaggerDocs from './config/swagger';
 import { isAuthenticated } from './middlewares/authMiddleware';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
+import { deployedUrls } from './common/auth/allowedOrigins';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
@@ -16,7 +17,6 @@ import serviceRoute from './routes/serviceRoute';
 import tenantRoute from './routes/tenantRoute';
 import userRoute from './routes/userRoute';
 import totalUnitsRoute from './routes/totalUnitsRoute';
-import { deployedUrls } from './common/auth/allowedOrigins';
 
 dotenv.config();
 
@@ -41,7 +41,7 @@ app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
 app.use('/api/v1/total-units', isAuthenticated, totalUnitsRoute); //total-units endpoint
-app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
+app.use('/api/v1', isAuthenticated, serviceRoute); //customer service endpoint
 app.use('/api/v1', receiptRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE

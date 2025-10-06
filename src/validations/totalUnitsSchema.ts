@@ -16,8 +16,8 @@ export const CreateTotalUnitsSchema = z.object({
 
 export const UpdateTotalUnitsSchema = z
   .object({
-    electricity_units: z.number().positive(),
-    water_units: z.number().positive(),
+    electricity_units: z.number().positive().optional(),
+    water_units: z.number().positive().optional(),
     bill_id: z.uuid({ version: 'v4' }).optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
