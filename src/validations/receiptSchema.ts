@@ -28,7 +28,7 @@ export const CreateReceiptSchema = z.object({
     PaymentMethod,
     "Payment method must be one of 'Cash' or 'Mobile_Banking'"
   ),
-  paid_date: z.coerce.date(),
+  paid_date: z.coerce.date().optional(),
   invoice_id: z.uuid({ version: 'v4' }),
 });
 
@@ -41,7 +41,7 @@ export const UpdateReceiptSchema = z
       )
       .optional(),
     paid_date: z.coerce.date().optional(),
-    // invoice_id: z.string().optional(),
+    invoice_id: z.uuid({ version: 'v4' }).optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
