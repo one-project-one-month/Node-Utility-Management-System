@@ -10,16 +10,16 @@ import {
 } from '../services/totalUnitsService';
 
 export async function getAllTotalUnitsController(
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const totalUnits = await getAllTotalUnitsService();
-    if (!totalUnits || !totalUnits.length)
+    const result = await getAllTotalUnitsService(req.validatedQuery);
+    if (!result || !result.totalUnits.length)
       return next(new NotFoundError('No receipts found'));
 
-    successResponse(res, 'Total-units fetched successfully', { totalUnits });
+    successResponse(res, 'Total-units fetched successfully', result);
   } catch (error) {
     return next(error);
   }

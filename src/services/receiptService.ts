@@ -1,16 +1,68 @@
+import { Prisma } from '../../generated/prisma';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
+import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateReceiptType,
+  GetAllReceiptsQueryType,
   UpdateReceiptType,
 } from '../validations/receiptSchema';
 
-export async function getAllReceiptsService() {
-  // add further queries
-  const whereClause: any = {};
-  return await prisma.receipt.findMany({
+export async function getAllReceiptsService(query: GetAllReceiptsQueryType) {
+  const whereClause: Prisma.ReceiptWhereInput = {};
+
+  // Add payment_method filter
+  if (query.payment_method) {
+    whereClause.payment_method = query.payment_method;
+  }
+
+  // Calculate pagination
+  const page = query.page || 1;
+  const limit = query.limit || 10;
+  const skip = (page - 1) * limit;
+
+  // Get total count for pagination
+  const totalCount = await prisma.receipt.count({ where: whereClause });
+  const totalPages = Math.ceil(totalCount / limit);
+
+  // Get receipts with pagination and relations
+  const receipts = await prisma.receipt.findMany({
     where: whereClause,
+    // include: {
+    //   invoice: {
+    //     include: {
+    //       bill: {
+    //         include: {
+    //           room: {
+    //             include: {
+    //               tenant: true,
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
+    skip,
+    take: limit,
+    orderBy: { created_at: 'desc' },
   });
+
+  // Build pagination info
+  const pagination = {
+    count: receipts.length,
+    hasPrevPage: page > 1,
+    hasNextPage: page < totalPages,
+    page,
+    limit,
+    totalPages,
+    totalCount,
+  };
+
+  return {
+    receipts,
+    pagination,
+  };
 }
 
 // Get by id
@@ -141,7 +193,7 @@ export async function updateReceiptService(
 }
 
 // Get latest receipt by tenant id (single most recent receipt)
-export async function getLatestReceiptsByTenantIdService(tenantId: string) {
+export async function getLatestReceiptByTenantIdService(tenantId: string) {
   if (!tenantId) throw new NotFoundError('Tenant id not found');
 
   // Check if tenant exists
@@ -169,7 +221,10 @@ export async function getLatestReceiptsByTenantIdService(tenantId: string) {
 }
 
 // Get receipt history by tenant id (all receipts)
-export async function getReceiptHistoriesByTenantIdService(tenantId: string) {
+export async function getReceiptHistoriesByTenantIdService(
+  tenantId: string,
+  query: PaginationQueryType
+) {
   if (!tenantId) throw new NotFoundError('Tenant id not found');
 
   // Check if tenant exists
@@ -180,18 +235,64 @@ export async function getReceiptHistoriesByTenantIdService(tenantId: string) {
 
   if (!tenant) throw new NotFoundError('Tenant not found');
 
-  return await prisma.receipt.findMany({
-    where: {
-      invoice: {
-        bill: {
-          room: {
-            tenant: {
-              id: tenantId,
-            },
+  // Calculate pagination
+  const page = query.page || 1;
+  const limit = query.limit || 10;
+  const skip = (page - 1) * limit;
+
+  // Build where clause
+  const whereClause: Prisma.ReceiptWhereInput = {
+    invoice: {
+      bill: {
+        room: {
+          tenant: {
+            id: tenantId,
           },
         },
       },
     },
+  };
+
+  // Get total count for pagination
+  const totalCount = await prisma.receipt.count({ where: whereClause });
+  const totalPages = Math.ceil(totalCount / limit);
+
+  // Get receipts with pagination
+  const receiptHistories = await prisma.receipt.findMany({
+    where: whereClause,
+    // include: {
+    //   invoice: {
+    //     include: {
+    //       bill: {
+    //         include: {
+    //           room: {
+    //             include: {
+    //               tenant: true,
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
+    skip,
+    take: limit,
     orderBy: { created_at: 'desc' },
   });
+
+  // Build pagination info
+  const pagination = {
+    count: receiptHistories.length,
+    hasPrevPage: page > 1,
+    hasNextPage: page < totalPages,
+    page,
+    limit,
+    totalPages,
+    totalCount,
+  };
+
+  return {
+    receiptHistories,
+    pagination,
+  };
 }

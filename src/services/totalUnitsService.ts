@@ -1,17 +1,44 @@
 import { BadRequestError, NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
+import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateTotalUnitsType,
   UpdateTotalUnitsType,
 } from '../validations/totalUnitsSchema';
 
-export async function getAllTotalUnitsService() {
-  // add further queries
-  const whereClause: any = {};
+export async function getAllTotalUnitsService(query: PaginationQueryType) {
+  const { page, limit } = query;
+  const skip = (page - 1) * limit;
 
-  return await prisma.totalUnits.findMany({
-    where: whereClause,
-  });
+  const [totalUnits, count] = await Promise.all([
+    prisma.totalUnits.findMany({
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+    }),
+    prisma.totalUnits.count(),
+  ]);
+
+ if (totalUnits.length === 0) {
+   throw new NotFoundError('No total units found');
+ }
+
+  const totalPages = Math.ceil(count / limit);
+
+  const pagination = {
+    count: totalUnits.length,
+    hasPrevPage: page > 1,
+    hasNextPage: page < totalPages,
+    page,
+    limit,
+    totalPages,
+    totalCount: count,
+  };
+
+  return {
+    totalUnits,
+    pagination,
+  };
 }
 
 // Get by id
