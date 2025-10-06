@@ -42,6 +42,7 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",

@@ -16,12 +16,12 @@ export async function getAllUsersController(
 ): Promise<void> {
   try {
     const filters = req.validatedQuery;
-    const users = await getAllUsersService(filters);
+    const result = await getAllUsersService(filters);
 
-    if (!users || !users.length) {
+    if (!result || !result.users.length) {
       return next(new NotFoundError('No users found'));
     }
-    successResponse(res, 'Users fetched successfully', { users });
+    successResponse(res, 'Users fetched successfully', result);
   } catch (error) {
     return next(error);
   }
