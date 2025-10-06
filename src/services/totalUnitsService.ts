@@ -88,7 +88,7 @@ export async function createTotalUnitService({
 
 export async function updateTotalUnitsService(
   totalUnitsId: string,
-  { electricity_units, water_units }: Partial<UpdateTotalUnitsType>
+  { electricity_units, water_units, bill_id }: UpdateTotalUnitsType
 ) {
   // Find if total-units exists
   const existingTotalUnits = await prisma.totalUnits.findUnique({
@@ -97,9 +97,13 @@ export async function updateTotalUnitsService(
       id: true,
       electricity_units: true,
       water_units: true,
+      bill_id: true,
     },
   });
+
   if (!existingTotalUnits) throw new NotFoundError('Total-units not found');
+
+  if (existingTotalUnits.bill_id !== bill_id || !bill_id) throw new BadRequestError('Bill id is not matched');
 
   return await prisma.totalUnits.update({
     where: { id: totalUnitsId },
