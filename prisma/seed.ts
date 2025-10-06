@@ -102,8 +102,8 @@ async function main() {
   // Create 100 rooms
   console.log('🏗️ Creating 100 rooms across 5 floors...');
   const rooms: Room[] = [];
-  const totalFloors = 5;
-  const roomsPerFloor = 20;
+  const totalFloors = 2; // 5
+  const roomsPerFloor = 10; // 20
 
   for (let floor = 1; floor <= totalFloors; floor++) {
     for (let roomIndex = 1; roomIndex <= roomsPerFloor; roomIndex++) {
