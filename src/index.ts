@@ -16,7 +16,7 @@ import receiptRoute from './routes/receiptRoute';
 import serviceRoute from './routes/serviceRoute';
 import tenantRoute from './routes/tenantRoute';
 import userRoute from './routes/userRoute';
-
+import invoiceRoute from './routes/invoiceRoute';
 import billRoute from './routes/billRoute';
 import tanentBillRoute from './routes/tanentBillRoute';
 import totalUnitsRoute from './routes/totalUnitsRoute';
@@ -42,10 +42,10 @@ swaggerDocs(app, port || 3000);
 // ROUTES
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
-app.use('/api/v1/tenants', serviceRoute);
 app.use('/api/v1/bills', isAuthenticated, billRoute);
+app.use('/api/v1/invoices', isAuthenticated, invoiceRoute);
 app.use('/api/v1/tenants', isAuthenticated, tanentBillRoute);
-
+app.use('/api/v1/tenants', serviceRoute);
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
 app.use('/api/v1/total-units', isAuthenticated, totalUnitsRoute); //total-units endpoint
 app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
