@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ForbiddenError, UnauthorizedError } from '../common/errors';
+import { UnauthorizedError, ForbiddenError } from '../common/errors';
 import { verifyAccessToken } from '../common/auth/jwt';
 import { UserRole } from '../../generated/prisma';
 
