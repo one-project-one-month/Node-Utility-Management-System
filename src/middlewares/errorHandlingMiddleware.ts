@@ -1,4 +1,4 @@
-import { BadRequestError, CustomError, ForbiddenError, NotFoundError, UnauthorizedError, ValidationError } from '../common/errors';
+import { CustomError, ValidationError } from '../common/errors';
 import { NextFunction, Request, Response } from 'express';
 import { logEvents } from '../common/utils/customLogger';
 
