@@ -1,4 +1,4 @@
-import { BadRequestError } from '../common/errors';
+import { BadRequestError, NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
 import {
   CreateContractTypeSchemaType,
@@ -24,8 +24,8 @@ export const getAllContractTypeService = async () => {
     orderBy: { created_at: 'desc' },
   });
 
-  if (!Array.isArray(contractTypes) || contractTypes.length === 0)
-    throw new BadRequestError('Contract types not found');
+  if (Array.isArray(contractTypes) && !contractTypes.length)
+    throw new NotFoundError('Contract types not found');
 
   return contractTypes;
 };
@@ -35,7 +35,7 @@ export const getByIdContractTypeService = async (contractTypeId: string) => {
   const contractType = await prisma.contractType.findUnique({
     where: { id: contractTypeId },
   });
-  if (!contractType) throw new BadRequestError('Contract type not found');
+  if (!contractType) throw new NotFoundError('Contract type not found');
   return contractType;
 };
 
@@ -47,7 +47,7 @@ export const updateContractTypeService = async (
   const contractType = await prisma.contractType.findUnique({
     where: { id: contractTypeId },
   });
-  if (!contractType) throw new BadRequestError('Contract type not found');
+  if (!contractType) throw new NotFoundError('Contract type not found');
 
   return await prisma.contractType.update({
     where: { id: contractTypeId },
