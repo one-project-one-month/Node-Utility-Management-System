@@ -6,7 +6,7 @@ export const CreateRoomSchema = z.object({
     floor: z.number().int(),
     dimension: z.string().min(1, 'Dimension is required'),
     no_of_bed_room: z.number().int().min(1, 'Number of bedrooms is required and must be at least 1'),
-    status: z.enum([RoomStatus.Available, RoomStatus.Rented, RoomStatus.Purchased, RoomStatus.InMaintenance]),
+    status: z.enum(RoomStatus,'Status must be one of Available, Rented, Purchased, InMaintenance'),
     selling_price: z.number().optional(), // Prisma Decimal maps to number in TS
     max_no_of_people: z.number().int().min(1, 'Maximum number of people is required and must be at least 1'),
     description: z.string().optional().nullable(),
