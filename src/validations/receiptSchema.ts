@@ -45,7 +45,7 @@ export const UpdateReceiptSchema = z
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
-  });
+  }).strict();
 
 export type GetReceiptParamType = z.infer<typeof GetReceiptParamSchema>;
 export type GetReceiptByInvoiceParamType = z.infer<

@@ -6,7 +6,7 @@ import corsOptions from './common/auth/corsOptions';
 import { crediential } from './common/auth/credential';
 import { customLogger } from './common/utils/customLogger';
 import swaggerDocs from './config/swagger';
-import { isAuthenticated } from './middlewares/authMiddleware';
+import { hasRole, isAuthenticated } from './middlewares/authMiddleware';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
 import { deployedUrls } from './common/auth/allowedOrigins';
 
@@ -39,9 +39,9 @@ swaggerDocs(app, port || 3000);
 
 // ROUTES
 app.use('/api/v1/auth', authRoute);
-app.use('/api/v1/users', isAuthenticated, userRoute);
+app.use('/api/v1/users', isAuthenticated, userRoute); // user endpoint
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
-app.use('/api/v1/total-units', isAuthenticated, totalUnitsRoute); //total-units endpoint
+app.use('/api/v1/total-units', isAuthenticated, hasRole(["Admin", "Staff"]), totalUnitsRoute); //total-units endpoint
 app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
 app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
 app.use('/api/v1/contract-types', isAuthenticated, contractTypeRoute); // contract type endpoint
