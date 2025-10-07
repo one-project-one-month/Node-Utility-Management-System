@@ -10,7 +10,9 @@ import { isAuthenticated } from './middlewares/authMiddleware';
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
 import userRoute from './routes/userRoute';
-import serviceRoute from './routes/serviceRoute'
+import serviceRoute from './routes/serviceRoute';
+import billRoute from './routes/billRoute';
+import tanentBillRoute from './routes/tanentBillRoute';
 
 dotenv.config();
 
@@ -31,7 +33,9 @@ swaggerDocs(app, port || 3000);
 // ROUTES
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute);
-app.use('/api/v1/tenants', serviceRoute)
+app.use('/api/v1/tenants', serviceRoute);
+app.use('/api/v1/bills', isAuthenticated, billRoute);
+app.use('/api/v1/tenants', isAuthenticated, tanentBillRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

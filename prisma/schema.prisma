@@ -103,7 +103,7 @@ model Room {
   contract         Contract[]
   tenant           Tenant?
   customer_service CustomerService[]
-  bill             Bill?
+  bill             Bill[]
 
   @@map("rooms")
 }
@@ -163,12 +163,12 @@ model Bill {
   wifi_fee        Decimal?
   total_amount    Decimal
   due_date        DateTime
-  created_at      DateTime
-  updated_at      DateTime
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
   //relations
   room       Room        @relation(fields: [room_id], references: [id])
-  room_id    String      @unique
+  room_id    String
   total_unit TotalUnits?
   invoice    Invoice?
 

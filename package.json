@@ -35,6 +35,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
     "rimraf": "^6.0.1",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^13.0.0",
