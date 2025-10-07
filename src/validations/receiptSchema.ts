@@ -1,4 +1,4 @@
-import z from 'zod';
+import * as z from "zod";
 import { PaymentMethod } from '../../generated/prisma';
 import { PaginationQuerySchema } from './paginationSchema';
 

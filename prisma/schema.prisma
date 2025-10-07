@@ -79,10 +79,10 @@ model Tenant {
   updated_at    DateTime @updatedAt
 
   // relations
-  room_id   String    @unique
-  room      Room      @relation(fields: [room_id], references: [id])
-  user      User?
-  contracts Contract?
+  room_id  String    @unique
+  room     Room      @relation(fields: [room_id], references: [id])
+  user     User?
+  contract Contract? // typo fixed
 
   @@map("tenants")
 }
