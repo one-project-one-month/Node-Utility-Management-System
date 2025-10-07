@@ -2,58 +2,42 @@ import { BadRequestError, NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
 import {
   CreateContractSchemaType,
-  GetAllContractSchemaType,
   UpdateContractSchemaType,
 } from '../validations/contractSchema';
+import { PaginationQueryType } from '../validations/paginationSchema';
 
 export const createContractService = async (data: CreateContractSchemaType) => {
-  const { roomNo, contractTypeId, tenantId, createdDate, expiryDate } = data;
-
   // check room exists
   const room = await prisma.room.findUnique({
-    where: { room_no: roomNo },
+    where: { id: data.room_id },
     select: { id: true },
   });
   if (!room) throw new NotFoundError('Room not found');
 
   // check room has tenant
   const existingTenant = await prisma.tenant.findUnique({
-    where: { room_id: room.id },
-    select: { id: true },
+    where: { id: data.tenant_id },
+    select: { id: true, room_id: true },
   });
-  if (existingTenant) throw new BadRequestError('Room already has a tenant');
+  if (existingTenant?.room_id) throw new BadRequestError('Room already has a tenant');
+  if (!existingTenant?.id) throw new NotFoundError('Tenant not found');
 
   // check contract type exists
   const contractType = await prisma.contractType.findUnique({
-    where: { id: contractTypeId },
+    where: { id: data.contract_type_id },
     select: { id: true },
   });
   if (!contractType) throw new NotFoundError('Contract type not found');
 
-  // check tenant exists
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { id: true },
-  });
-  if (!tenant) throw new NotFoundError('Tenant not found');
-
   // check if contract already exists
   const existingContract = await prisma.contract.findUnique({
-    where: { tenant_id: tenant.id },
+    where: { tenant_id: data.tenant_id },
     select: { id: true },
   });
-  if (existingContract)
-    throw new BadRequestError('Tenant already has a contract');
+  if (existingContract) throw new BadRequestError('Tenant already has a contract');
 
   return await prisma.contract.create({
-    data: {
-      room_id: room.id,
-      tenant_id: tenant.id,
-      contract_type_id: contractType.id,
-      created_date: new Date(createdDate),
-      expiry_date: new Date(expiryDate),
-      updated_date: new Date(),
-    },
+    data,
   });
 };
 
@@ -61,79 +45,42 @@ export const updateContractService = async (
   contractId: string,
   data: UpdateContractSchemaType
 ) => {
-  const { roomNo, contractTypeId, tenantId, createdDate, expiryDate } = data;
-
+  const { room_id, contract_type_id, tenant_id, created_date, expiry_date, updated_date } = data;
   // Check if contract exists
   const existingContract = await prisma.contract.findUnique({
     where: { id: contractId },
   });
   if (!existingContract) throw new NotFoundError('Contract not found');
 
-  // If user wants to change room
-  let roomId: string | undefined;
-  if (roomNo) {
-    const room = await prisma.room.findUnique({
-      where: { room_no: roomNo },
-      select: { id: true },
-    });
-    if (!room) throw new NotFoundError('Room not found');
+  const room = await prisma.room.findUnique({
+    where: { id: data.room_id },
+    select: { id: true },
+  });
+  if (!room) throw new NotFoundError('Room not found');
 
-    // Check if that room is already linked to another contract
-    const roomHasContract = await prisma.contract.findFirst({
-      where: {
-        room_id: room.id,
-        NOT: { id: contractId }, // exclude current contract
-      },
-      select: { id: true },
-    });
-    if (roomHasContract)
-      throw new BadRequestError(
-        'That room is already linked to another contract'
-      );
+  // check room has tenant
+  const existingTenant = await prisma.tenant.findUnique({
+    where: { id: data.tenant_id },
+    select: { id: true },
+  });
+  if (!existingTenant?.id) throw new NotFoundError('Tenant not found');
 
-    roomId = room.id;
-  }
-
-  // If user wants to change tenant
-  if (tenantId) {
-    const tenant = await prisma.tenant.findUnique({
-      where: { id: tenantId },
-      select: { id: true },
-    });
-    if (!tenant) throw new NotFoundError('Tenant not found');
-
-    // Check if tenant already has another contract
-    const tenantHasContract = await prisma.contract.findFirst({
-      where: {
-        tenant_id: tenant.id,
-        NOT: { id: contractId },
-      },
-      select: { id: true },
-    });
-    if (tenantHasContract)
-      throw new BadRequestError(
-        'That tenant is already linked to another contract'
-      );
-  }
-
-  // If user wants to change contract type
-  if (contractTypeId) {
-    const contractType = await prisma.contractType.findUnique({
-      where: { id: contractTypeId },
-      select: { id: true },
-    });
-    if (!contractType) throw new NotFoundError('Contract type not found');
-  }
-
+  // check contract type exists
+  const contractType = await prisma.contractType.findUnique({
+    where: { id: data.contract_type_id },
+    select: { id: true },
+  });
+  if (!contractType) throw new NotFoundError('Contract type not found');
+  
   return await prisma.contract.update({
     where: { id: contractId },
     data: {
-      ...(roomId && { room_id: roomId }),
-      ...(contractTypeId && { contract_type_id: contractTypeId }),
-      ...(tenantId && { tenant_id: tenantId }),
-      ...(createdDate && { created_date: new Date(createdDate) }),
-      ...(expiryDate && { expiry_date: new Date(expiryDate) }),
-      updated_date: new Date(),
+      ...(room_id && { room_id }),
+      ...(contract_type_id && { contract_type_id }),
+      ...(tenant_id && { tenant_id }),
+      ...(created_date && { created_date }),
+      ...(expiry_date && { expiry_date }),
+      ...(updated_date && { updated_date }),
     },
   });
 };
@@ -151,7 +98,7 @@ export const getContractByIdService = async (contractId: string) => {
   return contract;
 };
 
-export const getAllContractSrvice = async (data: GetAllContractSchemaType) => {
+export const getAllContractSrvice = async (data: PaginationQueryType) => {
   const { page, limit } = data;
   const skip = (page - 1) * limit;
 
@@ -182,6 +129,7 @@ export const getAllContractSrvice = async (data: GetAllContractSchemaType) => {
       page,
       limit,
       totalPages,
+      totalCounts: count,
     },
   };
 };
@@ -194,7 +142,7 @@ export const getContractByTenantService = async (tenantId: string) => {
   });
   if (!tenant) throw new NotFoundError('Tenant not found');
 
-  return await prisma.contract.findMany({
+  return await prisma.contract.findUnique({
     where: { tenant_id: tenant.id },
     include: {
       tenant: true,

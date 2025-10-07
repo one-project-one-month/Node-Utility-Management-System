@@ -8,7 +8,6 @@ import {
 import {
   ContractIdSchema,
   CreateContractSchema,
-  GetAllContractSchema,
   GetContractByTenantSchema,
   UpdateContractSchema,
 } from '../validations/contractSchema';
@@ -19,6 +18,7 @@ import {
   getContractByIdController,
   updateContractController,
 } from '../controllers/contractController';
+import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
 
@@ -47,13 +47,14 @@ router.get(
 router.get(
   '/contracts',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(GetAllContractSchema),
+  validateRequestQuery(PaginationQuerySchema),
   getAllContractController
 );
 
 // Get all contracts by tenant
 router.get(
   '/tenants/:tenantId/contracts',
+  hasRole(['Admin', 'Staff', 'Tenant']),
   validateRequestParams(GetContractByTenantSchema),
   getAllContractByTenantIdController
 );

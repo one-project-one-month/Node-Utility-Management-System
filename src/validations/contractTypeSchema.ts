@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 // Create Contract Type
 export const CreateContractTypeSchema = z.object({

@@ -68,11 +68,11 @@ export const getAllContractController = async (
   next: NextFunction
 ) => {
   try {
-    const contract = await getAllContractSrvice(req.validatedQuery);
+    const contracts = await getAllContractSrvice(req.validatedQuery);
     successResponse(
       res,
       'All Contracts fetched successfully',
-      { contract },
+       contracts ,
       200
     );
   } catch (error) {

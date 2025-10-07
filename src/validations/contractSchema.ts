@@ -1,64 +1,40 @@
-import z from 'zod';
+import * as z from 'zod';
 
 export const CreateContractSchema = z.object({
-  roomNo: z.number().int().positive({ message: 'Room is required' }),
-  contractTypeId: z
-    .string({ message: 'Contract type is required' })
+  room_id: z.uuid({ version: 'v4' }),
+  contract_type_id: z
     .uuid({ version: 'v4' }),
-  tenantId: z.string({ message: 'Tenant is required' }).uuid({ version: 'v4' }),
-  createdDate: z.string().datetime('Invalid created date'),
-  expiryDate: z.string().datetime('Invalid updated date'),
-});
+  tenant_id: z.uuid({ version: 'v4' }),
+  created_date: z.coerce.date().refine((date) => !isNaN(date.getTime()), 'Invalid created date'),
+  expiry_date: z.coerce.date().refine((date) => !isNaN(date.getTime()), 'Invalid expiry date'),
+  updated_date: z.coerce.date().refine((date) => !isNaN(date.getTime()), 'Invalid updated date'),
+}).strict();
 
 export const UpdateContractSchema = z
   .object({
-    roomNo: z.number().int().positive().optional(),
-    contractTypeId: z
-      .string({ message: 'Contract type is required' })
-      .uuid({ version: 'v4' })
-      .optional(),
-    tenantId: z
-      .string({ message: 'Tenant is required' })
-      .uuid({ version: 'v4' })
-      .optional(),
-    createdDate: z.string().datetime().optional(),
-    expiryDate: z.string().datetime().optional(),
+  room_id: z.uuid({ version: 'v4' }).optional(),
+  contract_type_id: z
+    .uuid({ version: 'v4' }).optional(),
+  tenant_id: z.uuid({ version: 'v4' }).optional(),
+  created_date: z.coerce.date().optional(),
+  expiry_date: z.coerce.date().optional(),
+  updated_date: z.coerce.date().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
   });
 
 export const ContractIdSchema = z.object({
-  contractId: z
-    .string({ message: 'Contract ID is required' })
-    .uuid({ version: 'v4' }),
+  contractId: z.uuid({ version: 'v4' }),
 });
 
-export const GetAllContractSchema = z
-  .object({
-    page: z
-      .string()
-      .optional()
-      .transform((val) => (val ? Number(val) : 1))
-      .refine((val) => !isNaN(val) && val > 0, 'Page must be greater than 0'),
-    limit: z
-      .string()
-      .optional()
-      .transform((val) => (val ? Number(val) : 10))
-      .refine((val) => !isNaN(val) && val > 0, 'Limit must be greater than 0'),
-  })
-  .strict();
-
 export const GetContractByTenantSchema = z.object({
-  tenantId: z
-    .string({ message: 'Tenant ID is required' })
-    .uuid({ version: 'v4' }),
+  tenantId: z.uuid({ version: 'v4' }),
 });
 
 export type CreateContractSchemaType = z.infer<typeof CreateContractSchema>;
 export type UpdateContractSchemaType = z.infer<typeof UpdateContractSchema>;
 export type ContractIdSchemaType = z.infer<typeof ContractIdSchema>;
-export type GetAllContractSchemaType = z.infer<typeof GetAllContractSchema>;
 export type GetContractByTenantSchemaType = z.infer<
   typeof GetContractByTenantSchema
 >;
