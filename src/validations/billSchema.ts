@@ -48,7 +48,7 @@ export const UpdateBillSchema = z.object({
 });
 
 export type GetTanentBillParamType = z.infer<typeof GetTanentBillParamSchema>;
-export type GetUserParamType = z.infer<typeof GetBillParamSchema>;
+export type GetBillParamType = z.infer<typeof GetBillParamSchema>;
 export type GetBillQueryType = z.infer<typeof GetBillQuerySchema>;
 export type CreateBillType = z.infer<typeof CreateBillSchema>;
 export type UpdateBillType = z.infer<typeof UpdateBillSchema>;

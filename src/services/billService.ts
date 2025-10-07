@@ -3,6 +3,7 @@ import { calculateTotalAmount } from '../common/utils/calculateTotalAmount';
 import prisma from '../lib/prismaClient';
 import {
   CreateBillType,
+  GetBillParamType,
   GetBillQueryType,
   GetTanentBillParamType,
   UpdateBillType,
@@ -53,9 +54,9 @@ export async function updateBillService(
   });
 }
 
-export async function getBillService(bill_id: string) {
+export async function getBillService(param: GetBillParamType) {
   return await prisma.bill.findUnique({
-    where: { id: bill_id },
+    where: { id: param.bill_id },
   });
 }
 
