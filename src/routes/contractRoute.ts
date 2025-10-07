@@ -9,10 +9,12 @@ import {
   ContractIdSchema,
   CreateContractSchema,
   GetAllContractSchema,
+  GetContractByTenantSchema,
   UpdateContractSchema,
 } from '../validations/contractSchema';
 import {
   createContractController,
+  getAllContractByTenantIdController,
   getAllContractController,
   getContractByIdController,
   updateContractController,
@@ -21,14 +23,14 @@ import {
 const router = Router();
 
 router.post(
-  '/',
+  '/contracts',
   hasRole(['Admin', 'Staff']),
   validateRequestBody(CreateContractSchema),
   createContractController
 );
 
 router.put(
-  '/:contractId',
+  '/contracts/:contractId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(ContractIdSchema),
   validateRequestBody(UpdateContractSchema),
@@ -36,17 +38,24 @@ router.put(
 );
 
 router.get(
-  '/show/:contractId',
+  '/contracts/show/:contractId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(ContractIdSchema),
   getContractByIdController
 );
 
 router.get(
-  '/',
+  '/contracts',
   hasRole(['Admin', 'Staff']),
   validateRequestQuery(GetAllContractSchema),
   getAllContractController
+);
+
+// Get all contracts by tenant
+router.get(
+  '/tenants/:tenantId/contracts',
+  validateRequestParams(GetContractByTenantSchema),
+  getAllContractByTenantIdController
 );
 
 export default router;

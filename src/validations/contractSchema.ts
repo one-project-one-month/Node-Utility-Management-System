@@ -49,7 +49,16 @@ export const GetAllContractSchema = z
   })
   .strict();
 
+export const GetContractByTenantSchema = z.object({
+  tenantId: z
+    .string({ message: 'Tenant ID is required' })
+    .uuid({ version: 'v4' }),
+});
+
 export type CreateContractSchemaType = z.infer<typeof CreateContractSchema>;
 export type UpdateContractSchemaType = z.infer<typeof UpdateContractSchema>;
 export type ContractIdSchemaType = z.infer<typeof ContractIdSchema>;
 export type GetAllContractSchemaType = z.infer<typeof GetAllContractSchema>;
+export type GetContractByTenantSchemaType = z.infer<
+  typeof GetContractByTenantSchema
+>;

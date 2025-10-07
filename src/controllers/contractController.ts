@@ -3,6 +3,7 @@ import {
   createContractService,
   getAllContractSrvice,
   getContractByIdService,
+  getContractByTenantService,
   updateContractService,
 } from '../services/contractService';
 import { successResponse } from '../common/apiResponse';
@@ -71,6 +72,27 @@ export const getAllContractController = async (
     successResponse(
       res,
       'All Contracts fetched successfully',
+      { contract },
+      200
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// @route GET | api/v1/tenants/:tenantId/contracts
+// @desc get all contracts by tenant
+// @access Client
+export const getAllContractByTenantIdController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const contract = await getContractByTenantService(req.params.tenantId);
+    successResponse(
+      res,
+      'All Contracts fetched By tenantId successfully',
       { contract },
       200
     );
