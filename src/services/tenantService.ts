@@ -2,9 +2,9 @@ import { BadRequestError } from '../common/errors/badRequestError';
 import { NotFoundError } from '../common/errors/notFoundError';
 import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
 import prisma from '../lib/prismaClient';
+import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateTenantType,
-  GetAllTenantsQueryType,
   UpdateTenantType,
 } from '../validations/tenantSchema';
 
@@ -20,7 +20,7 @@ export async function createTenantService(data: CreateTenantType) {
   });
 
   if (existingTenantForRoom)
-    throw new BadRequestError('Room already has a tenant');
+    throw new BadRequestError('Room already occupied!');
 
   //Check for duplicate emails & nrcs before creating
   await checkDuplicateTenantData(data.emails, data.nrcs);
@@ -50,7 +50,6 @@ export async function updateTenantService(
       ...(data.nrcs && { nrcs: { set: data.nrcs } }),
       ...(data.phone_nos && { phone_nos: { set: data.phone_nos } }),
       ...(data.emergency_nos && { emergency_nos: { set: data.emergency_nos } }),
-      // updated_at: new Date(), we don't need this as prisma will handle it automatically
     },
   });
 }
@@ -63,8 +62,8 @@ export const getByIdTenantService = async (tenantId: string) => {
   return tenant;
 };
 
-export const getAllTenantService = async (data: GetAllTenantsQueryType) => {
-  const { page, limit } = data;
+export const getAllTenantService = async (query: PaginationQueryType) => {
+  const { page, limit } = query;
   const skip = (page - 1) * limit;
 
   const [tenants, count] = await Promise.all([
@@ -79,20 +78,23 @@ export const getAllTenantService = async (data: GetAllTenantsQueryType) => {
     prisma.tenant.count(),
   ]);
 
-  if ( Array.isArray(tenants) && tenants.length === 0) {
+  if (tenants.length === 0) {
     throw new NotFoundError('No tenants found');
   }
-  
   const totalPages = Math.ceil(count / limit);
+
+  const pagination = {
+    count: tenants.length,
+    hasPrevPage: page > 1,
+    hasNextPage: page < totalPages,
+    page,
+    limit,
+    totalPages,
+    totalCount: count,
+  };
+
   return {
     tenants,
-    pagination: {
-      count: tenants.length,
-      prevPage: page > 1,
-      nextPage: page < totalPages,
-      page,
-      limit,
-      totalPages,
-    },
+    pagination,
   };
 };
