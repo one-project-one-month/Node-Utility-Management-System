@@ -19,6 +19,8 @@ import userRoute from './routes/userRoute';
 import contractTypeRoute from './routes/contractTypeRoute';
 import totalUnitsRoute from './routes/totalUnitsRoute';
 import contractRoute from './routes/contractRoute';
+import roomRoute from './routes/roomRoute';
+
 
 dotenv.config();
 
@@ -47,6 +49,7 @@ app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
 app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
 app.use('/api/v1/contract-types', isAuthenticated, contractTypeRoute); // contract type endpoint
 app.use('/api/v1', isAuthenticated, contractRoute); // contract endpoint
+app.use('/api/v1/rooms', isAuthenticated, roomRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
