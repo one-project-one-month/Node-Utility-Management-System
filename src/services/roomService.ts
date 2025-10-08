@@ -62,7 +62,7 @@ export async function getRoomService(roomId: string) {
 
 export async function createRoomService(data: CreateRoomType) {
   const existingRoom = await prisma.room.findFirst({
-    where: { room_no: data.room_no, floor: data.floor }, // ✅ fixed uniqueness
+    where: { room_no: data.room_no, floor: data.floor }, 
   });
 
   if (existingRoom) throw new BadRequestError('Room with this number already exists on this floor');
