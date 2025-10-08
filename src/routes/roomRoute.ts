@@ -37,7 +37,7 @@ router.get(
 );
 
 router.get(
-  '/:id', // ✅ matches controller param
+  '/:id', //matches controller param
   hasRole(['Admin', 'Staff']),
   validateRequestParams(RoomIdSchema),
   getRoomController
