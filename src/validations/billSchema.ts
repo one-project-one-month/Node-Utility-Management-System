@@ -6,7 +6,7 @@ const money_field = z
     message: 'Amount must be a positive number',
   });
 
-export const GetTanentBillParamSchema = z.object({
+export const GetTenantBillParamSchema = z.object({
   tenant_id: z.uuid({ version: 'v4' }),
 });
 
@@ -47,7 +47,7 @@ export const UpdateBillSchema = z.object({
   due_date: z.coerce.date(),
 });
 
-export type GetTanentBillParamType = z.infer<typeof GetTanentBillParamSchema>;
+export type GetTenantBillParamType = z.infer<typeof GetTenantBillParamSchema>;
 export type GetUserParamType = z.infer<typeof GetBillParamSchema>;
 export type GetBillQueryType = z.infer<typeof GetBillQuerySchema>;
 export type CreateBillType = z.infer<typeof CreateBillSchema>;

@@ -57,7 +57,7 @@ model User {
   password      String
   role          UserRole
   refresh_token String?
-  is_active     Boolean  @default(true) // To check with laravel team
+  is_active     Boolean  @default(true)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
@@ -79,10 +79,10 @@ model Tenant {
   updated_at    DateTime @updatedAt
 
   // relations
-  room_id   String    @unique
-  room      Room      @relation(fields: [room_id], references: [id])
-  user      User?
-  contracts Contract?
+  room_id  String    @unique
+  room     Room      @relation(fields: [room_id], references: [id])
+  user     User?
+  contract Contract? // typo fixed
 
   @@map("tenants")
 }
@@ -90,7 +90,7 @@ model Tenant {
 model Room {
   id               String     @id @default(uuid())
   room_no          Int        @unique
-  floor            Int // To check with laravel team
+  floor            Int
   dimension        String
   no_of_bed_room   Int
   status           RoomStatus @default(Available)

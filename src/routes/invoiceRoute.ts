@@ -8,12 +8,15 @@ import {
   CreateInvoiceSchema,
   GetInvoiceParamSchema,
   GetInvoiceQuerySchema,
+  GetTenantInvoiceParamSchema,
   UpdateInvoiceSchema,
 } from './../validations/invoiceSchema';
 import {
   createInvoiceController,
   getAllInvoicesController,
   getInvoiceController,
+  getTanentInvoiceHistoryController,
+  getTanentInvoiceLatestController,
   updateInvoiceController,
 } from './../controllers/invoiceController';
 import { hasRole } from '../middlewares/authMiddleware';
@@ -45,6 +48,17 @@ router.get(
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetInvoiceParamSchema),
   getInvoiceController
+);
+router.get(
+  '/:tenant_id/invoices/latest',
+  validateRequestParams(GetTenantInvoiceParamSchema),
+  getTanentInvoiceLatestController
+);
+router.get(
+  '/:tenant_id/invoices/history',
+  validateRequestParams(GetTenantInvoiceParamSchema),
+  validateRequestQuery(GetInvoiceQuerySchema),
+  getTanentInvoiceHistoryController
 );
 
 export default router;

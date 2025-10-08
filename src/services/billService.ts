@@ -4,7 +4,7 @@ import prisma from '../lib/prismaClient';
 import {
   CreateBillType,
   GetBillQueryType,
-  GetTanentBillParamType,
+  GetTenantBillParamType,
   UpdateBillType,
 } from '../validations/billSchema';
 import { BadRequestError } from '../common/errors';
@@ -59,19 +59,19 @@ export async function getBillService(bill_id: string) {
   });
 }
 
-export async function getTanentBillLatestService(
-  params: GetTanentBillParamType
+export async function getTenantBillLatestService(
+  params: GetTenantBillParamType
 ) {
   const tenant_id = params.tenant_id;
   console.log('tenant_id', tenant_id);
-  const tanent = await prisma.tenant.findUnique({ where: { id: tenant_id } });
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenant_id } });
 
-  if (!tanent) {
-    throw new BadRequestError('Tanent row does not exit.');
+  if (!tenant) {
+    throw new BadRequestError('Tenant row does not exit.');
   }
-  if (tanent) {
+  if (tenant) {
     return prisma.bill.findFirst({
-      where: { room_id: tanent.room_id },
+      where: { room_id: tenant.room_id },
       orderBy: {
         created_at: 'desc',
       },
@@ -79,18 +79,18 @@ export async function getTanentBillLatestService(
   }
 }
 
-export async function getTanentBillHistoryService(
-  params: GetTanentBillParamType
+export async function getTenantBillHistoryService(
+  params: GetTenantBillParamType
 ) {
   const tenant_id = params.tenant_id;
-  const tanent = await prisma.tenant.findUnique({ where: { id: tenant_id } });
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenant_id } });
 
-  if (!tanent) {
-    throw new BadRequestError('Tanent row does not exit.');
+  if (!tenant) {
+    throw new BadRequestError('Tenant row does not exit.');
   }
-  if (tanent) {
+  if (tenant) {
     return prisma.bill.findMany({
-      where: { room_id: tanent.room_id },
+      where: { room_id: tenant.room_id },
       orderBy: {
         created_at: 'desc',
       },

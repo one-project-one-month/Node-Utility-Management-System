@@ -1,5 +1,6 @@
 import z from 'zod';
 import { InvoiceStatus } from '../../generated/prisma';
+import { PaginationQuerySchema } from './paginationSchema';
 
 // id     String        @id @default(uuid())
 //   status InvoiceStatus
@@ -12,7 +13,7 @@ import { InvoiceStatus } from '../../generated/prisma';
 
 //   receipt Receipt?
 
-export const GetTanentInvoiceParamSchema = z.object({
+export const GetTenantInvoiceParamSchema = z.object({
   tenant_id: z.uuid({ version: 'v4' }),
 });
 
@@ -20,7 +21,8 @@ export const GetInvoiceParamSchema = z.object({
   invoice_id: z.uuid({ version: 'v4' }),
 });
 
-export const GetInvoiceQuerySchema = z.object({
+export const GetInvoiceQuerySchema = PaginationQuerySchema.extend({
+  status: z.enum(InvoiceStatus).optional(),
   month: z.string().optional(),
   year: z.string().optional(),
 });
@@ -35,8 +37,8 @@ export const UpdateInvoiceSchema = z.object({
   bill_id: z.uuid({ version: 'v4' }).optional(),
 });
 
-export type GetTanentInvoiceParamType = z.infer<
-  typeof GetTanentInvoiceParamSchema
+export type GetTenantInvoiceParamType = z.infer<
+  typeof GetTenantInvoiceParamSchema
 >;
 export type GetInvoiceParamType = z.infer<typeof GetInvoiceParamSchema>;
 export type GetInvoiceQueryType = z.infer<typeof GetInvoiceQuerySchema>;
