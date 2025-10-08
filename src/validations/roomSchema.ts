@@ -33,6 +33,26 @@ export const UpdateRoomSchema = z.object({
     message: 'At least one field must be updated',
 });
 
+//Add Room ID Schema (for param validation)
+export const RoomIdSchema = z.object({
+  id: z.string().uuid('Invalid room ID format'),
+});
+
+//Add Query Schema (for filtering and pagination)
+export const GetAllRoomQuerySchema = z.object({
+  status: z
+    .enum([
+      RoomStatus.Available,
+      RoomStatus.Rented,
+      RoomStatus.Purchased,
+      RoomStatus.InMaintenance,
+    ])
+    .optional(),
+  floor: z.string().optional(),
+  page: z.string().optional(),
+  limit: z.string().optional(),
+});
+
 //Type inference
 export type CreateRoomType = z.infer<typeof CreateRoomSchema>;
 export type UpdateRoomType = z.infer<typeof UpdateRoomSchema>;
