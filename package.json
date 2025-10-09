@@ -14,7 +14,10 @@
     "db:migrate": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "format": "prettier --write 'src/**/*.{ts,js,json}'",
+    "lint": "eslint src/ --ext .ts",
+    "lint-fix": "eslint src/ --ext .ts --fix"
   },
   "keywords": [],
   "author": "",
