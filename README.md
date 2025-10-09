@@ -38,7 +38,32 @@ Make sure you have the following installed before starting:
   ```
 
 ## Scripts
-Quick reference to your `package.json` scripts:
+
+### Using Makefile (Recommended)
+```bash
+# Quick setup for new developers
+make quick-setup
+
+# Development
+make dev              # Start development server
+make db-studio        # Open Prisma Studio
+make docker-up        # Start PostgreSQL
+
+# Database operations
+make db-setup         # Complete DB setup
+make db-reset         # Reset database
+make db-migrate       # Create migration
+
+# Code quality
+make lint             # Run ESLint
+make format           # Format with Prettier
+make type-check       # TypeScript check
+
+# View all available commands
+make help
+```
+
+### NPM Scripts
 ```markdown
 ## Available Scripts
 - `npm run dev` – start in development with hot reload
@@ -107,20 +132,28 @@ npm start
 ## Project Structure
 ```bash
 src/
- ├── controllers/         # Route controllers
- ├── services/            # Business logic
- ├── routes/              # Express routes
- ├── middlewares/         # Validation/auth middlewares
+ ├── controllers/         # Route controllers (auth, user, tenant, contract, etc.)
+ ├── services/            # Business logic layer
+ ├── routes/              # Express route definitions
+ ├── middlewares/         # Auth, validation, error handling
+ ├── validations/         # Zod validation schemas
+ ├── common/              # Shared utilities
+ │   ├── auth/            # JWT, password hashing, CORS
+ │   ├── errors/          # Custom error classes
+ │   └── utils/           # Logger, rate limiting
+ ├── config/              # Swagger configuration
+ ├── helpers/             # Utility functions
  ├── lib/                 # Prisma client setup
- ├── validations/         # Zod schemas
- ├── common/              # Error classes & API responses
- ├── types/               # TypeScript definitions
- └── index.ts             # App entrypoint
-prisma/                   # Database schema & migrations
- ├── schema.prisma        # Database schema
- ├── migrations/          # Database migrations
- └── seed.ts              # Database seeding
-docker-compose.yml        # Docker compose file for postgresql
+ ├── types/               # TypeScript type definitions
+ └── index.ts             # Application entry point
+prisma/                   # Database layer
+ ├── schema.prisma        # Database schema definition
+ ├── migrations/          # Database migration files
+ └── seed.ts              # Database seeding script
+generated/                # Auto-generated Prisma client
+docker-compose.yml        # PostgreSQL container setup
+swagger.yaml              # API documentation
+Makefile                  # Development workflow automation
 ```
 
 ## Database Schema
@@ -150,15 +183,49 @@ POST   /api/v1/users
 PUT    /api/v1/users/:userId
 DELETE /api/v1/users/:userId
 
+# Tenants (Admin/Staff only)
+GET    /api/v1/tenants
+GET    /api/v1/tenants/:tenantId
+POST   /api/v1/tenants
+PUT    /api/v1/tenants/:tenantId
+
+# Contract Types (Admin/Staff only)
+GET    /api/v1/contract-types
+GET    /api/v1/contract-types/:contractTypeId
+POST   /api/v1/contract-types
+PUT    /api/v1/contract-types/:contractTypeId
+
+# Contracts
+POST   /api/v1/contracts (Admin/Staff)
+GET    /api/v1/contracts (Admin/Staff)
+GET    /api/v1/contracts/show/:contractId (Admin/Staff)
+PUT    /api/v1/contracts/:contractId (Admin/Staff)
+GET    /api/v1/tenants/:tenantId/contracts (All roles)
+
+# Total Units (Admin/Staff only)
+GET    /api/v1/total-units
+GET    /api/v1/total-units/:id
+POST   /api/v1/total-units
+PUT    /api/v1/total-units/:id
+DELETE /api/v1/total-units/:id
+
 # Customer Service
 POST /api/v1/tenants/:id/customer-services/create
 GET  /api/v1/customer-services/
 GET  /api/v1/customer-services/:id
 PUT  /api/v1/customer-services/:id
+
+# Receipts
+GET  /api/v1/receipts
+GET  /api/v1/receipts/:id
+POST /api/v1/receipts
+PUT  /api/v1/receipts/:id
 ```
 
 ### ❌ **Planned Endpoints**
 ```
+# Authentication
+POST /api/v1/auth/register
 
 # Rooms
 GET    /api/v1/rooms
@@ -167,26 +234,19 @@ POST   /api/v1/rooms
 PUT    /api/v1/rooms/:id
 DELETE /api/v1/rooms/:id
 
-# Tenants
-GET    /api/v1/tenants
-GET    /api/v1/tenants/:id
-POST   /api/v1/tenants
-PUT    /api/v1/tenants/:id
-DELETE /api/v1/tenants/:id
-
-# Contracts
-GET    /api/v1/contracts
-GET    /api/v1/contracts/:id
-POST   /api/v1/contracts
-PUT    /api/v1/contracts/:id
-DELETE /api/v1/contracts/:id
-
 # Bills
 GET    /api/v1/bills
 GET    /api/v1/bills/:id
 POST   /api/v1/bills
 PUT    /api/v1/bills/:id
 DELETE /api/v1/bills/:id
+
+# Invoices
+GET    /api/v1/invoices
+GET    /api/v1/invoices/:id
+POST   /api/v1/invoices
+PUT    /api/v1/invoices/:id
+DELETE /api/v1/invoices/:id
 ```
 
 ## Development Status
@@ -196,15 +256,22 @@ DELETE /api/v1/bills/:id
 - ✅ Prisma ORM setup
 - ✅ Authentication system (JWT + bcrypt)
 - ✅ User management API (CRUD operations)
-- ✅ Customer service API
+- ✅ Tenant management API (CRUD operations)
+- ✅ Contract management API (CRUD operations)
+- ✅ Contract type management API (CRUD operations)
+- ✅ Customer service API (CRUD operations)
+- ✅ Receipt management API (CRUD operations)
+- ✅ Total units management API (CRUD operations)
 - ✅ Validation schemas (Zod)
 - ✅ Role-based access control
 - ✅ API documentation (Swagger)
+- ✅ Rate limiting (login attempts)
+- ✅ CORS configuration
+- ✅ Custom logging middleware
 - ❌ Room management API
-- ❌ Tenant management API
-- ❌ Contract management API
 - ❌ Billing system API
-- ❌ Invoice & Receipt generation
+- ❌ Invoice management API
+- ❌ User registration endpoint
 
 ## Contributing
 Please read [CONTRIBUTION_GUIDELINE.md](./CONTRIBUTION_GUIDELINE.md) for details on our code of conduct and the process for submitting pull requests.
