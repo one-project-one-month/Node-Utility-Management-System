@@ -19,9 +19,9 @@ export async function getAllTotalUnitsService(query: PaginationQueryType) {
     prisma.totalUnits.count(),
   ]);
 
- if (totalUnits.length === 0) {
-   throw new NotFoundError('No total units found');
- }
+  if (totalUnits.length === 0) {
+    throw new NotFoundError('No total units found');
+  }
 
   const totalPages = Math.ceil(count / limit);
 
@@ -103,7 +103,8 @@ export async function updateTotalUnitsService(
 
   if (!existingTotalUnits) throw new NotFoundError('Total-units not found');
 
-  if (existingTotalUnits.bill_id !== bill_id || !bill_id) throw new BadRequestError('Bill id is not matched');
+  if (existingTotalUnits.bill_id !== bill_id || !bill_id)
+    throw new BadRequestError('Bill id is not matched');
 
   return await prisma.totalUnits.update({
     where: { id: totalUnitsId },

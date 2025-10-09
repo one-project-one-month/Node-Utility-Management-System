@@ -55,7 +55,8 @@ make db-reset         # Reset database
 make db-migrate       # Create migration
 
 # Code quality
-make lint             # Run ESLint
+make lint             # Run ESLint to check for code issues
+make lint-fix         # Run ESLint and automatically fix fixable issues
 make format           # Format with Prettier
 make type-check       # TypeScript check
 

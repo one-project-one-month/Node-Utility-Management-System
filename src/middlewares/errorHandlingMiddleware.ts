@@ -8,15 +8,17 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
+  logEvents(
+    `${err.name}: ${err.message}\t${_req.method}\t${_req.url}\t${_req.headers.origin}`,
+    'errLog.log'
+  );
 
-  logEvents(`${err.name}: ${err.message}\t${_req.method}\t${_req.url}\t${_req.headers.origin}`, 'errLog.log');
-  
   if (err instanceof ValidationError) {
     return res.status(err.statusCode).json({
       success: false,
       message: err.message,
       status: err.statusCode,
-      errors: err.generateErrors()
+      errors: err.generateErrors(),
     });
   } else if (err instanceof CustomError) {
     return res.status(err.statusCode).json({
