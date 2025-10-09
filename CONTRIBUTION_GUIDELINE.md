@@ -6,11 +6,11 @@ Thank you for contributing to this project! Please follow the rules below to kee
 
 ## 🚀 Branch Naming
 
-- Use the following format for branch names:
-  - `feature/[description]` - For new features
-  - `fix/[description]` - For bug fixes
-  - `docs/[description]` - For documentation updates
-  - `refactor/[description]` - For code refactoring
+**Use the following format for branch names:**
+- `feature/[description]` - For new features
+- `fix/[description]` - For bug fixes
+- `docs/[description]` - For documentation updates
+- `refactor/[description]` - For code refactoring
 
 **Examples:**
 - `feature/add-authentication`
@@ -50,7 +50,7 @@ We follow the **conventional commit** style for consistency:
 ## 📂 Specific File Type Conventions
 
 - **Controllers**: [entity]Controller.ts (e.g., `userController.ts`, `tenantController.ts`, `contractController.ts`)
-- **Services**: [entity]Service.ts (e.g., `userService.ts`, `authService.ts`, `tenantService.ts`)
+- **Services**: [entity]Service.ts (e.g., `userService.ts`, `tenantService.ts`, `contractService.ts`)
 - **Routes**: [entity]Route.ts (e.g., `userRoute.ts`, `tenantRoute.ts`, `contractRoute.ts`)
 - **Middlewares**: [purpose]Middleware.ts (e.g., `validationMiddleware.ts`, `authMiddleware.ts`)
 - **Validations**: [entity]Schema.ts (e.g., `userSchema.ts`, `tenantSchema.ts`, `contractSchema.ts`)
@@ -193,9 +193,10 @@ import {
   GetUserQueryType,
   UpdateUserType,
 } from '../validations/userSchema';
+import { Prisma } from '../../generated/prisma';
 
 export async function getAllUsersService(query: GetUserQueryType) {
-  const whereClause: any = {};
+  const whereClause: Prisma.UserWhereInput = {};
 
   if (query.email) {
     whereClause.email = query.email;
@@ -214,6 +215,22 @@ export async function getAllUsersService(query: GetUserQueryType) {
       // Exclude password field from the result
     },
   });
+}
+
+export async function getUserService(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      createdAt: true,
+      updatedAt: true,
+      // Exclude password from results
+    },
+  });
+
+  return user;
 }
 
 export async function createUserService(data: CreateUserType) {
@@ -271,10 +288,7 @@ export const CreateUserSchema = z.object({
   email: z.email(),
   password: z.string().min(8, 'Password must be at least 8 characters long'),
   role: z
-    .enum(
-      [UserRole.Admin, UserRole.Staff, UserRole.Tenant],
-      "Role must be one of 'Admin', 'Staff', or 'Tenant'"
-    )
+    .enum(UserRole, "Role must be one of 'Admin', 'Staff', or 'Tenant'")
     .default(UserRole.Tenant),
 });
 
@@ -287,7 +301,7 @@ export const UpdateUserSchema = z
       .min(8, 'Password must be at least 8 characters long')
       .optional(),
     role: z
-      .enum([UserRole.Admin, UserRole.Staff, UserRole.Tenant])
+      .enum(UserRole)
       .optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {

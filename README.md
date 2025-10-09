@@ -224,9 +224,6 @@ PUT  /api/v1/receipts/:id
 
 ### ❌ **Planned Endpoints**
 ```
-# Authentication
-POST /api/v1/auth/register
-
 # Rooms
 GET    /api/v1/rooms
 GET    /api/v1/rooms/:id
@@ -271,7 +268,6 @@ DELETE /api/v1/invoices/:id
 - ❌ Room management API
 - ❌ Billing system API
 - ❌ Invoice management API
-- ❌ User registration endpoint
 
 ## Contributing
 Please read [CONTRIBUTION_GUIDELINE.md](./CONTRIBUTION_GUIDELINE.md) for details on our code of conduct and the process for submitting pull requests.
