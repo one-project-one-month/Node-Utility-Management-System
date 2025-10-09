@@ -17,7 +17,7 @@
     "postinstall": "prisma generate",
     "format": "prettier --write 'src/**/*.{ts,js,json}'",
     "lint": "eslint src/ --ext .ts",
-    "lint-fix": "eslint src/ --ext .ts --fix"
+    "lint:fix": "eslint src/ --ext .ts --fix"
   },
   "keywords": [],
   "author": "",
