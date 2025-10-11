@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const PaginationQuerySchema = z.object({
+export const PaginationQueryType = z.object({
   page: z
     .string()
     .regex(/^\d+$/, 'Page must be a number') // ensure numeric string

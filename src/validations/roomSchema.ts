@@ -1,6 +1,6 @@
 import z from 'zod';
 import { RoomStatus } from '../../generated/prisma';
-import { PaginationQuerySchema } from './paginationSchema';
+import {  PaginationQueryType } from './paginationSchema';
 
 //Add Room ID Schema (for param validation)
 export const RoomIdSchema = z.object({
@@ -41,7 +41,7 @@ export const UpdateRoomSchema = z.object({
 });
 
 //Add Query Schema (for filtering and pagination)
-export const GetAllRoomSchema = PaginationQuerySchema.extend({
+export const GetAllRoomSchema = PaginationQueryType.extend({
   room_no: z.string().optional(),
   floor: z.number().int().optional(),
   status: z
@@ -60,8 +60,8 @@ export const GetAllRoomSchema = PaginationQuerySchema.extend({
 
 
 //Type inference
-export type CreateRoomSchema = z.infer<typeof CreateRoomSchema>;
-export type UpdateRoomSchema = z.infer<typeof UpdateRoomSchema>;
-export type RoomIdSchema = z.infer<typeof RoomIdSchema>;
-export type GetAllRoomSchema = z.infer<typeof GetAllRoomSchema>;
+export type CreateRoomType = z.infer<typeof CreateRoomSchema>;
+export type UpdateRoomType = z.infer<typeof UpdateRoomSchema>;
+export type RoomIdType = z.infer<typeof RoomIdSchema>;
+export type GetAllRoomType = z.infer<typeof GetAllRoomSchema>;
 

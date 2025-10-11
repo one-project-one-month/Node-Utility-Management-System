@@ -1,9 +1,9 @@
 import { BadRequestError, NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
-import { CreateRoomSchema, UpdateRoomSchema, RoomIdSchema, GetAllRoomSchema } from '../validations/roomSchema';
+import { CreateRoomType, UpdateRoomType, RoomIdType, GetAllRoomType } from '../validations/roomSchema';
 import { Prisma } from '../../generated/prisma';
 
-export async function getAllRoomsService(query: any) {
+export async function getAllRoomsService(query: GetAllRoomType) {
   const whereClause: Prisma.RoomWhereInput = {};
 
   // Optional filters
@@ -60,7 +60,7 @@ export async function getRoomService(roomId: string) {
   return room;
 }
 
-export async function createRoomService(data: CreateRoomSchema) {
+export async function createRoomService(data: CreateRoomType) {
   const existingRoom = await prisma.room.findFirst({
     where: { room_no: data.room_no, floor: data.floor }, 
   });
@@ -71,7 +71,7 @@ export async function createRoomService(data: CreateRoomSchema) {
   return room;
 }
 
-export async function updateRoomService(roomId: string, data: UpdateRoomSchema) {
+export async function updateRoomService(roomId: string, data: UpdateRoomType) {
   const existingRoom = await prisma.room.findUnique({ where: { id: roomId } });
   if (!existingRoom) throw new NotFoundError('Room not found');
 

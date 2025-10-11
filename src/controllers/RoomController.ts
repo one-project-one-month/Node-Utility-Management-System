@@ -16,7 +16,7 @@ export async function getAllRoomsController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result = await getAllRoomsService(req.query);
+    const result = await getAllRoomsService(req.validatedQuery);
     successResponse(res, 'Rooms fetched successfully', result);
   } catch (error) {
     next(error);
