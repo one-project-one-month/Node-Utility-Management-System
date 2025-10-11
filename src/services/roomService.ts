@@ -82,10 +82,10 @@ export async function updateRoomService(roomId: string, data: UpdateRoomSchema) 
   return updatedRoom;
 }
 
-export async function deleteRoomService(roomId: string) {
-  const existingRoom = await prisma.room.findUnique({ where: { id: roomId } });
-  if (!existingRoom) throw new NotFoundError('Room not found');
+// export async function deleteRoomService(roomId: string) {
+//   const existingRoom = await prisma.room.findUnique({ where: { id: roomId } });
+//   if (!existingRoom) throw new NotFoundError('Room not found');
 
-  const deletedRoom = await prisma.room.delete({ where: { id: roomId } });
-  return deletedRoom;
-}
+//   const deletedRoom = await prisma.room.delete({ where: { id: roomId } });
+//   return deletedRoom;
+// }

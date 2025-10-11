@@ -4,7 +4,7 @@ import {
   getRoomController,
   createRoomController,
   updateRoomController,
-  deleteRoomController,
+  // deleteRoomController,
 } from '../controllers/RoomController';
 import {
   validateRequestBody,
@@ -51,11 +51,11 @@ router.put(
   updateRoomController
 );
 
-router.delete(
-  '/:roomId',
-  hasRole(['Admin']),
-  validateRequestParams(RoomIdSchema),
-  deleteRoomController
-);
+// router.delete(
+//   '/:roomId',
+//   hasRole(['Admin']),
+//   validateRequestParams(RoomIdSchema),
+//   deleteRoomController
+// );
 
 export default router;

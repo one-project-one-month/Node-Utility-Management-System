@@ -4,7 +4,7 @@ import {
   getRoomService,
   createRoomService,
   updateRoomService,
-  deleteRoomService,
+  // deleteRoomService,
 } from '../services/roomService';
 import { successResponse } from '../common/apiResponse';
 import { BadRequestError } from '../common/errors';
@@ -71,19 +71,18 @@ export async function updateRoomController(
   }
 }
 
-// Delete room
-export async function deleteRoomController(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
-  try {
-    const { id } = req.params;
-    if (!id) throw new BadRequestError('Valid Room ID is required');
+// export async function deleteRoomController(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ): Promise<void> {
+//   try {
+//     const { id } = req.params;
+//     if (!id) throw new BadRequestError('Valid Room ID is required');
 
-    const deletedRoom = await deleteRoomService(id);
-    successResponse(res, 'Room deleted successfully', deletedRoom);
-  } catch (error) {
-    next(error);
-  }
-}
+//     const deletedRoom = await deleteRoomService(id);
+//     successResponse(res, 'Room deleted successfully', deletedRoom);
+//   } catch (error) {
+//     next(error);
+//   }
+// }
