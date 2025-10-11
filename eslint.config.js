@@ -1,7 +1,7 @@
 const js = require('@eslint/js');
-const ts = require('@typescript-eslint/eslint-plugin');
+const tsPlugin = require('@typescript-eslint/eslint-plugin');
 const tsParser = require('@typescript-eslint/parser');
-const prettier = require('eslint-plugin-prettier');
+const prettierPlugin = require('eslint-plugin-prettier');
 const configPrettier = require('eslint-config-prettier');
 
 module.exports = [
@@ -16,11 +16,11 @@ module.exports = [
       },
     },
     plugins: {
-      '@typescript-eslint': ts,
-      prettier,
+      '@typescript-eslint': tsPlugin,
+      prettier: prettierPlugin,
     },
     rules: {
-      ...ts.configs.recommended.rules,
+      ...tsPlugin.configs.recommended.rules,
       'prettier/prettier': 'error',
       'no-console': 'off',
       'no-undef': 'off',

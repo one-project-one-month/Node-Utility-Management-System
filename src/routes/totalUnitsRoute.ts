@@ -22,7 +22,11 @@ import { PaginationQuerySchema } from '../validations/paginationSchema';
 const router = Router();
 
 // Get all total-units
-router.get('/', validateRequestQuery(PaginationQuerySchema) ,getAllTotalUnitsController);
+router.get(
+  '/',
+  validateRequestQuery(PaginationQuerySchema),
+  getAllTotalUnitsController
+);
 
 // Get total-units by bill id
 router.get(

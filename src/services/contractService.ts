@@ -19,7 +19,8 @@ export const createContractService = async (data: CreateContractSchemaType) => {
     where: { id: data.tenant_id },
     select: { id: true, room_id: true },
   });
-  if (existingTenant?.room_id) throw new BadRequestError('Room already has a tenant');
+  if (existingTenant?.room_id)
+    throw new BadRequestError('Room already has a tenant');
   if (!existingTenant?.id) throw new NotFoundError('Tenant not found');
 
   // check contract type exists
@@ -34,7 +35,8 @@ export const createContractService = async (data: CreateContractSchemaType) => {
     where: { tenant_id: data.tenant_id },
     select: { id: true },
   });
-  if (existingContract) throw new BadRequestError('Tenant already has a contract');
+  if (existingContract)
+    throw new BadRequestError('Tenant already has a contract');
 
   return await prisma.contract.create({
     data,
@@ -45,7 +47,14 @@ export const updateContractService = async (
   contractId: string,
   data: UpdateContractSchemaType
 ) => {
-  const { room_id, contract_type_id, tenant_id, created_date, expiry_date, updated_date } = data;
+  const {
+    room_id,
+    contract_type_id,
+    tenant_id,
+    created_date,
+    expiry_date,
+    updated_date,
+  } = data;
   // Check if contract exists
   const existingContract = await prisma.contract.findUnique({
     where: { id: contractId },
@@ -71,7 +80,7 @@ export const updateContractService = async (
     select: { id: true },
   });
   if (!contractType) throw new NotFoundError('Contract type not found');
-  
+
   return await prisma.contract.update({
     where: { id: contractId },
     data: {

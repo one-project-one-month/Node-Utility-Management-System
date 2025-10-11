@@ -10,13 +10,13 @@ import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from '../middlewares/validationMiddlware'; 
+} from '../middlewares/validationMiddlware';
 
 import {
   CreateRoomSchema,
   UpdateRoomSchema,
   RoomIdSchema,
-  GetAllRoomSchema,
+  GetAllRoomsQuerySchema,
 } from '../validations/roomSchema';
 import { hasRole } from '../middlewares/authMiddleware';
 
@@ -32,7 +32,7 @@ router.post(
 router.get(
   '/',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(GetAllRoomSchema),
+  validateRequestQuery(GetAllRoomsQuerySchema),
   getAllRoomsController
 );
 

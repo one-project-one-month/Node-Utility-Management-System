@@ -72,19 +72,19 @@ export async function getReceiptHistoriesByTenantIdController(
   next: NextFunction
 ): Promise<void> {
   try {
-       const result = await getReceiptHistoriesByTenantIdService(
-         req.validatedParams.tenantId,
-         req.validatedQuery
-       );
+    const result = await getReceiptHistoriesByTenantIdService(
+      req.validatedParams.tenantId,
+      req.validatedQuery
+    );
 
-       if (!result.receiptHistories || !result.receiptHistories.length)
-         return next(new NotFoundError('Receipt histories are not found'));
+    if (!result.receiptHistories || !result.receiptHistories.length)
+      return next(new NotFoundError('Receipt histories are not found'));
 
-       successResponse(
-         res,
-         'Receipt histories by tenant id fetched successfully',
-         result
-       );
+    successResponse(
+      res,
+      'Receipt histories by tenant id fetched successfully',
+      result
+    );
   } catch (error) {
     return next(error);
   }
