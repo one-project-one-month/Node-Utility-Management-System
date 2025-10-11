@@ -4,6 +4,8 @@ import {
   createBillService,
   getAllBillsService,
   getBillService,
+  getTanentBillHistoryService,
+  getTanentBillLatestService,
   updateBillService,
 } from '../services/billService';
 
@@ -14,7 +16,6 @@ export async function createBillController(
 ): Promise<void> {
   try {
     const newBill = await createBillService(req.validatedBody);
-
     successResponse(res, 'Bill created successfully', { bill: newBill }, 201);
   } catch (error) {
     next(error);
@@ -27,8 +28,13 @@ export async function getAllBillsController(
   next: NextFunction
 ) {
   try {
-    const bills = await getAllBillsService(req.validatedQuery);
-    successResponse(res, 'Bill fetched successfully', { bills }, 201);
+    const result = await getAllBillsService(req.validatedQuery);
+    successResponse(
+      res,
+      'Bill fetched successfully',
+      { bills: result.bills, pagination: result.pagination },
+      201
+    );
   } catch (error) {
     next(error);
   }
@@ -41,7 +47,7 @@ export async function updateBillController(
 ): Promise<void> {
   try {
     const updateBill = await updateBillService(
-      req.validatedParams.bill_id,
+      req.validatedParams.billId,
       req.validatedBody
     );
 
@@ -75,5 +81,36 @@ export async function getBillController(
     );
   } catch (error) {
     return next(error);
+  }
+}
+
+//For tenant to view their bills
+
+export async function getTanentBillLatestController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const bills = await getTanentBillLatestService(req.validatedParams);
+    successResponse(res, 'Bill fetched successfully', { bills }, 201);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getTanentBillHistoryController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const bills = await getTanentBillHistoryService(
+      req.validatedParams,
+      req.validatedQuery
+    );
+    successResponse(res, 'Bill fetched successfully', { bills }, 201);
+  } catch (error) {
+    next(error);
   }
 }
