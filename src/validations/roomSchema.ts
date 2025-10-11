@@ -2,6 +2,12 @@ import z from 'zod';
 import { RoomStatus } from '../../generated/prisma';
 import { PaginationQuerySchema } from './paginationSchema';
 
+//Add Room ID Schema (for param validation)
+export const RoomIdSchema = z.object({
+  roomId: z.uuid({ version: 'v4' }),
+});
+
+
 export const CreateRoomSchema = z.object({
     room_no: z.number().int().min(1, 'Room number is required and choose a positive number in the list'),
     floor: z.number().int(),
@@ -32,11 +38,6 @@ export const UpdateRoomSchema = z.object({
 
 }).refine((data) => Object.keys(data).length > 0, {
     message: 'At least one field must be updated',
-});
-
-//Add Room ID Schema (for param validation)
-export const RoomIdSchema = z.object({
-  roomId: z.uuid({ version: 'v4' }),
 });
 
 //Add Query Schema (for filtering and pagination)

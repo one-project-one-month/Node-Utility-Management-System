@@ -30,10 +30,10 @@ export async function getRoomController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { id } = req.params;
-    if (!id) throw new BadRequestError('Valid Room ID is required');
+    const { roomId } = req.params;
+    if (!roomId) throw new BadRequestError(' Room ID is required');
 
-    const room = await getRoomService(id);
+    const room = await getRoomService(roomId);
     successResponse(res, 'Room fetched successfully', room);
   } catch (error) {
     next(error);
@@ -61,10 +61,10 @@ export async function updateRoomController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { id } = req.params;
-    if (!id) throw new BadRequestError('Valid Room ID is required');
+    const { roomId } = req.params;
+    if (!roomId) throw new BadRequestError(' Room ID is required');
 
-    const updatedRoom = await updateRoomService(id, req.body);
+    const updatedRoom = await updateRoomService(roomId, req.body);
     successResponse(res, 'Room updated successfully', updatedRoom);
   } catch (error) {
     next(error);
