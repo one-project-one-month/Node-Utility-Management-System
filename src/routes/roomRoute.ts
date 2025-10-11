@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import {
-  createRoomController,
   getAllRoomsController,
   getRoomController,
+  createRoomController,
   updateRoomController,
   deleteRoomController,
 } from '../controllers/RoomController';
@@ -16,7 +16,7 @@ import {
   CreateRoomSchema,
   UpdateRoomSchema,
   RoomIdSchema,
-  GetAllRoomQuerySchema,
+  GetAllRoomSchema,
 } from '../validations/roomSchema';
 import { hasRole } from '../middlewares/authMiddleware';
 
@@ -32,7 +32,7 @@ router.post(
 router.get(
   '/',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(GetAllRoomQuerySchema),
+  validateRequestQuery(GetAllRoomSchema),
   getAllRoomsController
 );
 

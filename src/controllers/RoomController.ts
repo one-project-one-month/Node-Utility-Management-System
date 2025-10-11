@@ -31,7 +31,7 @@ export async function getRoomController(
 ): Promise<void> {
   try {
     const { id } = req.params;
-    if (!id) throw new BadRequestError('Room ID is required');
+    if (!id) throw new BadRequestError('Valid Room ID is required');
 
     const room = await getRoomService(id);
     successResponse(res, 'Room fetched successfully', room);
@@ -62,7 +62,7 @@ export async function updateRoomController(
 ): Promise<void> {
   try {
     const { id } = req.params;
-    if (!id) throw new BadRequestError('Room ID is required');
+    if (!id) throw new BadRequestError('Valid Room ID is required');
 
     const updatedRoom = await updateRoomService(id, req.body);
     successResponse(res, 'Room updated successfully', updatedRoom);
@@ -79,7 +79,7 @@ export async function deleteRoomController(
 ): Promise<void> {
   try {
     const { id } = req.params;
-    if (!id) throw new BadRequestError('Room ID is required');
+    if (!id) throw new BadRequestError('Valid Room ID is required');
 
     const deletedRoom = await deleteRoomService(id);
     successResponse(res, 'Room deleted successfully', deletedRoom);

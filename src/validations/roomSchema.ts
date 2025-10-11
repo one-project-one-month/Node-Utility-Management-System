@@ -13,9 +13,9 @@ export const CreateRoomSchema = z.object({
     
     //Relations
     tenant_id: z.uuid({ version: 'v4' }).optional().nullable(),
-    contract_id: z.string().optional().nullable(),
-    bill_id: z.string().optional().nullable(),
-    customer_service_id: z.string().optional().nullable(),
+    contract_id: z.uuid({ version: 'v4' }).nullable(),
+    bill_id: z.uuid({ version: 'v4' }).optional().nullable(),
+    customer_service_id: z.uuid({ version: 'v4' }).optional().nullable(),
 
 });
 
@@ -53,7 +53,7 @@ export const GetAllRoomSchema = z.object({
 
 
 //Type inference
-export type CreateRoomType = z.infer<typeof CreateRoomSchema>;
+export type CreateRoomSchema = z.infer<typeof CreateRoomSchema>;
 export type UpdateRoomSchema = z.infer<typeof UpdateRoomSchema>;
 export type RoomIdSchema = z.infer<typeof RoomIdSchema>;
 export type GetAllRoomSchema = z.infer<typeof GetAllRoomSchema>;
