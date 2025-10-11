@@ -612,6 +612,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
   /api/v1/auth/refresh-token:
     post:
       tags:
@@ -657,6 +660,9 @@ paths:
                       message:
                         type: string
                         example: Refresh token is required
+                      status:
+                        type: integer
+                        example: 401
 
   # User Endpoints
   /api/v1/users:
@@ -756,6 +762,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
     post:
       tags:
         - Users
@@ -802,6 +811,9 @@ paths:
                       message:
                         type: string
                         example: User with this email already exists
+                      status:
+                        type: integer
+                        example: 400
         401:
           description: Unauthorized
           content:
@@ -814,6 +826,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -826,6 +841,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
   /api/v1/users/{userId}:
     get:
       tags:
@@ -874,6 +892,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin role required
           content:
@@ -886,6 +907,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: User not found
           content:
@@ -898,6 +922,9 @@ paths:
                       message:
                         type: string
                         example: User not found
+                      status:
+                        type: integer
+                        example: 404
     put:
       tags:
         - Users
@@ -952,6 +979,9 @@ paths:
                       message:
                         type: string
                         example: Validation failed
+                      status:
+                        type: integer
+                        example: 400
                       details:
                         type: array
                         items:
@@ -975,6 +1005,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: User not found
           content:
@@ -987,6 +1020,9 @@ paths:
                       message:
                         type: string
                         example: User not found
+                      status:
+                        type: integer
+                        example: 404
     delete:
       tags:
         - Users
@@ -1031,6 +1067,9 @@ paths:
                       message:
                         type: string
                         example: User not found
+                      status:
+                        type: integer
+                        example: 404
 
   # Customer Service Endpoints
   /api/v1/tenants/{id}/customer-services/create:
@@ -1088,6 +1127,9 @@ paths:
                       message:
                         type: string
                         example: Validation failed
+                      status:
+                        type: integer
+                        example: 400
         404:
           description: Tenant not found
           content:
@@ -1101,6 +1143,7 @@ paths:
                         type: string
                         example: Tenant not found
                       status:
+                        type: integer
                         example: 404
   /api/v1/tenants/{id}/customer-services/history/{status}:
     get:
@@ -1284,6 +1327,10 @@ paths:
                       message:
                         type: string
                         example: 'Access token is required'
+                      status:
+                        type: integer
+                        example: 401
+                        
         403:
           description: Forbidden - Admin or Staff only
           content:
@@ -1346,6 +1393,9 @@ paths:
                       message:
                         type: string
                         example: No customer service found for Id-c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
+                      status:
+                        type: integer
+                        example: 404
     put:
       tags:
         - Customer Services
@@ -1509,6 +1559,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -1521,6 +1574,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
     post:
       tags:
         - Tenants
@@ -1578,6 +1634,9 @@ paths:
                             message:
                               type: string
                               example: Array fields must have the same length
+                            status:
+                              type: integer
+                              example: 400
         401:
           description: Unauthorized
           content:
@@ -1590,6 +1649,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -1602,6 +1664,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
   /api/v1/tenants/{tenantId}:
     get:
       tags:
@@ -1649,6 +1714,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -1661,6 +1729,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: Tenant not found
           content:
@@ -1673,6 +1744,9 @@ paths:
                       message:
                         type: string
                         example: Tenant not found
+                      status:
+                        type: integer
+                        example: 404
     put:
       tags:
         - Tenants
@@ -1725,6 +1799,9 @@ paths:
                       message:
                         type: string
                         example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
         401:
           description: Unauthorized
           content:
@@ -1737,6 +1814,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -1749,6 +1829,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: Tenant not found
           content:
@@ -1761,6 +1844,9 @@ paths:
                       message:
                         type: string
                         example: Tenant not found
+                      status:
+                        type: integer
+                        example: 404
 
   # Receipt Endpoints
   /api/v1/receipts:
@@ -1853,6 +1939,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -1865,6 +1954,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: No receipts found
           content:
@@ -1877,6 +1969,9 @@ paths:
                       message:
                         type: string
                         example: No receipts found
+                      status:
+                        type: integer
+                        example: 404
     post:
       tags:
         - Receipts
@@ -1923,6 +2018,9 @@ paths:
                       message:
                         type: string
                         example: Receipt already exists for this invoice
+                      status:
+                        type: integer
+                        example: 400
         401:
           description: Unauthorized
           content:
@@ -1935,6 +2033,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -1947,6 +2048,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: Invoice not found
           content:
@@ -1959,6 +2063,9 @@ paths:
                       message:
                         type: string
                         example: Invoice not found
+                      status:
+                        type: integer
+                        example: 404
   /api/v1/receipts/{id}:
     get:
       tags:
@@ -2006,6 +2113,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -2018,6 +2128,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: Receipt not found
           content:
@@ -2030,6 +2143,9 @@ paths:
                       message:
                         type: string
                         example: Receipt not found
+                      status:
+                        type: integer
+                        example: 404
     put:
       tags:
         - Receipts
@@ -2082,6 +2198,9 @@ paths:
                       message:
                         type: string
                         example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
         401:
           description: Unauthorized
           content:
@@ -2094,6 +2213,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -2106,6 +2228,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: Receipt not found
           content:
@@ -2118,6 +2243,9 @@ paths:
                       message:
                         type: string
                         example: Receipt not found
+                      status:
+                        type: integer
+                        example: 404
   /api/v1/receipts/invoice/{invoiceId}:
     get:
       tags:
@@ -2165,6 +2293,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -2177,6 +2308,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: Receipt not found for this invoice
           content:
@@ -2189,6 +2323,9 @@ paths:
                       message:
                         type: string
                         example: Receipt not found for this invoice
+                      status:
+                        type: integer
+                        example: 404
   /api/v1/tenants/{tenantId}/receipts/latest:
     get:
       tags:
@@ -2236,6 +2373,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         404:
           description: Latest receipt not found or tenant not found
           content:
@@ -2248,6 +2388,9 @@ paths:
                       message:
                         type: string
                         example: Latest receipt not found
+                      status:
+                        type: integer
+                        example: 404
   /api/v1/tenants/{tenantId}/receipts/history:
     get:
       tags:
@@ -2338,6 +2481,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         404:
           description: Receipt histories not found or tenant not found
           content:
@@ -2350,6 +2496,9 @@ paths:
                       message:
                         type: string
                         example: Receipt histories are not found
+                      status:
+                        type: integer
+                        example: 404
 
   # Total Units Endpoints
   /api/v1/total-units:
@@ -2434,6 +2583,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -2446,6 +2598,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: No total units found
           content:
@@ -2458,6 +2613,9 @@ paths:
                       message:
                         type: string
                         example: No total units found
+                      status:
+                        type: integer
+                        example: 404
     post:
       tags:
         - Total Units
@@ -2504,6 +2662,9 @@ paths:
                       message:
                         type: string
                         example: Total-units already exists for this bill
+                      status:
+                        type: integer
+                        example: 400
         401:
           description: Unauthorized
           content:
@@ -2516,6 +2677,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -2528,6 +2692,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: Bill not found
           content:
@@ -2540,6 +2707,9 @@ paths:
                       message:
                         type: string
                         example: Bill not found
+                      status:
+                        type: integer
+                        example: 404
 
   /api/v1/total-units/{id}:
     get:
@@ -2588,6 +2758,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -2600,6 +2773,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: Total units not found
           content:
@@ -2612,6 +2788,9 @@ paths:
                       message:
                         type: string
                         example: Total-units not found
+                      status:
+                        type: integer
+                        example: 404
     put:
       tags:
         - Total Units
@@ -2664,6 +2843,9 @@ paths:
                       message:
                         type: string
                         example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
         401:
           description: Unauthorized
           content:
@@ -2676,6 +2858,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -2688,6 +2873,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: Total units not found
           content:
@@ -2700,6 +2888,9 @@ paths:
                       message:
                         type: string
                         example: Total-units not found
+                      status:
+                        type: integer
+                        example: 404
 
   /api/v1/total-units/bills/{billId}:
     get:
@@ -2748,6 +2939,9 @@ paths:
                       message:
                         type: string
                         example: Access token is required
+                      status:
+                        type: integer
+                        example: 401
         403:
           description: Forbidden - Admin or Staff role required
           content:
@@ -2760,6 +2954,9 @@ paths:
                       message:
                         type: string
                         example: 'Required roles: Admin, Staff'
+                      status:
+                        type: integer
+                        example: 403
         404:
           description: Total units not found for this bill
           content:
@@ -2772,3 +2969,6 @@ paths:
                       message:
                         type: string
                         example: Total-units by bill id not found
+                      status:
+                        type: integer
+                        example: 404

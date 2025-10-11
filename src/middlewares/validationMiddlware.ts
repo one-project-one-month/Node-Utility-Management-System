@@ -20,7 +20,7 @@ const validate = (props: ValidateProps) => {
           : req.query;
 
     const validation = schema.safeParse(dataToValidate);
-    
+
     if (!validation.success) {
       const formattedErrors = validation.error.issues.map((err) => ({
         path: err.path.join('.'),

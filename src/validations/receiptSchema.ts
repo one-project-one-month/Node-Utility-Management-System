@@ -1,4 +1,4 @@
-import * as z from "zod";
+import * as z from 'zod';
 import { PaymentMethod } from '../../generated/prisma';
 import { PaginationQuerySchema } from './paginationSchema';
 
@@ -45,7 +45,8 @@ export const UpdateReceiptSchema = z
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
-  }).strict();
+  })
+  .strict();
 
 export type GetReceiptParamType = z.infer<typeof GetReceiptParamSchema>;
 export type GetReceiptByInvoiceParamType = z.infer<
