@@ -1,12 +1,12 @@
 import * as z from 'zod';
 import { UserRole } from '../../generated/prisma';
-import { PaginationQueryType } from './paginationSchema';
+import { PaginationQuerySchema } from './paginationSchema';
 
 export const GetUserParamSchema = z.object({
   userId: z.uuid({ version: 'v4' }),
 });
 
-export const GetAllUsersQuerySchema = PaginationQueryType.extend({
+export const GetAllUsersQuerySchema = PaginationQuerySchema.extend({
   role: z
     .enum(UserRole, "Role must be one of 'Admin', 'Staff', or 'Tenant")
     .optional(),
