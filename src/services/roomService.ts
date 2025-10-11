@@ -61,7 +61,7 @@ export async function getRoomService(roomId: string) {
 
 export async function createRoomService(data: CreateRoomType) {
   const existingRoom = await prisma.room.findFirst({
-    where: { room_no: data.room_no, floor: data.floor },
+    where: { room_no: data.room_no, floor: data.floor }
   });
 
   if (existingRoom)
