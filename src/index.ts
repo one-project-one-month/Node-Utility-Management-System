@@ -16,6 +16,7 @@ import receiptRoute from './routes/receiptRoute';
 import serviceRoute from './routes/serviceRoute';
 import tenantRoute from './routes/tenantRoute';
 import userRoute from './routes/userRoute';
+import billRoute from './routes/billRoute';
 import contractTypeRoute from './routes/contractTypeRoute';
 import totalUnitsRoute from './routes/totalUnitsRoute';
 import contractRoute from './routes/contractRoute';
@@ -40,16 +41,21 @@ swaggerDocs(app, port || 3000);
 
 // ROUTES
 app.use('/api/v1/auth', authRoute);
+
 app.use('/api/v1/users', isAuthenticated, userRoute); // user endpoint
+app.use('/api/v1/tenants', serviceRoute);
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
+app.use('/api/v1/total-units', isAuthenticated, totalUnitsRoute); //total-units endpoint
+app.use('/api/v1', isAuthenticated, billRoute);
+app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
+app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
+//tenant endpoint
 app.use(
   '/api/v1/total-units',
   isAuthenticated,
   hasRole(['Admin', 'Staff']),
   totalUnitsRoute
 ); //total-units endpoint
-app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
-app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
 app.use('/api/v1/contract-types', isAuthenticated, contractTypeRoute); // contract type endpoint
 app.use('/api/v1', isAuthenticated, contractRoute); // contract endpoint
 
