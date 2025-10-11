@@ -16,3 +16,5 @@ export const PaginationQuerySchema = z.object({
     .optional()
     .default(10),
 }).strict();
+
+export type PaginationQueryType = z.infer<typeof PaginationQuerySchema>;
