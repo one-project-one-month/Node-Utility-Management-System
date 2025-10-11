@@ -4,7 +4,7 @@ import { RoomStatus } from '../../generated/prisma';
 export const CreateRoomSchema = z.object({
     room_no: z.number().int().min(1, 'Room number is required and choose a positive number in the list'),
     floor: z.number().int(),
-    dimension: z.string().min(1, 'Dimension is required'),
+    dimension: z.string(),
     no_of_bed_room: z.number().int().min(1, 'Number of bedrooms is required and must be at least 1'),
     status: z.enum(RoomStatus,'Status must be one of Available, Rented, Purchased, InMaintenance'),
     selling_price: z.number().optional(), // Prisma Decimal maps to number in TS
@@ -12,7 +12,7 @@ export const CreateRoomSchema = z.object({
     description: z.string().optional().nullable(),
     
     //Relations
-    tenant_id: z.string().optional().nullable(),
+    tenant_id: z.uuid({ version: 'v4' }).optional().nullable(),
     contract_id: z.string().optional().nullable(),
     bill_id: z.string().optional().nullable(),
     customer_service_id: z.string().optional().nullable(),
@@ -24,10 +24,10 @@ export const UpdateRoomSchema = z.object({
     floor: z.number().int().optional(),
     dimension: z.string().optional(),
     no_of_bed_room: z.number().int().optional(),
-    status: z.enum([RoomStatus.Available, RoomStatus.Rented, RoomStatus.Purchased, RoomStatus.InMaintenance]).optional(),
+    status: z.enum(RoomStatus).optional(),
     selling_price: z.number().optional(), // Prisma Decimal maps to number in TS
     max_no_of_people: z.number().int().optional(),
-    description: z.string().optional().nullable(),
+    description: z.string().optional(),
 
 }).refine((data) => Object.keys(data).length > 0, {
     message: 'At least one field must be updated',
@@ -35,24 +35,26 @@ export const UpdateRoomSchema = z.object({
 
 //Add Room ID Schema (for param validation)
 export const RoomIdSchema = z.object({
-  id: z.string().uuid('Invalid room ID format'),
+  roomId: z.uuid({ version: 'v4' }),
 });
 
 //Add Query Schema (for filtering and pagination)
-export const GetAllRoomQuerySchema = z.object({
+export const GetAllRoomSchema = z.object({
+  room_no: z.string().optional(),
+  floor: z.number().int().optional(),
   status: z
-    .enum([
-      RoomStatus.Available,
-      RoomStatus.Rented,
-      RoomStatus.Purchased,
-      RoomStatus.InMaintenance,
-    ])
+    .enum(
+    RoomStatus, "Room Status must be one of 'Available', 'Rented', 'Purchased', 'InMaintenance"
+    )
     .optional(),
-  floor: z.string().optional(),
   page: z.string().optional(),
   limit: z.string().optional(),
 });
 
+
 //Type inference
 export type CreateRoomType = z.infer<typeof CreateRoomSchema>;
-export type UpdateRoomType = z.infer<typeof UpdateRoomSchema>;
+export type UpdateRoomSchema = z.infer<typeof UpdateRoomSchema>;
+export type RoomIdSchema = z.infer<typeof RoomIdSchema>;
+export type GetAllRoomSchema = z.infer<typeof GetAllRoomSchema>;
+
