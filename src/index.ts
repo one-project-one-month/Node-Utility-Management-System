@@ -21,7 +21,6 @@ import totalUnitsRoute from './routes/totalUnitsRoute';
 import contractRoute from './routes/contractRoute';
 import roomRoute from './routes/roomRoute';
 
-
 dotenv.config();
 
 const app = express();
