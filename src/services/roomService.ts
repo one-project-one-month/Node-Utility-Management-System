@@ -22,7 +22,6 @@ export async function getAllRoomsService(query: GetAllRoomsQueryType) {
     where: whereClause,
     include: {
       tenant: true,
-      contract: true,
       bill: true,
       customer_service: true,
     },
