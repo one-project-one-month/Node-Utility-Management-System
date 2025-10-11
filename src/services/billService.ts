@@ -1,5 +1,4 @@
 import { genetatedRentalFee } from './../common/utils/generatedRentalFee';
-import { ContractType } from './../../generated/prisma/index.d';
 import prisma from '../lib/prismaClient';
 import {
   CreateBillType,

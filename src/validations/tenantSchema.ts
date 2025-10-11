@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 export const CreateTenantSchema = z
   .object({
@@ -8,7 +8,6 @@ export const CreateTenantSchema = z
     emails: z
       .array(z.email('Invalid email'))
       .nonempty('Emails cannot be empty'),
-
     nrcs: z
       .array(z.string().min(3, 'NRC is required'))
       .nonempty('NRCs cannot be empty'),
@@ -77,7 +76,6 @@ export const UpdateTenantSchema = (expectedLengths: {
         message: 'At least one field must be provided for update',
       }
     )
-
     .refine(
       (data) => {
         const { names, emails, nrcs } = data;

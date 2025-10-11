@@ -6,7 +6,7 @@ import corsOptions from './common/auth/corsOptions';
 import { crediential } from './common/auth/credential';
 import { customLogger } from './common/utils/customLogger';
 import swaggerDocs from './config/swagger';
-import { isAuthenticated } from './middlewares/authMiddleware';
+import { hasRole, isAuthenticated } from './middlewares/authMiddleware';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
 import { deployedUrls } from './common/auth/allowedOrigins';
 
@@ -17,7 +17,9 @@ import serviceRoute from './routes/serviceRoute';
 import tenantRoute from './routes/tenantRoute';
 import userRoute from './routes/userRoute';
 import billRoute from './routes/billRoute';
+import contractTypeRoute from './routes/contractTypeRoute';
 import totalUnitsRoute from './routes/totalUnitsRoute';
+import contractRoute from './routes/contractRoute';
 
 dotenv.config();
 
@@ -39,14 +41,23 @@ swaggerDocs(app, port || 3000);
 
 // ROUTES
 app.use('/api/v1/auth', authRoute);
-app.use('/api/v1/users', isAuthenticated, userRoute);
-app.use('/api/v1/tenants', serviceRoute);
 
+app.use('/api/v1/users', isAuthenticated, userRoute); // user endpoint
+app.use('/api/v1/tenants', serviceRoute);
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
 app.use('/api/v1/total-units', isAuthenticated, totalUnitsRoute); //total-units endpoint
 app.use('/api/v1', isAuthenticated, billRoute);
 app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
 app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
+//tenant endpoint
+app.use(
+  '/api/v1/total-units',
+  isAuthenticated,
+  hasRole(['Admin', 'Staff']),
+  totalUnitsRoute
+); //total-units endpoint
+app.use('/api/v1/contract-types', isAuthenticated, contractTypeRoute); // contract type endpoint
+app.use('/api/v1', isAuthenticated, contractRoute); // contract endpoint
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

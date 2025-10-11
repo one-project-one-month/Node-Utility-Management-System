@@ -28,21 +28,6 @@ export async function getAllReceiptsService(query: GetAllReceiptsQueryType) {
   // Get receipts with pagination and relations
   const receipts = await prisma.receipt.findMany({
     where: whereClause,
-    // include: {
-    //   invoice: {
-    //     include: {
-    //       bill: {
-    //         include: {
-    //           room: {
-    //             include: {
-    //               tenant: true,
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
     skip,
     take: limit,
     orderBy: { created_at: 'desc' },
@@ -260,21 +245,6 @@ export async function getReceiptHistoriesByTenantIdService(
   // Get receipts with pagination
   const receiptHistories = await prisma.receipt.findMany({
     where: whereClause,
-    // include: {
-    //   invoice: {
-    //     include: {
-    //       bill: {
-    //         include: {
-    //           room: {
-    //             include: {
-    //               tenant: true,
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
     skip,
     take: limit,
     orderBy: { created_at: 'desc' },

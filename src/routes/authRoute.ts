@@ -17,7 +17,6 @@ router.post(
   '/login',
   loginLimiter,
   validateRequestBody(LogInSchema),
-
   loginController
 );
 router.post('/logout', isAuthenticated, logoutController);
