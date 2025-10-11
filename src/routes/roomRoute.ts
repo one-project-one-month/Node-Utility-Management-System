@@ -37,14 +37,14 @@ router.get(
 );
 
 router.get(
-  '/:id', //matches controller param
+  '/:roomId', //matches controller param
   hasRole(['Admin', 'Staff']),
   validateRequestParams(RoomIdSchema),
   getRoomController
 );
 
 router.put(
-  '/:id',
+  '/:roomId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(RoomIdSchema),
   validateRequestBody(UpdateRoomSchema),
@@ -52,7 +52,7 @@ router.put(
 );
 
 router.delete(
-  '/:id',
+  '/:roomId',
   hasRole(['Admin']),
   validateRequestParams(RoomIdSchema),
   deleteRoomController
