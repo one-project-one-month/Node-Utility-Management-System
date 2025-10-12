@@ -23,7 +23,7 @@ import { hasRole } from '../middlewares/authMiddleware';
 const router = Router();
 
 router.post(
-  '/create',
+  '/',
   hasRole(['Admin', 'Staff']),
   validateRequestBody(CreateRoomSchema),
   createRoomController

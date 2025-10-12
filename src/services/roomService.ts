@@ -8,6 +8,7 @@ export async function getAllRoomsService(query: GetAllRoomsQueryType) {
 
   // Optional filters
   if (query.status) whereClause.status = query.status;
+  if (query.room_no) whereClause.room_no = Number(query.room_no);
   if (query.floor) whereClause.floor = Number(query.floor);
 
   // Pagination
@@ -29,6 +30,8 @@ export async function getAllRoomsService(query: GetAllRoomsQueryType) {
     take: limit,
     orderBy: { created_at: 'desc' },
   });
+
+  if (rooms.length === 0) throw new NotFoundError('No rooms found');
 
   return {
     rooms,

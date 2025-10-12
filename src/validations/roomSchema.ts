@@ -54,13 +54,6 @@ export const GetAllRoomsQuerySchema = PaginationQuerySchema.extend({
       "Room Status must be one of 'Available', 'Rented', 'Purchased', 'InMaintenance"
     )
     .optional(),
-  is_active: z
-    .string()
-    .refine((val) => val === 'true' || val === 'false', {
-      message: 'is_active must be either "true" or "false"',
-    })
-    .transform((val) => val === 'true')
-    .optional(),
 });
 //Type inference
 export type CreateRoomType = z.infer<typeof CreateRoomSchema>;
