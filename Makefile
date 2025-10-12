@@ -43,8 +43,7 @@ start: ## Start production server
 # =============================================================================
 
 db-setup: ## Complete database setup (generate + push + seed)
-	make db-generate
-	make db-push
+	make db-migrate
 	make db-seed
 
 db-generate: ## Generate Prisma client
