@@ -1,6 +1,6 @@
 import z from 'zod';
 import { RoomStatus } from '../../generated/prisma';
-import {  PaginationQuerySchema } from './paginationSchema';
+import { PaginationQuerySchema } from './paginationSchema';
 
 //Add Room ID Schema (for param validation)
 export const RoomIdSchema = z.object({
@@ -8,10 +8,16 @@ export const RoomIdSchema = z.object({
 });
 
 export const CreateRoomSchema = z.object({
-  room_no: z.number().int().min(1, 'Room number is required and choose a positive number in the list'),
+  room_no: z
+    .number()
+    .int()
+    .min(1, 'Room number is required and choose a positive number in the list'),
   floor: z.number().int(),
   dimension: z.string(),
-  no_of_bed_room: z.number().int().min(1, 'Number of bedrooms is required and must be at least 1'),
+  no_of_bed_room: z
+    .number()
+    .int()
+    .min(1, 'Number of bedrooms is required and must be at least 1'),
   status: z.enum(
     RoomStatus,
     'Status must be one of Available, Rented, Purchased, InMaintenance'
