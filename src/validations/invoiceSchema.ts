@@ -2,23 +2,12 @@ import z from 'zod';
 import { InvoiceStatus } from '../../generated/prisma';
 import { PaginationQuerySchema } from './paginationSchema';
 
-// id     String        @id @default(uuid())
-//   status InvoiceStatus
-
-//   // relations
-//   bill       Bill     @relation(fields: [bill_id], references: [id])
-//   bill_id    String   @unique
-//   created_at DateTime @default(now())
-//   updated_at DateTime @updatedAt
-
-//   receipt Receipt?
-
 export const GetTenantInvoiceParamSchema = z.object({
-  tenant_id: z.uuid({ version: 'v4' }),
+  tenantId: z.uuid({ version: 'v4' }),
 });
 
 export const GetInvoiceParamSchema = z.object({
-  invoice_id: z.uuid({ version: 'v4' }),
+  invoiceId: z.uuid({ version: 'v4' }),
 });
 
 export const GetInvoiceQuerySchema = PaginationQuerySchema.extend({
@@ -32,10 +21,14 @@ export const CreateInvoiceSchema = z.object({
   bill_id: z.uuid({ version: 'v4' }),
 });
 
-export const UpdateInvoiceSchema = z.object({
-  status: z.enum(InvoiceStatus).default('Pending').optional(),
-  bill_id: z.uuid({ version: 'v4' }).optional(),
-});
+export const UpdateInvoiceSchema = z
+  .object({
+    status: z.enum(InvoiceStatus).default('Pending').optional(),
+    bill_id: z.uuid({ version: 'v4' }),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    error: 'At least one field must be provided for update',
+  });
 
 export type GetTenantInvoiceParamType = z.infer<
   typeof GetTenantInvoiceParamSchema

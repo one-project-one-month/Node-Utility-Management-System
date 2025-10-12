@@ -24,19 +24,19 @@ import { hasRole } from '../middlewares/authMiddleware';
 const router = Router();
 
 router.post(
-  '/',
+  '/invoices',
   hasRole(['Admin', 'Staff']),
   validateRequestBody(CreateInvoiceSchema),
   createInvoiceController
 );
 router.get(
-  '/',
+  '/invoices',
   hasRole(['Admin', 'Staff']),
   validateRequestQuery(GetInvoiceQuerySchema),
   getAllInvoicesController
 );
 router.put(
-  '/:invoice_id',
+  '/invoices/:invoiceId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetInvoiceParamSchema),
   validateRequestBody(UpdateInvoiceSchema),
@@ -44,18 +44,18 @@ router.put(
 );
 
 router.get(
-  '/:invoice_id',
+  '/invoices/:invoiceId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetInvoiceParamSchema),
   getInvoiceController
 );
 router.get(
-  '/:tenant_id/invoices/latest',
+  '/tenants/:tenantId/invoices/latest',
   validateRequestParams(GetTenantInvoiceParamSchema),
   getTanentInvoiceLatestController
 );
 router.get(
-  '/:tenant_id/invoices/history',
+  '/tenants/:tenantId/invoices/history',
   validateRequestParams(GetTenantInvoiceParamSchema),
   validateRequestQuery(GetInvoiceQuerySchema),
   getTanentInvoiceHistoryController
