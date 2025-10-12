@@ -14,7 +14,10 @@
     "db:migrate": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "format": "prettier --write 'src/**/*.{ts,js,json}'",
+    "lint": "eslint src/ --ext .ts",
+    "lint:fix": "eslint src/ --ext .ts --fix"
   },
   "keywords": [],
   "author": "",
@@ -25,7 +28,7 @@
     "url": "git+https://github.com/one-project-one-month/Node-Utility-Management-System.git"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.2",
+    "@prisma/client": "^6.16.3",
     "@prisma/extension-accelerate": "2.0.2",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
@@ -55,11 +58,13 @@
     "@types/swagger-ui-express": "^4.1.8",
     "@types/uuid": "^10.0.0",
     "@types/yamljs": "^0.2.34",
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "prettier": "^3.6.2",
-    "prisma": "^6.16.2",
+    "prisma": "^6.16.3",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2"
   }

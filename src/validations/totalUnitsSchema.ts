@@ -1,4 +1,4 @@
-import * as z from "zod";
+import * as z from 'zod';
 
 export const GetTotalUnitsParamSchema = z.object({
   id: z.uuid({ version: 'v4' }),

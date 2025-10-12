@@ -20,6 +20,7 @@ import invoiceRoute from './routes/invoiceRoute';
 import contractTypeRoute from './routes/contractTypeRoute';
 import totalUnitsRoute from './routes/totalUnitsRoute';
 import contractRoute from './routes/contractRoute';
+import roomRoute from './routes/roomRoute';
 
 dotenv.config();
 
@@ -51,15 +52,15 @@ app.use(
   hasRole(['Admin', 'Staff']),
   totalUnitsRoute
 ); //total-units endpoint
-app.use('/api/v1', isAuthenticated, invoiceRoute);
-app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
-app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
+app.use('/api/v1/rooms', isAuthenticated, roomRoute);
 app.use('/api/v1/contract-types', isAuthenticated, contractTypeRoute); // contract type endpoint
+app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
+app.use('/api/v1', isAuthenticated, serviceRoute); //customer service end point
 app.use('/api/v1', isAuthenticated, contractRoute); // contract endpoint
+app.use('/api/v1', isAuthenticated, invoiceRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);
-
 app.get('/', (_req: Request, res: Response) => {
   const docsLinks = deployedUrls.map((url) => `${url}/docs`);
 

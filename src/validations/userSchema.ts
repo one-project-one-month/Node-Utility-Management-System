@@ -1,4 +1,4 @@
-import * as z from "zod";
+import * as z from 'zod';
 import { UserRole } from '../../generated/prisma';
 import { PaginationQuerySchema } from './paginationSchema';
 

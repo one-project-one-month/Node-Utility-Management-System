@@ -69,12 +69,7 @@ export const getAllContractController = async (
 ) => {
   try {
     const contracts = await getAllContractSrvice(req.validatedQuery);
-    successResponse(
-      res,
-      'All Contracts fetched successfully',
-       contracts ,
-      200
-    );
+    successResponse(res, 'All Contracts fetched successfully', contracts, 200);
   } catch (error) {
     return next(error);
   }
