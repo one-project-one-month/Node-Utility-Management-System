@@ -5,7 +5,7 @@ import {
   createRoomController,
   updateRoomController,
   // deleteRoomController,
-} from '../controllers/RoomController';
+} from '../controllers/roomController';
 import {
   validateRequestBody,
   validateRequestParams,

@@ -1,6 +1,10 @@
 import { BadRequestError, NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
-import { CreateRoomType, UpdateRoomType, RoomIdType, GetAllRoomsQueryType } from '../validations/roomSchema';
+import {
+  CreateRoomType,
+  UpdateRoomType,
+  GetAllRoomsQueryType,
+} from '../validations/roomSchema';
 import { Prisma } from '../../generated/prisma';
 
 export async function getAllRoomsService(query: GetAllRoomsQueryType) {
@@ -61,10 +65,9 @@ export async function getRoomService(roomId: string) {
   return room;
 }
 
-
 export async function createRoomService(data: CreateRoomType) {
   const existingRoom = await prisma.room.findFirst({
-    where: { room_no: data.room_no, floor: data.floor }
+    where: { room_no: data.room_no, floor: data.floor },
   });
 
   if (existingRoom)

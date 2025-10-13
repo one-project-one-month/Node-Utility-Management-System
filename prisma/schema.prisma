@@ -50,6 +50,16 @@ enum UserRole {
   Staff
 }
 
+enum RelationshipToTenant {
+  SPOUSE
+  PARENT
+  CHILD
+  SIBLING
+  RELATIVE
+  FRIEND
+  OTHER
+}
+
 model User {
   id            String   @id @default(uuid())
   user_name     String
@@ -69,22 +79,38 @@ model User {
 }
 
 model Tenant {
-  id            String   @id @default(uuid())
-  names         String[]
-  emails        String[]
-  nrcs          String[]
-  phone_nos     String[]
-  emergency_nos String[]
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  id           String   @id @default(uuid())
+  name         String
+  email        String
+  nrc          String
+  phone_no     String
+  emergency_no String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
   // relations
-  room_id  String    @unique
-  room     Room      @relation(fields: [room_id], references: [id])
-  user     User?
-  contract Contract? // typo fixed
+  room_id   String     @unique
+  room      Room       @relation(fields: [room_id], references: [id])
+  occupants Occupant[]
+  user      User?
+  contract  Contract? // typo fixed
 
   @@map("tenants")
+}
+
+model Occupant {
+  id                     String               @id @default(uuid())
+  name                   String
+  nrc                    String?
+  relationship_to_tenant RelationshipToTenant
+  created_at             DateTime             @default(now())
+  updated_at             DateTime             @updatedAt
+
+  // relations
+  tenant    Tenant @relation(fields: [tenant_id], references: [id])
+  tenant_id String
+
+  @@map("occupants")
 }
 
 model Room {
