@@ -217,13 +217,6 @@ export async function getTenantInvoiceHistoryService(
     },
   };
 
-  const selectedInvoice = {
-    id: true,
-    status: true,
-    bill_id: true,
-    created_at: true,
-    updated_at: true,
-  };
   // Calculate pagination
   const page = query.page || 1;
   const limit = query.limit || 10;
@@ -249,28 +242,23 @@ export async function getTenantInvoiceHistoryService(
   const totalPages = Math.ceil(totalCount / limit);
 
   // Get users with pagination
-  let invoices;
-  query.month && query.year
-    ? (invoices = await prisma.invoice.findMany({
-        where: {
-          ...whereClause,
-          created_at: {
-            gte: startDate,
-            lt: endDate,
-          },
-        },
-        select: selectedInvoice,
-        skip,
-        take: limit,
-        orderBy: { created_at: 'desc' },
-      }))
-    : (invoices = await prisma.invoice.findMany({
-        where: whereClause,
-        select: selectedInvoice,
-        skip,
-        take: limit,
-        orderBy: { created_at: 'desc' },
-      }));
+  const invoices = await prisma.invoice.findMany({
+    where:
+      query.month && query.year
+        ? { ...whereClause, created_at: { gte: startDate, lt: endDate } }
+        : whereClause,
+    select: {
+      id: true,
+      status: true,
+      bill_id: true,
+      created_at: true,
+      updated_at: true,
+    },
+    skip,
+    take: limit,
+    orderBy: { created_at: 'desc' },
+  });
+
   // Build pagination info
   const pagination = {
     count: invoices.length,
