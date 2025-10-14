@@ -18,7 +18,7 @@ export const UpdateTotalUnitsSchema = z
   .object({
     electricity_units: z.number().positive().optional(),
     water_units: z.number().positive().optional(),
-    bill_id: z.uuid({ version: 'v4' }).optional(),
+    bill_id: z.uuid({ version: 'v4' }),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',

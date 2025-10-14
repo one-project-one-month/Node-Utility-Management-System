@@ -1,0 +1,64 @@
+import { Router } from 'express';
+import {
+  validateRequestBody,
+  validateRequestParams,
+  validateRequestQuery,
+} from '../middlewares/validationMiddlware';
+import {
+  CreateInvoiceSchema,
+  GetInvoiceParamSchema,
+  GetInvoiceQuerySchema,
+  GetTenantInvoiceParamSchema,
+  UpdateInvoiceSchema,
+} from './../validations/invoiceSchema';
+import {
+  createInvoiceController,
+  getAllInvoicesController,
+  getInvoiceController,
+  getTanentInvoiceHistoryController,
+  getTanentInvoiceLatestController,
+  updateInvoiceController,
+} from './../controllers/invoiceController';
+import { hasRole } from '../middlewares/authMiddleware';
+
+const router = Router();
+
+router.post(
+  '/invoices',
+  hasRole(['Admin', 'Staff']),
+  validateRequestBody(CreateInvoiceSchema),
+  createInvoiceController
+);
+router.get(
+  '/invoices',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(GetInvoiceQuerySchema),
+  getAllInvoicesController
+);
+router.put(
+  '/invoices/:invoiceId',
+  hasRole(['Admin', 'Staff']),
+  validateRequestParams(GetInvoiceParamSchema),
+  validateRequestBody(UpdateInvoiceSchema),
+  updateInvoiceController
+);
+
+router.get(
+  '/invoices/:invoiceId',
+  hasRole(['Admin', 'Staff']),
+  validateRequestParams(GetInvoiceParamSchema),
+  getInvoiceController
+);
+router.get(
+  '/tenants/:tenantId/invoices/latest',
+  validateRequestParams(GetTenantInvoiceParamSchema),
+  getTanentInvoiceLatestController
+);
+router.get(
+  '/tenants/:tenantId/invoices/history',
+  validateRequestParams(GetTenantInvoiceParamSchema),
+  validateRequestQuery(GetInvoiceQuerySchema),
+  getTanentInvoiceHistoryController
+);
+
+export default router;
