@@ -6,8 +6,17 @@ import {
   GetAllRoomsQueryType,
 } from '../validations/roomSchema';
 import { Prisma } from '../../generated/prisma';
+import { Request } from 'express';
+import { generatePaginationData } from '../common/utils/pagination-helper';
 
-export async function getAllRoomsService(query: GetAllRoomsQueryType) {
+export async function getAllRoomsService(
+  query: GetAllRoomsQueryType,
+  req: Request
+) {
+  // Calculate pagination
+  const { page, limit } = query;
+  const skip = (page - 1) * limit;
+
   const whereClause: Prisma.RoomWhereInput = {};
 
   // Optional filters
@@ -15,39 +24,30 @@ export async function getAllRoomsService(query: GetAllRoomsQueryType) {
   if (query.room_no) whereClause.room_no = Number(query.room_no);
   if (query.floor) whereClause.floor = Number(query.floor);
 
-  // Pagination
-  const page = query.page ? Number(query.page) : 1;
-  const limit = query.limit ? Number(query.limit) : 10;
-  const skip = (page - 1) * limit; //amount of pages next page skip
-
-  const totalCount = await prisma.room.count({ where: whereClause });
-  const totalPages = Math.ceil(totalCount / limit);
-
-  const rooms = await prisma.room.findMany({
-    where: whereClause,
-    include: {
-      tenant: true,
-      bill: true,
-      customer_service: true,
-    },
-    skip,
-    take: limit,
-    orderBy: { created_at: 'desc' },
-  });
+  // Get rooms & totalCount with filters
+  const [rooms, totalCount] = await prisma.$transaction([
+    prisma.room.findMany({
+      where: whereClause,
+      include: {
+        tenant: true,
+        bill: true,
+        customer_service: true,
+      },
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+    }),
+    prisma.room.count({ where: whereClause }),
+  ]);
 
   if (rooms.length === 0) throw new NotFoundError('No rooms found');
 
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
+
   return {
     rooms,
-    pagination: {
-      count: rooms.length,
-      hasPrevPage: page > 1,
-      hasNextPage: page < totalPages,
-      page,
-      limit,
-      totalPages,
-      totalCount,
-    },
+    ...paginationData,
   };
 }
 

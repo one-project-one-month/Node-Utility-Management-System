@@ -15,8 +15,7 @@ export async function getAllUsersController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const filters = req.validatedQuery;
-    const result = await getAllUsersService(filters);
+    const result = await getAllUsersService(req.validatedQuery, req);
 
     if (!result || !result.users.length) {
       return next(new NotFoundError('No users found'));

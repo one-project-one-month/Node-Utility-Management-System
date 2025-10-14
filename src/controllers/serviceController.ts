@@ -40,7 +40,8 @@ export const serviceHistoryController = async (
   try {
     const result = await cutomerServiceHistory(
       req.validatedParams,
-      req.validatedQuery
+      req.validatedQuery,
+      req
     );
     successResponse(res, 'Fetch service history successfullly', result, 200);
   } catch (error) {
@@ -77,7 +78,7 @@ export const getAllServiceController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await getAllCustomerService(req.validatedQuery);
+    const result = await getAllCustomerService(req.validatedQuery, req);
     successResponse(res, 'Fetch customer services successfully', result, 200);
   } catch (error) {
     next(error);
