@@ -58,6 +58,7 @@ export async function getRoomService(roomId: string) {
       contract: true,
       bill: true,
       customer_service: true,
+      tenant: true,
     },
   });
 
