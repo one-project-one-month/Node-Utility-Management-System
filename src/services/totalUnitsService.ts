@@ -22,6 +22,23 @@ export async function getAllTotalUnitsService(
       skip,
       take: limit,
       orderBy: { created_at: 'desc' },
+      select:{
+        id: true,
+        electricity_units: true,
+        water_units: true,
+        created_at: true,
+        updated_at: true,
+        bill:{
+          select: {
+            room: {
+              select:{
+                room_no: true,
+                floor: true,
+                status: true,
+              }
+            }
+          }
+      }}
     }),
     prisma.totalUnits.count(),
   ]);
