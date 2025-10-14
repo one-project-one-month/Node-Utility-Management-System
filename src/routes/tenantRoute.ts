@@ -13,12 +13,13 @@ import {
 } from '../middlewares/validationMiddlware';
 
 import { hasRole } from '../middlewares/authMiddleware';
-import { validateUpdateTenantBody } from '../middlewares/validateUpdateTenantBody';
+
+import { PaginationQuerySchema } from '../validations/paginationSchema';
 import {
   CreateTenantSchema,
   GetTenantParamSchema,
+  UpdateTenantSchema,
 } from '../validations/tenantSchema';
-import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
 
@@ -47,7 +48,7 @@ router.put(
   '/:tenantId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetTenantParamSchema),
-  validateUpdateTenantBody,
+  validateRequestBody(UpdateTenantSchema),
   updateTenantController
 );
 
