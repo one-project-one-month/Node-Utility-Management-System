@@ -31,7 +31,7 @@ export async function createInvoiceService(body: CreateInvoiceType) {
     data: {
       status: body.status,
       bill_id: body.bill_id,
-      invoice_no: "INV-" + crypto.randomUUID().split('-')[0].toUpperCase(),
+      invoice_no: 'INV-' + crypto.randomUUID().split('-')[0].toUpperCase(),
       receipt: {
         create: {
           payment_method: 'Cash',
@@ -62,7 +62,7 @@ export async function getAllInvoicesService(query: GetInvoiceQueryType) {
   const limit = query.limit || 10;
   const skip = (page - 1) * limit;
 
-//   Get total count for pagination
+  //   Get total count for pagination
   let totalCount =
     query.month || query.year
       ? await prisma.invoice.count({
@@ -128,7 +128,9 @@ export async function updateInvoiceService(
   }
 
   if (body.status === 'Paid') {
-    throw new BadRequestError('Cannot update invoice to Paid status; it is set automatically upon receipt payment.');
+    throw new BadRequestError(
+      'Cannot update invoice to Paid status; it is set automatically upon receipt payment.'
+    );
   }
 
   if (body.status === 'Overdue' || body.status === 'Pending') {
@@ -231,7 +233,7 @@ export async function getTenantInvoiceHistoryService(
       : await prisma.invoice.count({ where: whereClause });
   const totalPages = Math.ceil(totalCount / limit);
 
-//   Get users with pagination
+  //   Get users with pagination
   const invoices = await prisma.invoice.findMany({
     where:
       query.month || query.year
@@ -250,7 +252,7 @@ export async function getTenantInvoiceHistoryService(
     orderBy: { created_at: 'desc' },
   });
 
-//   Build pagination info
+  //   Build pagination info
   const pagination = {
     count: invoices.length,
     hasPrevPage: page > 1,
