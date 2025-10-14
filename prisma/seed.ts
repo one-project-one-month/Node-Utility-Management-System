@@ -38,12 +38,7 @@ function calculateUtilities() {
     water: faker.number.float({ min: 20, max: 100, fractionDigits: 1 }),
   };
 }
-
-async function main() {
-  console.log('🚀 Starting database seeding...');
-
-  // Clear all tables in proper order
-  const tables = [
+const tables = [
     'receipt',
     'invoice',
     'totalUnits',
@@ -55,11 +50,22 @@ async function main() {
     'user',
     'tenant',
     'room',
-  ];
+];
 
+async function cleanUpDatabase() {
   for (const table of tables) {
     await (prisma as any)[table].deleteMany();
   }
+  console.log('🧹 Database cleaned up successfully.');
+}
+
+// === Seeding Script ===
+async function main() {
+
+  console.log('🧹 Cleaning up existing data...');
+  await cleanUpDatabase();
+
+  console.log('🚀 Starting database seeding...');
 
   // Contract Types
   await prisma.contractType.createMany({
@@ -364,6 +370,7 @@ async function main() {
         data: {
           status: invoiceStatus,
           bill_id: bill.id,
+          invoice_no: `INV-${faker.string.alphanumeric(8).toUpperCase()}`,
           created_at: invoiceDate,
           updated_at: randomDaysAfter(invoiceDate, 0, 5),
         },
@@ -512,3 +519,12 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+// cleanUpDatabase()
+//   .catch((e) => {
+//     console.error('❌ Seeding failed:', e);
+//     process.exit(1);
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });

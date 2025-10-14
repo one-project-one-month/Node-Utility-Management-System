@@ -221,8 +221,9 @@ model TotalUnits {
 }
 
 model Invoice {
-  id     String        @id @default(uuid())
-  status InvoiceStatus
+  id         String        @id @default(uuid())
+  invoice_no String        @unique
+  status     InvoiceStatus
 
   // relations
   bill       Bill     @relation(fields: [bill_id], references: [id])
