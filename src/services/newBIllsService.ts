@@ -79,13 +79,17 @@ export const createBillService = async (data: CreateBillSchemaType) => {
     });
 
     // create Invoice
-    const invoiceNo = `INV-${Date.now()}-${bill.id.slice(0, 6)}`; // Generate a unique invoice number
-
     await tx.invoice.create({
       data: {
         bill_id: String(bill.id),
-        invoice_no: invoiceNo,
         status: 'Pending',
+        invoice_no: `INV-${crypto.randomUUID().split('-')[0].toUpperCase()}`,
+        receipt: {
+          create: {
+            payment_method: 'Cash',
+            paid_date: null,
+          },
+        },
       },
     });
 
@@ -182,6 +186,12 @@ export const getBillsByIdService = async (billId: string) => {
     where: { id: billId },
     include: {
       room: true,
+      total_unit: true,
+      invoice: {
+        include: {
+          receipt: true,
+        },
+      },
     },
   });
   if (!bill) throw new NotFoundError('Bill not found');
@@ -204,6 +214,12 @@ export const getAllBillsService = async (query: PaginationQueryType) => {
     orderBy: { created_at: 'desc' },
     include: {
       room: true,
+      total_unit: true,
+      invoice: {
+        include: {
+          receipt: true,
+        },
+      },
     },
   });
   if (Array.isArray(bills) && !bills.length)
@@ -221,11 +237,51 @@ export const getAllBillsService = async (query: PaginationQueryType) => {
   return { bills, pagination };
 };
 
-// export const GetBillByTenentIdService = async (tenantId: string) => {
-//   const bills = await prisma.bill.findMany({
-//     where: { tenant_id: tenantId },
-//   });
-//   if (Array.isArray(bills) && !bills.length)
-//     throw new NotFoundError('Bills not found');
-//   return bills;
-// };
+export const getLatestBillByTenantIdService = async (tenantId: string) => {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { room_id: true },
+  });
+  if (!tenant) throw new NotFoundError('Tenant not found');
+
+  // Get the latest bill
+  const latestBill = await prisma.bill.findFirst({
+    where: { room_id: tenant.room_id },
+    orderBy: { created_at: 'desc' },
+    include: {
+      total_unit: true,
+      invoice: {
+        include: {
+          receipt: true,
+        },
+      },
+    },
+  });
+
+  if (!latestBill) throw new NotFoundError('No bills found for this tenant');
+  return latestBill;
+};
+
+export const getBillHistoryByTenantIdService = async (tenantId: string) => {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { room_id: true },
+  });
+  if (!tenant) throw new NotFoundError('Tenant not found');
+
+  const bills = await prisma.bill.findMany({
+    where: { room_id: tenant.room_id },
+    orderBy: { created_at: 'desc' },
+    include: {
+      total_unit: true,
+      invoice: {
+        include: {
+          receipt: true,
+        },
+      },
+    },
+  });
+
+  if (!bills.length) throw new NotFoundError('No bills found for this tenant');
+  return bills;
+};

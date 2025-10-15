@@ -72,10 +72,13 @@ export const GetBillByIdSchema = z.object({
   billId: z.uuid({ version: 'v4' }),
 });
 
-export const GetBillsByTenantIdSchema = z.object({
+export const GetBillByTenantIdSchema = z.object({
   tenantId: z.uuid({ version: 'v4' }),
 });
 
 export type CreateBillSchemaType = z.infer<typeof CreateBillSchema>;
 export type UpdateBillSchemaType = z.infer<typeof UpdateBillSchema>;
 export type GetBillByIdSchemaType = z.infer<typeof GetBillByIdSchema>;
+export type GetBillByTenantIdSchemaType = z.infer<
+  typeof GetBillByTenantIdSchema
+>;

@@ -8,12 +8,15 @@ import {
 import {
   CreateBillSchema,
   GetBillByIdSchema,
+  GetBillByTenantIdSchema,
   UpdateBillSchema,
 } from '../validations/newBillsSchema';
 import {
   createBillController,
   getAllBillsController,
   getBillByIdController,
+  getBillHistoryByTenantIdController,
+  getLatestBillByTenantIdController,
   updateBillController,
 } from '../controllers/newBillsController';
 import { PaginationQuerySchema } from '../validations/paginationSchema';
@@ -47,6 +50,20 @@ router.get(
   hasRole(['Admin', 'Staff']),
   validateRequestQuery(PaginationQuerySchema),
   getAllBillsController
+);
+
+router.get(
+  '/tenants/:tenantId/bills/latest',
+  hasRole(['Admin', 'Staff', 'Tenant']),
+  validateRequestParams(GetBillByTenantIdSchema),
+  getLatestBillByTenantIdController
+);
+
+router.get(
+  '/tenants/:tenantId/bills/history',
+  hasRole(['Admin', 'Staff', 'Tenant']),
+  validateRequestParams(GetBillByTenantIdSchema),
+  getBillHistoryByTenantIdController
 );
 
 export default router;

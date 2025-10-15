@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import {
   createBillService,
   getAllBillsService,
+  getBillHistoryByTenantIdService,
   getBillsByIdService,
+  getLatestBillByTenantIdService,
   updateBillsService,
 } from '../services/newBIllsService';
 import { successResponse } from '../common/apiResponse';
@@ -59,24 +61,42 @@ export const getAllBillsController = async (
   }
 };
 
-// export const createBillController = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
+export const getLatestBillByTenantIdController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const latestBill = await getLatestBillByTenantIdService(
+      req.params.tenantId
+    );
+    successResponse(
+      res,
+      'Latest Bill fetched successfully',
+      { latestBill },
+      200
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
 
-// export const createBillController = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
+export const getBillHistoryByTenantIdController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const billHistory = await getBillHistoryByTenantIdService(
+      req.params.tenantId
+    );
+    successResponse(
+      res,
+      'Bill History fetched successfully',
+      { billHistory },
+      200
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
