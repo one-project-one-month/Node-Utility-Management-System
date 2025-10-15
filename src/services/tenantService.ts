@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { BadRequestError } from '../common/errors/badRequestError';
 import { NotFoundError } from '../common/errors/notFoundError';
 import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
@@ -7,6 +8,7 @@ import {
   CreateTenantType,
   UpdateTenantType,
 } from '../validations/tenantSchema';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
 export async function createTenantService(data: CreateTenantType) {
   const {
@@ -123,7 +125,7 @@ export async function updateTenantService(
   });
 }
 
-export const getByIdTenantService = async (tenantId: string) => {
+export async function getByIdTenantService(tenantId: string) {
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     include: {
@@ -135,13 +137,16 @@ export const getByIdTenantService = async (tenantId: string) => {
     throw new NotFoundError('Tenant Not Found');
   }
   return tenant;
-};
+}
 
-export const getAllTenantService = async (query: PaginationQueryType) => {
+export async function getAllTenantService(
+  query: PaginationQueryType,
+  req: Request
+) {
   const { page, limit } = query;
   const skip = (page - 1) * limit;
 
-  const [tenants, count] = await Promise.all([
+  const [tenants, totalCount] = await Promise.all([
     prisma.tenant.findMany({
       skip,
       take: limit,
@@ -157,20 +162,11 @@ export const getAllTenantService = async (query: PaginationQueryType) => {
   if (tenants.length === 0) {
     throw new NotFoundError('No tenants found');
   }
-  const totalPages = Math.ceil(count / limit);
-
-  const pagination = {
-    count: tenants.length,
-    hasPrevPage: page > 1,
-    hasNextPage: page < totalPages,
-    page,
-    limit,
-    totalPages,
-    totalCount: count,
-  };
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
     tenants,
-    pagination,
+    ...paginationData,
   };
-};
+}
