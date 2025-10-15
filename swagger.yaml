@@ -41,6 +41,7 @@ components:
         status:
           type: number
           example: 401
+
     # User Schemas
     AdminUser:
       type: object
@@ -102,6 +103,7 @@ components:
       type: string
       enum: [Admin, Staff, Tenant]
       example: Tenant
+
     # Customer Service Schema
     CustomerService:
       type: object
@@ -135,6 +137,7 @@ components:
         updated_at:
           type: string
           example: '2025-10-05T09:30:00.000Z'
+
     # Tenant Schema
     Tenant:
       type: object
@@ -184,6 +187,7 @@ components:
           example: d44605d3-4f8e-4057-b778-201111db860d
         room:
           $ref: '#/components/schemas/Room'
+
     # Room Schema
     Room:
       type: object
@@ -225,6 +229,7 @@ components:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.158Z
+
     # Receipt Schema
     Receipt:
       type: object
@@ -251,6 +256,7 @@ components:
           example: 2025-10-15T10:59:20.031Z
         invoice:
           $ref: '#/components/schemas/Invoice'
+
     # Invoice Schema
     Invoice:
       type: object
@@ -275,6 +281,7 @@ components:
           type: string
           format: date-time
           example: 2025-10-15T10:59:20.031Z
+
     # Total Units Schemas
     TotalUnits:
       type: object
@@ -303,6 +310,85 @@ components:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
+
+    # Contract Schema
+    Contract:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 456e7890-f12a-34b5-c678-426614174000
+        room_id:
+          type: string
+          format: uuid
+          example: d44605d3-4f8e-4057-b778-201111db860d
+        contract_type_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        tenant_id:
+          type: string
+          format: uuid
+          example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+        created_date:
+          type: string
+          format: date-time
+          example: 2025-10-01T00:00:00.000Z
+        expiry_date:
+          type: string
+          format: date-time
+          example: 2026-09-30T00:00:00.000Z
+        updated_date:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+        room:
+          $ref: '#/components/schemas/Room'
+        contract_type:
+          $ref: '#/components/schemas/ContractType'
+
+    # Contract Type
+    ContractType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+        name:
+          type: string
+          example: 'Standard 1-Year Lease'
+        duration:
+          type: integer
+          example: 12
+        price:
+          type: number
+          example: 1200000
+        facilities:
+          type: array
+          items:
+            type: string
+          example: ['WiFi', 'Parking', 'Maintenance']
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-01T00:00:00.000Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-01T00:00:00.000Z
+
     # Pagination Schema
     Pagination:
       type: object
@@ -458,6 +544,46 @@ components:
         type: string
         enum: [Pending, Ongoing, Resolved]
         example: Pending
+
+    ContractIdParam:
+      name: contractId
+      in: path
+      description: Contract ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+    ContractTypeIdParam:
+      name: contractTypeId
+      in: path
+      description: Contract Type ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+
+    RoomIdParam:
+      name: roomId
+      in: path
+      description: Room ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: d44605d3-4f8e-4057-b778-201111db860d
+
+    RoomStatusFilterParam:
+      name: status
+      in: query
+      description: Filter by room status
+      required: false
+      schema:
+        type: string
+        enum: [Available, Rented, Maintenance]
+        example: Available
 
   # Reusable Request Bodies
   requestBodies:
@@ -753,112 +879,289 @@ components:
                 description: Associated bill ID
                 example: b2c3d4e5-f6g7-8901-bcde-f23456789012
 
+    CreateContractRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              [
+                room_id,
+                contract_type_id,
+                tenant_id,
+                created_date,
+                expiry_date,
+                updated_date,
+              ]
+            properties:
+              room_id:
+                type: string
+                format: uuid
+                example: d44605d3-4f8e-4057-b778-201111db860d
+              contract_type_id:
+                type: string
+                format: uuid
+                example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+              tenant_id:
+                type: string
+                format: uuid
+                example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+              created_date:
+                type: string
+                format: date-time
+                example: 2025-10-01T00:00:00.000Z
+              expiry_date:
+                type: string
+                format: date-time
+                example: 2026-10-01T00:00:00.000Z
+              updated_date:
+                type: string
+                format: date-time
+                example: 2025-10-01T00:00:00.000Z
+
+    UpdateContractRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              room_id:
+                type: string
+                format: uuid
+                example: d44605d3-4f8e-4057-b778-201111db860d
+              contract_type_id:
+                type: string
+                format: uuid
+                example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+              tenant_id:
+                type: string
+                format: uuid
+                example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+              created_date:
+                type: string
+                format: date-time
+                example: 2025-10-01T00:00:00.000Z
+              expiry_date:
+                type: string
+                format: date-time
+                example: 2026-10-01T00:00:00.000Z
+              updated_date:
+                type: string
+                format: date-time
+                example: 2025-10-01T00:00:00.000Z
+
+    CreateContractTypeRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [name, duration, price, facilities]
+            properties:
+              name:
+                type: string
+                minLength: 1
+                example: 'Standard 1-Year Lease'
+              duration:
+                type: integer
+                minimum: 1
+                example: 12
+              price:
+                type: number
+                minimum: 0
+                example: 1200000
+              facilities:
+                type: array
+                items:
+                  type: string
+                  minLength: 1
+                minItems: 1
+                example: ['WiFi', 'Parking', 'Maintenance']
+
+    UpdateContractTypeRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                minLength: 1
+                example: 'Premium 2-Year Lease'
+              duration:
+                type: integer
+                minimum: 1
+                example: 24
+              price:
+                type: number
+                minimum: 0
+                example: 2200000
+              facilities:
+                type: array
+                items:
+                  type: string
+                  minLength: 1
+                example: ['WiFi', 'Parking', 'Maintenance', 'Gym Access']
+
+    CreateRoomRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - room_no
+              - floor
+              - dimension
+              - no_of_bed_room
+              - status
+              - max_no_of_people
+            properties:
+              room_no:
+                type: integer
+                minimum: 1
+                example: 414
+              floor:
+                type: integer
+                example: 4
+              dimension:
+                type: string
+                example: 14x20 ft
+              no_of_bed_room:
+                type: integer
+                minimum: 1
+                example: 2
+              status:
+                type: string
+                enum: [Available, Rented, Maintenance]
+                example: Available
+              selling_price:
+                type: number
+                example: 1352275
+              max_no_of_people:
+                type: integer
+                minimum: 1
+                example: 2
+              description:
+                type: string
+                example: City view with balcony
+              tenant_id:
+                type: string
+                format: uuid
+                nullable: true
+              bill_id:
+                type: string
+                format: uuid
+                nullable: true
+              customer_service_id:
+                type: string
+                format: uuid
+                nullable: true
+
+    UpdateRoomRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              room_no:
+                type: integer
+                minimum: 1
+                example: 415
+              floor:
+                type: integer
+                example: 4
+              dimension:
+                type: string
+                example: 15x20 ft
+              no_of_bed_room:
+                type: integer
+                minimum: 1
+                example: 3
+              status:
+                type: string
+                enum: [Available, Rented, Maintenance]
+                example: Rented
+              selling_price:
+                type: number
+                example: 1400000
+              max_no_of_people:
+                type: integer
+                minimum: 1
+                example: 3
+              description:
+                type: string
+                example: City view with large balcony
+
   # Reusable Responses
   responses:
-    UnauthorizedError:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/ApiErrorResponse'
-              - type: object
-                properties:
-                  message:
-                    type: string
-                    example: Access token is required
-                  status:
-                    type: integer
-                    example: 401
+      UnauthorizedError:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ApiErrorResponse'
+                - type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Access token is required
+                    status:
+                      type: integer
+                      example: 401
 
-    ForbiddenError:
-      description: Forbidden - Admin or Staff role required
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/ApiErrorResponse'
-              - type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'Required roles: Admin, Staff'
-                  status:
-                    type: integer
-                    example: 403
+      ForbiddenError:
+        description: Forbidden - Admin or Staff role required
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ApiErrorResponse'
+                - type: object
+                  properties:
+                    message:
+                      type: string
+                      example: 'Required roles: Admin, Staff'
+                    status:
+                      type: integer
+                      example: 403
 
-    NotFoundError:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/ApiErrorResponse'
-              - type: object
-                properties:
-                  message:
-                    type: string
-                    example: Resource not found
-                  status:
-                    type: integer
-                    example: 404
+      NotFoundError:
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ApiErrorResponse'
+                - type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Resource not found
+                    status:
+                      type: integer
+                      example: 404
 
-    BadRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/ApiErrorResponse'
-              - type: object
-                properties:
-                  message:
-                    type: string
-                    example: Validation failed
-                  status:
-                    type: integer
-                    example: 400
-
-  # Reusable Headers
-  headers:
-    X-Total-Count:
-      description: Total number of items
-      schema:
-        type: integer
-        example: 100
-
-    X-Page-Count:
-      description: Total number of pages
-      schema:
-        type: integer
-        example: 10
-
-  # Reusable Examples
-  examples:
-    UserExample:
-      summary: Example user
-      value:
-        id: '974cbaf3-78b9-41f0-b6e9-8a9ddf9682d3'
-        user_name: 'admin'
-        email: 'admin@gmail.com'
-        role: 'Admin'
-        tenant_id: null
-        is_active: true
-        created_at: '2025-09-30T18:05:15.112Z'
-        updated_at: '2025-10-01T03:25:04.296Z'
-
-    TenantExample:
-      summary: Example tenant
-      value:
-        id: '2ca12c44-dfc8-4c24-a5d3-5ef650b02758'
-        names: ['Lyle Willms', 'Maxine Ankunding IV']
-        emails: ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
-        nrcs: ['12/ABCD(N)854324', '12/ABCD(N)895764']
-        phone_nos: ['+959452897714', '+959553996447']
-        emergency_nos: ['+959202435118']
-        created_at: '2025-10-05T19:17:18.241Z'
-        updated_at: '2025-10-05T19:17:18.241Z'
-        room_id: 'd44605d3-4f8e-4057-b778-201111db860d'
+      BadRequestError:
+        description: Bad Request
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ApiErrorResponse'
+                - type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Validation failed
+                    status:
+                      type: integer
+                      example: 400
 
 paths:
   # Authentication Endpoints
@@ -1255,6 +1558,7 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         403:
           $ref: '#/components/responses/ForbiddenError'
+
   /api/v1/customer-services/{id}:
     get:
       tags:
@@ -1340,7 +1644,7 @@ paths:
   /api/v1/tenants:
     get:
       tags:
-        - Tenants - (ERROR)
+        - Tenants - (In Maintenance)
       summary: Get all tenants (Admin & Staff only)
       description: Retrieves a list of all tenants with pagination support. Accessible only to Admin and Staff users.
       security:
@@ -1376,7 +1680,7 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
     post:
       tags:
-        - Tenants - (ERROR)
+        - Tenants - (In Maintenance)
       summary: Create a new tenant (Admin & Staff only)
       description: Create a new tenant with name, email, NRC, etc. Accessible only to Admin and Staff users.
       security:
@@ -1434,10 +1738,11 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         403:
           $ref: '#/components/responses/ForbiddenError'
+
   /api/v1/tenants/{tenantId}:
     get:
       tags:
-        - Tenants - (ERROR)
+        - Tenants - (In Maintenance)
       summary: Get tenant by ID (Admin & Staff only)
       description: Retrieve a specific tenant by their ID. Accessible only to Admin and Staff users.
       security:
@@ -1470,7 +1775,7 @@ paths:
           $ref: '#/components/responses/NotFoundError'
     put:
       tags:
-        - Tenants - (ERROR)
+        - Tenants - (In Maintenance)
       summary: Update tenant by ID (Admin & Staff only)
       description: Update tenant information. At least one field must be provided. Accessible to Admin and Staff users.
       security:
@@ -1611,6 +1916,7 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         404:
           $ref: '#/components/responses/NotFoundError'
+
   /api/v1/receipts/{id}:
     get:
       tags:
@@ -2014,4 +2320,575 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         404:
           $ref: '#/components/responses/NotFoundError'
-    
+
+  # Contract Endpoints
+  /api/v1/contracts:
+    post:
+      tags:
+        - Contracts
+      summary: Create a new contract (Admin & Staff only)
+      description: Create a new contract between tenant and room with contract type.
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/CreateContractRequest'
+      responses:
+        201:
+          description: Contract created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract created successfully
+                      content:
+                        type: object
+                        properties:
+                          contract:
+                            $ref: '#/components/schemas/Contract'
+                      status:
+                        type: number
+                        example: 201
+        400:
+          description: Bad Request - Validation error or contract already exists
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Tenant already has a contract
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    get:
+      tags:
+        - Contracts
+      summary: Get all contracts (Admin & Staff only)
+      description: Retrieves a list of all contracts with pagination support.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        200:
+          description: Contracts fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All Contracts fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          contracts:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Contract'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/contracts/{contractId}:
+    put:
+      tags:
+        - Contracts
+      summary: Update contract by ID (Admin & Staff only)
+      description: Update contract information. At least one field must be provided.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ContractIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateContractRequest'
+      responses:
+        200:
+          description: Contract updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract updated successfully
+                      content:
+                        type: object
+                        properties:
+                          contract:
+                            $ref: '#/components/schemas/Contract'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/contracts/show/{contractId}:
+    get:
+      tags:
+        - Contracts
+      summary: Get contract by ID (Admin & Staff only)
+      description: Retrieve a specific contract by its ID with tenant, room, and contract type details.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ContractIdParam'
+      responses:
+        200:
+          description: Contract fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          contract:
+                            $ref: '#/components/schemas/Contract'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/tenants/{tenantId}/contracts:
+    get:
+      tags:
+        - Contracts
+      summary: Get all contracts by tenant ID
+      description: Retrieve all contracts for a specific tenant. Accessible by Admin, Staff, and the tenant themselves.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdParam'
+      responses:
+        200:
+          description: Contracts fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All Contracts fetched By tenantId successfully
+                      content:
+                        type: object
+                        properties:
+                          contract:
+                            $ref: '#/components/schemas/Contract'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  # Contract Type Endpoints
+  /api/v1/contract-types:
+    post:
+      tags:
+        - Contract Types
+      summary: Create a new contract type (Admin & Staff only)
+      description: Create a new contract type with name, duration, price, and facilities.
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/CreateContractTypeRequest'
+      responses:
+        201:
+          description: Contract type created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract type created successfully
+                      content:
+                        type: object
+                        properties:
+                          contractType:
+                            $ref: '#/components/schemas/ContractType'
+                      status:
+                        type: number
+                        example: 201
+        400:
+          description: Bad Request - Validation error or contract type already exists
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract type already exists
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+    get:
+      tags:
+        - Contract Types
+      summary: Get all contract types (Admin & Staff only)
+      description: Retrieves a list of all contract types.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Contract types fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All Contract types fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          contractTypes:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ContractType'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/contract-types/{contractTypeId}:
+    get:
+      tags:
+        - Contract Types
+      summary: Get contract type by ID (Admin & Staff only)
+      description: Retrieve a specific contract type by its ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ContractTypeIdParam'
+      responses:
+        200:
+          description: Contract type retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract type retrieved successfully
+                      content:
+                        type: object
+                        properties:
+                          contractType:
+                            $ref: '#/components/schemas/ContractType'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      tags:
+        - Contract Types
+      summary: Update contract type by ID (Admin & Staff only)
+      description: Update contract type information. At least one field must be provided.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ContractTypeIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateContractTypeRequest'
+      responses:
+        200:
+          description: Contract type updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract type updated successfully
+                      content:
+                        type: object
+                        properties:
+                          contractType:
+                            $ref: '#/components/schemas/ContractType'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  # Room Endpoints
+  /api/v1/rooms:
+    post:
+      tags:
+        - Rooms
+      summary: Create a new room (Admin & Staff only)
+      description: Create a new room with room details. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/CreateRoomRequest'
+      responses:
+        201:
+          description: Room created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Room created successfully
+                      content:
+                        type: object
+                        properties:
+                          room:
+                            $ref: '#/components/schemas/Room'
+                      status:
+                        type: number
+                        example: 201
+        400:
+          description: Bad Request - Validation error or room already exists
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Room with this number already exists on this floor
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+    get:
+      tags:
+        - Rooms
+      summary: Get all rooms (Admin & Staff only)
+      description: Retrieves a list of all rooms with pagination and filtering support. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: room_no
+          in: query
+          description: Filter by room number
+          required: false
+          schema:
+            type: string
+            example: '414'
+        - name: floor
+          in: query
+          description: Filter by floor number
+          required: false
+          schema:
+            type: integer
+            example: 4
+        - $ref: '#/components/parameters/RoomStatusFilterParam'
+      responses:
+        200:
+          description: Rooms fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Rooms fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          rooms:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Room'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/rooms/{roomId}:
+    get:
+      tags:
+        - Rooms
+      summary: Get room by ID (Admin & Staff only)
+      description: Retrieve a specific room by its ID with contract, bill, customer service, and tenant details.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RoomIdParam'
+      responses:
+        200:
+          description: Room fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Room fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          room:
+                            $ref: '#/components/schemas/Room'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      tags:
+        - Rooms
+      summary: Update room by ID (Admin & Staff only)
+      description: Update room information. At least one field must be provided.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RoomIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateRoomRequest'
+      responses:
+        200:
+          description: Room updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Room updated successfully
+                      content:
+                        type: object
+                        properties:
+                          room:
+                            $ref: '#/components/schemas/Room'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'

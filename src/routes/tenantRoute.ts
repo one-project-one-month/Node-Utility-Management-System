@@ -25,7 +25,7 @@ const router = Router();
 
 router.get(
   '/:tenantId',
-  hasRole(['Admin', 'Staff']),
+  hasRole(['Admin', 'Staff', 'Tenant']),
   validateRequestParams(GetTenantParamSchema),
   getByIdTenantController
 );

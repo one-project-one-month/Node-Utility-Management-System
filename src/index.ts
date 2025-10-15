@@ -14,6 +14,7 @@ import { errorHandler } from './middlewares/errorHandlingMiddleware';
 import authRoute from './routes/authRoute';
 import contractRoute from './routes/contractRoute';
 import contractTypeRoute from './routes/contractTypeRoute';
+import invoiceRoute from './routes/invoiceRoute';
 import occupantRoute from './routes/occupantRoute';
 import receiptRoute from './routes/receiptRoute';
 import roomRoute from './routes/roomRoute';
@@ -56,6 +57,7 @@ app.use('/api/v1', isAuthenticated, receiptRoute); //receipt endpoint
 app.use('/api/v1/contract-types', isAuthenticated, contractTypeRoute); // contract type endpoint
 app.use('/api/v1', isAuthenticated, contractRoute); // contract endpoint
 app.use('/api/v1/rooms', isAuthenticated, roomRoute);
+app.use('/api/v1', isAuthenticated, invoiceRoute); // invoice endpoint
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

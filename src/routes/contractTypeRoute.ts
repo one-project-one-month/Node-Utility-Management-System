@@ -3,7 +3,6 @@ import { hasRole } from '../middlewares/authMiddleware';
 import {
   validateRequestBody,
   validateRequestParams,
-  validateRequestQuery,
 } from '../middlewares/validationMiddlware';
 import {
   CreateContractTypeSchema,

@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
 import {
@@ -5,6 +6,7 @@ import {
   UpdateContractSchemaType,
 } from '../validations/contractSchema';
 import { PaginationQueryType } from '../validations/paginationSchema';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
 export const createContractService = async (data: CreateContractSchemaType) => {
   // check room exists
@@ -107,11 +109,15 @@ export const getContractByIdService = async (contractId: string) => {
   return contract;
 };
 
-export const getAllContractSrvice = async (data: PaginationQueryType) => {
-  const { page, limit } = data;
+export const getAllContractService = async (
+  query: PaginationQueryType,
+  req: Request
+) => {
+  const { page, limit } = query;
   const skip = (page - 1) * limit;
 
-  const [contracts, count] = await prisma.$transaction([
+  // Get contracts & totalCount
+  const [contracts, totalCount] = await prisma.$transaction([
     prisma.contract.findMany({
       skip,
       take: limit,
@@ -120,6 +126,7 @@ export const getAllContractSrvice = async (data: PaginationQueryType) => {
         room: true,
         contract_type: true,
       },
+      orderBy: { created_date: 'desc' },
     }),
     prisma.contract.count(),
   ]);
@@ -127,24 +134,17 @@ export const getAllContractSrvice = async (data: PaginationQueryType) => {
   if (Array.isArray(contracts) && !contracts.length)
     throw new NotFoundError('Contracts not found');
 
-  const totalPages = Math.ceil(count / limit);
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
     contracts,
-    pagination: {
-      count: contracts.length,
-      hasPrevPage: page > 1,
-      hasNextPage: page < totalPages,
-      page,
-      limit,
-      totalPages,
-      totalCounts: count,
-    },
+    ...paginationData,
   };
 };
 
 // get contract by tenantId
-export const getContractByTenantService = async (tenantId: string) => {
+export const getContractByTenantIdService = async (tenantId: string) => {
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     select: { id: true },
