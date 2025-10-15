@@ -40,11 +40,10 @@ export async function getAllInvoicesController(
     if (!result.invoices.length) {
       return next(new NotFoundError('No found invoice.'));
     }
-    successResponse(
-      res,
-      'Invoices fetched successfully',
-      { invoices: result.invoices, pagination: result.pagination }
-    );
+    successResponse(res, 'Invoices fetched successfully', {
+      invoices: result.invoices,
+      pagination: result.pagination,
+    });
   } catch (error) {
     next(error);
   }
@@ -127,12 +126,7 @@ export async function getTanentInvoiceHistoryController(
     const query = req.validatedQuery;
     const result = await getTenantInvoiceHistoryService(tenant_id, query);
 
-    successResponse(
-      res,
-      'Invoice fetched successfully.',
-        result,
-      200
-    );
+    successResponse(res, 'Invoice fetched successfully.', result, 200);
   } catch (error) {
     return next(error);
   }

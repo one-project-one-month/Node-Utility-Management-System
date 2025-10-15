@@ -15,23 +15,24 @@ export async function getAllTotalUnitsService(query: PaginationQueryType) {
       skip,
       take: limit,
       orderBy: { created_at: 'desc' },
-      select:{
+      select: {
         id: true,
         electricity_units: true,
         water_units: true,
         created_at: true,
         updated_at: true,
-        bill:{
+        bill: {
           select: {
             room: {
-              select:{
+              select: {
                 room_no: true,
                 floor: true,
                 status: true,
-              }
-            }
-          }
-      }}
+              },
+            },
+          },
+        },
+      },
     }),
     prisma.totalUnits.count(),
   ]);

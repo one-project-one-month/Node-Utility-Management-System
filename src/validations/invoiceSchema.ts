@@ -31,7 +31,7 @@ export const UpdateInvoiceSchema = z
     error: 'At least one field must be provided for update',
   })
   .refine((data) => {
-    return !data.invoice_no; 
+    return !data.invoice_no;
   }, 'you cannot update invoice_no')
   .strict();
 
