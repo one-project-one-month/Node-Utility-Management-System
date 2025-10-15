@@ -5,14 +5,16 @@ info:
   description: API documentation for the Utility Management System
 
 components:
+  # Security Schemes
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
 
+  # Reusable Schemas (Data Models)
   schemas:
-    # Api Response Format
+    # API Response Formats
     ApiSuccessResponse:
       type: object
       properties:
@@ -39,7 +41,8 @@ components:
         status:
           type: number
           example: 401
-    # User Schema
+
+    # User Schemas
     AdminUser:
       type: object
       properties:
@@ -100,91 +103,8 @@ components:
       type: string
       enum: [Admin, Staff, Tenant]
       example: Tenant
-    CreateUserRequest:
-      type: object
-      properties:
-        user_name:
-          type: string
-          example: tenant1
-        email:
-          type: string
-          example: tenant1@gmail.com
-        password:
-          type: string
-          example: tenant1
-        role:
-          type: string
-          enum: [Tenant, Admin, Staff]
-          example: Tenant
-        tenant_id:
-          type: string
-          nullable: true
-          example:
-    UpdateUserRequest:
-      type: object
-      properties:
-        user_name:
-          type: string
-          example: tenant1
-        email:
-          type: string
-          example: tenant1@gmail.com
-        role:
-          type: string
-          example: Tenant
-        tenant_id:
-          type: string
-          nullable: true
-          example: null
+
     # Customer Service Schema
-    CreateCustomerServiceRequest:
-      type: object
-      required: [description, category, status, priority_level, room_id]
-      properties:
-        description:
-          type: string
-          minLength: 10
-          example: 'Air conditioning not working properly'
-        category:
-          type: string
-          enum: [Complain, Maintenance, Other]
-          example: 'Maintenance'
-        status:
-          type: string
-          enum: [Pending, Ongoing, Resolved]
-          example: 'Pending'
-        priority_level:
-          type: string
-          enum: [Low, Medium, High]
-          example: 'High'
-        room_id:
-          type: string
-          format: uuid
-          example: 'b7a2cc9b-9f7b-46cf-b3f9-19cb94d68c73'
-    UpdateCustomerServiceRequest:
-      type: object
-      description: At least `status` and `priority_level` must both be provided.
-      properties:
-        description:
-          type: string
-          minLength: 10
-          example: 'Rechecked the air conditioning issue.'
-        category:
-          type: string
-          enum: [Complain, Maintenance, Other]
-          example: 'Maintenance'
-        status:
-          type: string
-          enum: [Pending, Ongoing, Resolved]
-          example: 'Resolved'
-        priority_level:
-          type: string
-          enum: [Low, Medium, High]
-          example: 'High'
-        room_id:
-          type: string
-          format: uuid
-          example: 'b7a2cc9b-9f7b-46cf-b3f9-19cb94d68c73'
     CustomerService:
       type: object
       properties:
@@ -217,6 +137,7 @@ components:
         updated_at:
           type: string
           example: '2025-10-05T09:30:00.000Z'
+
     # Tenant Schema
     Tenant:
       type: object
@@ -266,86 +187,7 @@ components:
           example: d44605d3-4f8e-4057-b778-201111db860d
         room:
           $ref: '#/components/schemas/Room'
-    CreateTenantRequest:
-      type: object
-      required: [names, emails, nrcs, phone_nos, emergency_nos, room_id]
-      properties:
-        names:
-          type: array
-          items:
-            type: string
-            minLength: 1
-          minItems: 1
-          example: ['Lyle Willms', 'Maxine Ankunding IV']
-        emails:
-          type: array
-          items:
-            type: string
-            format: email
-          minItems: 1
-          example:
-            ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
-        nrcs:
-          type: array
-          items:
-            type: string
-            minLength: 3
-          minItems: 1
-          example: ['12/ABCD(N)854324', '12/ABCD(N)895764']
-        phone_nos:
-          type: array
-          items:
-            type: string
-            minLength: 6
-          example: ['+959452897714', '+959553996447']
-        emergency_nos:
-          type: array
-          items:
-            type: string
-            minLength: 6
-          example: ['+959202435118']
-        room_id:
-          type: string
-          format: uuid
-          example: d44605d3-4f8e-4057-b778-201111db860d
-    UpdateTenantRequest:
-      type: object
-      properties:
-        names:
-          type: array
-          items:
-            type: string
-            minLength: 1
-          example: ['Lyle Willms', 'Maxine Ankunding IV']
-        emails:
-          type: array
-          items:
-            type: string
-            format: email
-          example:
-            ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
-        nrcs:
-          type: array
-          items:
-            type: string
-            minLength: 3
-          example: ['12/ABCD(N)854324', '12/ABCD(N)895764']
-        phone_nos:
-          type: array
-          items:
-            type: string
-            minLength: 6
-          example: ['+959452897714', '+959553996447']
-        emergency_nos:
-          type: array
-          items:
-            type: string
-            minLength: 6
-          example: ['+959202435118']
-        room_id:
-          type: string
-          format: uuid
-          example: d44605d3-4f8e-4057-b778-201111db860d
+
     # Room Schema
     Room:
       type: object
@@ -387,6 +229,7 @@ components:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.158Z
+
     # Receipt Schema
     Receipt:
       type: object
@@ -413,33 +256,7 @@ components:
           example: 2025-10-15T10:59:20.031Z
         invoice:
           $ref: '#/components/schemas/Invoice'
-    CreateReceiptRequest:
-      type: object
-      required: [payment_method, paid_date, invoice_id]
-      properties:
-        payment_method:
-          type: string
-          enum: [Cash, Mobile Banking]
-          example: Cash
-        paid_date:
-          type: string
-          format: date-time
-          example: 2025-10-14T04:07:20.031Z
-        invoice_id:
-          type: string
-          format: uuid
-          example: d1ea2e8f-c047-48e0-bd90-d26356674d47
-    UpdateReceiptRequest:
-      type: object
-      properties:
-        payment_method:
-          type: string
-          enum: [Cash, Mobile Banking]
-          example: Mobile Banking
-        paid_date:
-          type: string
-          format: date-time
-          example: 2025-10-14T04:07:20.031Z
+
     # Invoice Schema
     Invoice:
       type: object
@@ -464,6 +281,7 @@ components:
           type: string
           format: date-time
           example: 2025-10-15T10:59:20.031Z
+
     # Total Units Schemas
     TotalUnits:
       type: object
@@ -492,43 +310,858 @@ components:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
+
+    # Contract Schema
+    Contract:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 456e7890-f12a-34b5-c678-426614174000
+        room_id:
+          type: string
+          format: uuid
+          example: d44605d3-4f8e-4057-b778-201111db860d
+        contract_type_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        tenant_id:
+          type: string
+          format: uuid
+          example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+        created_date:
+          type: string
+          format: date-time
+          example: 2025-10-01T00:00:00.000Z
+        expiry_date:
+          type: string
+          format: date-time
+          example: 2026-09-30T00:00:00.000Z
+        updated_date:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+        room:
+          $ref: '#/components/schemas/Room'
+        contract_type:
+          $ref: '#/components/schemas/ContractType'
+
+    # Contract Type
+    ContractType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+        name:
+          type: string
+          example: 'Standard 1-Year Lease'
+        duration:
+          type: integer
+          example: 12
+        price:
+          type: number
+          example: 1200000
+        facilities:
+          type: array
+          items:
+            type: string
+          example: ['WiFi', 'Parking', 'Maintenance']
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-01T00:00:00.000Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-01T00:00:00.000Z
+
+    # Pagination Schema
+    Pagination:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 10
+        hasPrevPage:
+          type: boolean
+          example: false
+        hasNextPage:
+          type: boolean
+          example: true
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        totalPages:
+          type: integer
+          example: 5
+        totalCount:
+          type: integer
+          example: 50
+
+  # Reusable Parameters
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page number for pagination
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items per page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        example: 10
+
+    UserIdParam:
+      name: userId
+      in: path
+      description: User ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 974cbaf3-78b9-41f0-b6e9-8a9ddf9682d3
+
+    TenantIdParam:
+      name: tenantId
+      in: path
+      description: Tenant ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+
+    CustomerServiceIdParam:
+      name: id
+      in: path
+      description: Customer Service ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
+
+    ReceiptIdParam:
+      name: id
+      in: path
+      description: Receipt ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 7fc98505-605f-49d2-a3b8-3c6f6eac0ad2
+
+    TotalUnitsIdParam:
+      name: id
+      in: path
+      description: Total Units ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+    InvoiceIdParam:
+      name: invoiceId
+      in: path
+      description: Invoice ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: d1ea2e8f-c047-48e0-bd90-d26356674d47
+
+    BillIdParam:
+      name: billId
+      in: path
+      description: Bill ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+
+    RoleFilterParam:
+      name: role
+      in: query
+      description: Filter by user role
+      required: false
+      schema:
+        $ref: '#/components/schemas/UserRole'
+
+    ActiveFilterParam:
+      name: is_active
+      in: query
+      description: Filter by active status
+      required: false
+      schema:
+        type: boolean
+        example: true
+
+    PaymentMethodFilterParam:
+      name: payment_method
+      in: query
+      description: Filter by payment method
+      required: false
+      schema:
+        type: string
+        enum: [Cash, Mobile Banking]
+        example: Cash
+
+    StatusParam:
+      name: status
+      in: path
+      description: Service status filter
+      required: true
+      schema:
+        type: string
+        enum: [Pending, Ongoing, Resolved]
+        example: Pending
+
+    ContractIdParam:
+      name: contractId
+      in: path
+      description: Contract ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+    ContractTypeIdParam:
+      name: contractTypeId
+      in: path
+      description: Contract Type ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+
+    RoomIdParam:
+      name: roomId
+      in: path
+      description: Room ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: d44605d3-4f8e-4057-b778-201111db860d
+
+    RoomStatusFilterParam:
+      name: status
+      in: query
+      description: Filter by room status
+      required: false
+      schema:
+        type: string
+        enum: [Available, Rented, Maintenance]
+        example: Available
+
+  # Reusable Request Bodies
+  requestBodies:
+    LoginRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: admin@gmail.com
+              password:
+                type: string
+                example: admin123
+
+    CreateUserRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user_name:
+                type: string
+                example: tenant1
+              email:
+                type: string
+                example: tenant1@gmail.com
+              password:
+                type: string
+                example: tenant1
+              role:
+                type: string
+                enum: [Tenant, Admin, Staff]
+                example: Tenant
+              tenant_id:
+                type: string
+                nullable: true
+                example:
+
+    UpdateUserRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user_name:
+                type: string
+                example: tenant1
+              email:
+                type: string
+                example: tenant1@gmail.com
+              role:
+                type: string
+                example: Tenant
+              tenant_id:
+                type: string
+                nullable: true
+                example: null
+
+    CreateCustomerServiceRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [description, category, status, priority_level, room_id]
+            properties:
+              description:
+                type: string
+                minLength: 10
+                example: 'Air conditioning not working properly'
+              category:
+                type: string
+                enum: [Complain, Maintenance, Other]
+                example: 'Maintenance'
+              status:
+                type: string
+                enum: [Pending, Ongoing, Resolved]
+                example: 'Pending'
+              priority_level:
+                type: string
+                enum: [Low, Medium, High]
+                example: 'High'
+              room_id:
+                type: string
+                format: uuid
+                example: 'b7a2cc9b-9f7b-46cf-b3f9-19cb94d68c73'
+
+    UpdateCustomerServiceRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            description: At least `status` and `priority_level` must both be provided.
+            properties:
+              description:
+                type: string
+                minLength: 10
+                example: 'Rechecked the air conditioning issue.'
+              category:
+                type: string
+                enum: [Complain, Maintenance, Other]
+                example: 'Maintenance'
+              status:
+                type: string
+                enum: [Pending, Ongoing, Resolved]
+                example: 'Resolved'
+              priority_level:
+                type: string
+                enum: [Low, Medium, High]
+                example: 'High'
+              room_id:
+                type: string
+                format: uuid
+                example: 'b7a2cc9b-9f7b-46cf-b3f9-19cb94d68c73'
+
+    CreateTenantRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [names, emails, nrcs, phone_nos, emergency_nos, room_id]
+            properties:
+              names:
+                type: array
+                items:
+                  type: string
+                  minLength: 1
+                minItems: 1
+                example: ['Lyle Willms', 'Maxine Ankunding IV']
+              emails:
+                type: array
+                items:
+                  type: string
+                  format: email
+                minItems: 1
+                example:
+                  ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
+              nrcs:
+                type: array
+                items:
+                  type: string
+                  minLength: 3
+                minItems: 1
+                example: ['12/ABCD(N)854324', '12/ABCD(N)895764']
+              phone_nos:
+                type: array
+                items:
+                  type: string
+                  minLength: 6
+                example: ['+959452897714', '+959553996447']
+              emergency_nos:
+                type: array
+                items:
+                  type: string
+                  minLength: 6
+                example: ['+959202435118']
+              room_id:
+                type: string
+                format: uuid
+                example: d44605d3-4f8e-4057-b778-201111db860d
+
+    UpdateTenantRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              names:
+                type: array
+                items:
+                  type: string
+                  minLength: 1
+                example: ['Lyle Willms', 'Maxine Ankunding IV']
+              emails:
+                type: array
+                items:
+                  type: string
+                  format: email
+                example:
+                  ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
+              nrcs:
+                type: array
+                items:
+                  type: string
+                  minLength: 3
+                example: ['12/ABCD(N)854324', '12/ABCD(N)895764']
+              phone_nos:
+                type: array
+                items:
+                  type: string
+                  minLength: 6
+                example: ['+959452897714', '+959553996447']
+              emergency_nos:
+                type: array
+                items:
+                  type: string
+                  minLength: 6
+                example: ['+959202435118']
+              room_id:
+                type: string
+                format: uuid
+                example: d44605d3-4f8e-4057-b778-201111db860d
+
+    CreateReceiptRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [payment_method, paid_date, invoice_id]
+            properties:
+              payment_method:
+                type: string
+                enum: [Cash, Mobile Banking]
+                example: Cash
+              paid_date:
+                type: string
+                format: date-time
+                example: 2025-10-14T04:07:20.031Z
+              invoice_id:
+                type: string
+                format: uuid
+                example: d1ea2e8f-c047-48e0-bd90-d26356674d47
+
+    UpdateReceiptRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              payment_method:
+                type: string
+                enum: [Cash, Mobile Banking]
+                example: Mobile Banking
+              paid_date:
+                type: string
+                format: date-time
+                example: 2025-10-14T04:07:20.031Z
+
     CreateTotalUnitsRequest:
-      type: object
-      required: [electricity_units, water_units, bill_id]
-      properties:
-        electricity_units:
-          type: number
-          minimum: 0.1
-          description: Electricity consumption in units (must be positive)
-          example: 125.5
-        water_units:
-          type: number
-          minimum: 0.1
-          description: Water consumption in units (must be positive)
-          example: 45.2
-        bill_id:
-          type: string
-          format: uuid
-          description: Associated bill ID
-          example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [electricity_units, water_units, bill_id]
+            properties:
+              electricity_units:
+                type: number
+                minimum: 0.1
+                description: Electricity consumption in units (must be positive)
+                example: 125.5
+              water_units:
+                type: number
+                minimum: 0.1
+                description: Water consumption in units (must be positive)
+                example: 45.2
+              bill_id:
+                type: string
+                format: uuid
+                description: Associated bill ID
+                example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+
     UpdateTotalUnitsRequest:
-      type: object
-      properties:
-        electricity_units:
-          type: number
-          minimum: 0.1
-          description: Electricity consumption in units (must be positive)
-          example: 130.8
-        water_units:
-          type: number
-          minimum: 0.1
-          description: Water consumption in units (must be positive)
-          example: 48.5
-        bill_id:
-          type: string
-          format: uuid
-          description: Associated bill ID
-          example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              electricity_units:
+                type: number
+                minimum: 0.1
+                description: Electricity consumption in units (must be positive)
+                example: 130.8
+              water_units:
+                type: number
+                minimum: 0.1
+                description: Water consumption in units (must be positive)
+                example: 48.5
+              bill_id:
+                type: string
+                format: uuid
+                description: Associated bill ID
+                example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+
+    CreateContractRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              [
+                room_id,
+                contract_type_id,
+                tenant_id,
+                created_date,
+                expiry_date,
+                updated_date,
+              ]
+            properties:
+              room_id:
+                type: string
+                format: uuid
+                example: d44605d3-4f8e-4057-b778-201111db860d
+              contract_type_id:
+                type: string
+                format: uuid
+                example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+              tenant_id:
+                type: string
+                format: uuid
+                example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+              created_date:
+                type: string
+                format: date-time
+                example: 2025-10-01T00:00:00.000Z
+              expiry_date:
+                type: string
+                format: date-time
+                example: 2026-10-01T00:00:00.000Z
+              updated_date:
+                type: string
+                format: date-time
+                example: 2025-10-01T00:00:00.000Z
+
+    UpdateContractRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              room_id:
+                type: string
+                format: uuid
+                example: d44605d3-4f8e-4057-b778-201111db860d
+              contract_type_id:
+                type: string
+                format: uuid
+                example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+              tenant_id:
+                type: string
+                format: uuid
+                example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+              created_date:
+                type: string
+                format: date-time
+                example: 2025-10-01T00:00:00.000Z
+              expiry_date:
+                type: string
+                format: date-time
+                example: 2026-10-01T00:00:00.000Z
+              updated_date:
+                type: string
+                format: date-time
+                example: 2025-10-01T00:00:00.000Z
+
+    CreateContractTypeRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [name, duration, price, facilities]
+            properties:
+              name:
+                type: string
+                minLength: 1
+                example: 'Standard 1-Year Lease'
+              duration:
+                type: integer
+                minimum: 1
+                example: 12
+              price:
+                type: number
+                minimum: 0
+                example: 1200000
+              facilities:
+                type: array
+                items:
+                  type: string
+                  minLength: 1
+                minItems: 1
+                example: ['WiFi', 'Parking', 'Maintenance']
+
+    UpdateContractTypeRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                minLength: 1
+                example: 'Premium 2-Year Lease'
+              duration:
+                type: integer
+                minimum: 1
+                example: 24
+              price:
+                type: number
+                minimum: 0
+                example: 2200000
+              facilities:
+                type: array
+                items:
+                  type: string
+                  minLength: 1
+                example: ['WiFi', 'Parking', 'Maintenance', 'Gym Access']
+
+    CreateRoomRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - room_no
+              - floor
+              - dimension
+              - no_of_bed_room
+              - status
+              - max_no_of_people
+            properties:
+              room_no:
+                type: integer
+                minimum: 1
+                example: 414
+              floor:
+                type: integer
+                example: 4
+              dimension:
+                type: string
+                example: 14x20 ft
+              no_of_bed_room:
+                type: integer
+                minimum: 1
+                example: 2
+              status:
+                type: string
+                enum: [Available, Rented, Maintenance]
+                example: Available
+              selling_price:
+                type: number
+                example: 1352275
+              max_no_of_people:
+                type: integer
+                minimum: 1
+                example: 2
+              description:
+                type: string
+                example: City view with balcony
+              tenant_id:
+                type: string
+                format: uuid
+                nullable: true
+              bill_id:
+                type: string
+                format: uuid
+                nullable: true
+              customer_service_id:
+                type: string
+                format: uuid
+                nullable: true
+
+    UpdateRoomRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              room_no:
+                type: integer
+                minimum: 1
+                example: 415
+              floor:
+                type: integer
+                example: 4
+              dimension:
+                type: string
+                example: 15x20 ft
+              no_of_bed_room:
+                type: integer
+                minimum: 1
+                example: 3
+              status:
+                type: string
+                enum: [Available, Rented, Maintenance]
+                example: Rented
+              selling_price:
+                type: number
+                example: 1400000
+              max_no_of_people:
+                type: integer
+                minimum: 1
+                example: 3
+              description:
+                type: string
+                example: City view with large balcony
+
+  # Reusable Responses
+  responses:
+      UnauthorizedError:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ApiErrorResponse'
+                - type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Access token is required
+                    status:
+                      type: integer
+                      example: 401
+
+      ForbiddenError:
+        description: Forbidden - Admin or Staff role required
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ApiErrorResponse'
+                - type: object
+                  properties:
+                    message:
+                      type: string
+                      example: 'Required roles: Admin, Staff'
+                    status:
+                      type: integer
+                      example: 403
+
+      NotFoundError:
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ApiErrorResponse'
+                - type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Resource not found
+                    status:
+                      type: integer
+                      example: 404
+
+      BadRequestError:
+        description: Bad Request
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ApiErrorResponse'
+                - type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Validation failed
+                    status:
+                      type: integer
+                      example: 400
 
 paths:
   # Authentication Endpoints
@@ -539,18 +1172,7 @@ paths:
       summary: Sign in a user
       description: Sign in a user with email and password
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  example: admin@gmail.com
-                password:
-                  type: string
-                  example: admin123
+        $ref: '#/components/requestBodies/LoginRequest'
       responses:
         200:
           description: User signed in successfully
@@ -573,11 +1195,7 @@ paths:
                             type: string
                             example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
+          $ref: '#/components/responses/UnauthorizedError'
   /api/v1/auth/logout:
     post:
       tags:
@@ -599,19 +1217,8 @@ paths:
                       message:
                         type: string
                         example: Sign out successful
-
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
   /api/v1/auth/refresh-token:
     post:
       tags:
@@ -646,17 +1253,7 @@ paths:
                             type: string
                             example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Refresh token is required
+          $ref: '#/components/responses/UnauthorizedError'
 
   # User Endpoints
   /api/v1/users:
@@ -668,36 +1265,10 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: page
-          in: query
-          description: Page number for pagination
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            example: 1
-        - name: limit
-          in: query
-          description: Number of items per page
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            example: 10
-        - name: role
-          in: query
-          description: Filter by user role
-          required: false
-          schema:
-            $ref: '#/components/schemas/UserRole'
-        - name: is_active
-          in: query
-          description: Filter by active status
-          required: false
-          schema:
-            type: boolean
-            example: true
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/RoleFilterParam'
+        - $ref: '#/components/parameters/ActiveFilterParam'
       responses:
         200:
           description: Users fetched successfully
@@ -721,41 +1292,11 @@ paths:
                                 - $ref: '#/components/schemas/AdminUser'
                                 - $ref: '#/components/schemas/TenantUser'
                           pagination:
-                            type: object
-                            properties:
-                              count:
-                                type: integer
-                                example: 2
-                              hasPrevPage:
-                                type: boolean
-                                example: false
-                              hasNextPage:
-                                type: boolean
-                                example: false
-                              page:
-                                type: integer
-                                example: 1
-                              limit:
-                                type: integer
-                                example: 10
-                              totalPages:
-                                type: integer
-                                example: 1
-                              totalCount:
-                                type: integer
-                                example: 2
+                            $ref: '#/components/schemas/Pagination'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
     post:
       tags:
         - Users
@@ -764,11 +1305,7 @@ paths:
       security:
         - bearerAuth: []
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUserRequest'
+        $ref: '#/components/requestBodies/CreateUserRequest'
       responses:
         201:
           description: User created successfully
@@ -791,41 +1328,11 @@ paths:
                         type: number
                         example: 201
         400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: User with this email already exists
+          $ref: '#/components/responses/BadRequestError'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
   /api/v1/users/{userId}:
     get:
       tags:
@@ -835,13 +1342,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: userId
-          in: path
-          description: User ID (UUID)
-          required: true
-          schema:
-            type: string
-            example: 974cbaf3-78b9-41f0-b6e9-8a9ddf9682d3
+        - $ref: '#/components/parameters/UserIdParam'
       responses:
         200:
           description: User fetched successfully
@@ -863,41 +1364,11 @@ paths:
                               - $ref: '#/components/schemas/AdminUser'
                               - $ref: '#/components/schemas/TenantUser'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: User not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: User not found
+          $ref: '#/components/responses/NotFoundError'
     put:
       tags:
         - Users
@@ -906,20 +1377,9 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: userId
-          in: path
-          description: User ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: 974cbaf3-78b9-41f0-b6e9-8a9ddf9682d3
+        - $ref: '#/components/parameters/UserIdParam'
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
+        $ref: '#/components/requestBodies/UpdateUserRequest'
       responses:
         200:
           description: User updated successfully
@@ -941,52 +1401,13 @@ paths:
                               - $ref: '#/components/schemas/AdminUser'
                               - $ref: '#/components/schemas/TenantUser'
         400:
-          description: Bad Request - Validation error or email already taken
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Validation failed
-                      details:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            path:
-                              type: string
-                              example: email
-                            message:
-                              type: string
-                              example: Email is already taken
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: User not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: User not found
+          $ref: '#/components/responses/NotFoundError'
     delete:
       tags:
         - Users
@@ -995,14 +1416,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: userId
-          in: path
-          description: User ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: 974cbaf3-78b9-41f0-b6e9-8a9ddf9682d3
+        - $ref: '#/components/parameters/UserIdParam'
       responses:
         200:
           description: User deleted successfully
@@ -1019,21 +1433,15 @@ paths:
                       message:
                         type: string
                         example: User deleted successfully
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: User not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: User not found
+          $ref: '#/components/responses/NotFoundError'
 
   # Customer Service Endpoints
-  /api/v1/tenants/{id}/customer-services/create:
+  /api/v1/tenants/{tenantId}/customer-services/create:
     post:
       tags:
         - Customer Services
@@ -1042,20 +1450,9 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Tenant ID (UUID)
-          schema:
-            type: string
-            format: uuid
-            example: 8a9ddf96-82d3-974c-baf3-78b941f0b6e9
+        - $ref: '#/components/parameters/TenantIdParam'
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCustomerServiceRequest'
+        $ref: '#/components/requestBodies/CreateCustomerServiceRequest'
       responses:
         201:
           description: Customer service created successfully
@@ -1077,32 +1474,12 @@ paths:
                         type: integer
                         example: 201
         400:
-          description: Invalid input or validation error
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Validation failed
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Tenant not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Tenant not found
-                      status:
-                        example: 404
-  /api/v1/tenants/{id}/customer-services/history/{status}:
+          $ref: '#/components/responses/NotFoundError'
+  /api/v1/tenants/{tenantId}/customer-services/history/{status}:
     get:
       tags:
         - Customer Services
@@ -1111,38 +1488,10 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Tenant ID (UUID)
-          schema:
-            type: string
-            format: uuid
-        - name: status
-          in: path
-          required: true
-          description: Service status filter
-          schema:
-            type: string
-            enum: [Pending, Ongoing, Resolved]
-            example: Pending
-        - name: page
-          in: query
-          required: false
-          description: 'Page number for pagination (default: 1)'
-          schema:
-            type: integer
-            minimum: 1
-            example: 1
-        - name: limit
-          in: query
-          required: false
-          description: 'Number of items per page (default: 10, max: 100)'
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            example: 10
+        - $ref: '#/components/parameters/TenantIdParam'
+        - $ref: '#/components/parameters/StatusParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
       responses:
         200:
           description: Customer service history retrieved successfully
@@ -1163,48 +1512,15 @@ paths:
                             type: array
                             items:
                               $ref: '#/components/schemas/CustomerService'
-                          pagination:
-                            type: object
-                            properties:
-                              count:
-                                type: integer
-                                example: 1
-                              hasPrevPage:
-                                type: boolean
-                                example: false
-                              hasNextPage:
-                                type: boolean
-                                example: false
-                              page:
-                                type: integer
-                                example: 1
-                              limit:
-                                type: integer
-                                example: 10
-                              totalPages:
-                                type: integer
-                                example: 1
-                              totalCount:
-                                type: integer
-                                example: 1
+                            pagination:
+                              $ref: '#/components/schemas/Pagination'
                       status:
                         type: integer
                         example: 200
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Tenant not found or no service history found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: No customer service history found.
-                      status:
-                        type: integer
-                        example: 404
+          $ref: '#/components/responses/NotFoundError'
   /api/v1/customer-services:
     get:
       tags:
@@ -1214,20 +1530,8 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: page
-          in: query
-          required: false
-          description: Page number for pagination
-          schema:
-            type: integer
-            example: 1
-        - name: limit
-          in: query
-          required: false
-          description: Number of items per page
-          schema:
-            type: integer
-            example: 10
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
       responses:
         200:
           description: Customer services retrieved successfully
@@ -1249,56 +1553,12 @@ paths:
                             items:
                               $ref: '#/components/schemas/CustomerService'
                           pagination:
-                            type: object
-                            properties:
-                              count:
-                                type: integer
-                                example: 1
-                              hasPrevPage:
-                                type: boolean
-                                example: false
-                              hasNextPage:
-                                type: boolean
-                                example: false
-                              page:
-                                type: integer
-                                example: 1
-                              limit:
-                                type: integer
-                                example: 10
-                              totalPages:
-                                type: integer
-                                example: 1
-                              totalCount:
-                                type: integer
-                                example: 1
+                            $ref: '#/components/schemas/Pagination'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Access token is required'
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff only
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
-                      status:
-                        type: integer
-                        example: 403
+          $ref: '#/components/responses/ForbiddenError'
+
   /api/v1/customer-services/{id}:
     get:
       tags:
@@ -1308,14 +1568,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Customer Service ID (UUID)
-          schema:
-            type: string
-            format: uuid
-            example: c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
+        - $ref: '#/components/parameters/CustomerServiceIdParam'
       responses:
         200:
           description: Customer service retrieved successfully
@@ -1334,18 +1587,12 @@ paths:
                         properties:
                           service:
                             $ref: '#/components/schemas/CustomerService'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Customer service not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: No customer service found for Id-c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
+          $ref: '#/components/responses/NotFoundError'
     put:
       tags:
         - Customer Services
@@ -1354,20 +1601,9 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Customer Service ID (UUID)
-          schema:
-            type: string
-            format: uuid
-            example: c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
+        - $ref: '#/components/parameters/CustomerServiceIdParam'
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateCustomerServiceRequest'
+        $ref: '#/components/requestBodies/UpdateCustomerServiceRequest'
       responses:
         200:
           description: Customer service updated successfully
@@ -1397,62 +1633,25 @@ paths:
                         example: Both status AND priority_level must be provided for update
                       status:
                         example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
-                      status:
-                        example: 403
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Customer service not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: No customer service found for Id-c54e9b25-d17f-4c8f-9c73-15fd95a62f1f
-                      status:
-                        example: 404
+          $ref: '#/components/responses/NotFoundError'
 
   # Tenant Endpoints
   /api/v1/tenants:
     get:
       tags:
-        - Tenants
+        - Tenants - (In Maintenance)
       summary: Get all tenants (Admin & Staff only)
       description: Retrieves a list of all tenants with pagination support. Accessible only to Admin and Staff users.
       security:
         - bearerAuth: []
       parameters:
-        - name: page
-          in: query
-          description: Page number for pagination
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            example: 1
-        - name: limit
-          in: query
-          description: Number of items per page
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            example: 10
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
       responses:
         200:
           description: Tenants retrieved successfully
@@ -1474,66 +1673,20 @@ paths:
                             items:
                               $ref: '#/components/schemas/Tenant'
                           pagination:
-                            type: object
-                            properties:
-                              count:
-                                type: integer
-                                example: 1
-                              hasPrevPage:
-                                type: boolean
-                                example: false
-                              hasNextPage:
-                                type: boolean
-                                example: true
-                              page:
-                                type: integer
-                                example: 1
-                              limit:
-                                type: integer
-                                example: 1
-                              totalPages:
-                                type: integer
-                                example: 67
-                              totalCount:
-                                type: integer
-                                example: 67
+                            $ref: '#/components/schemas/Pagination'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
     post:
       tags:
-        - Tenants
+        - Tenants - (In Maintenance)
       summary: Create a new tenant (Admin & Staff only)
-      description: Create a new tenant with multiple names, emails, NRCs, etc. Accessible only to Admin and Staff users.
+      description: Create a new tenant with name, email, NRC, etc. Accessible only to Admin and Staff users.
       security:
         - bearerAuth: []
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTenantRequest'
+        $ref: '#/components/requestBodies/CreateTenantRequest'
       responses:
         201:
           description: Tenant created successfully
@@ -1578,47 +1731,24 @@ paths:
                             message:
                               type: string
                               example: Array fields must have the same length
+                            status:
+                              type: integer
+                              example: 400
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
+
   /api/v1/tenants/{tenantId}:
     get:
       tags:
-        - Tenants
+        - Tenants - (In Maintenance)
       summary: Get tenant by ID (Admin & Staff only)
       description: Retrieve a specific tenant by their ID. Accessible only to Admin and Staff users.
       security:
         - bearerAuth: []
       parameters:
-        - name: tenantId
-          in: path
-          description: Tenant ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+        - $ref: '#/components/parameters/TenantIdParam'
       responses:
         200:
           description: Tenant retrieved successfully
@@ -1638,63 +1768,22 @@ paths:
                           tenant:
                             $ref: '#/components/schemas/Tenant'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Tenant not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Tenant not found
+          $ref: '#/components/responses/NotFoundError'
     put:
       tags:
-        - Tenants
+        - Tenants - (In Maintenance)
       summary: Update tenant by ID (Admin & Staff only)
       description: Update tenant information. At least one field must be provided. Accessible to Admin and Staff users.
       security:
         - bearerAuth: []
       parameters:
-        - name: tenantId
-          in: path
-          description: Tenant ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+        - $ref: '#/components/parameters/TenantIdParam'
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateTenantRequest'
+        $ref: '#/components/requestBodies/UpdateTenantRequest'
       responses:
         200:
           description: Tenant updated successfully
@@ -1725,42 +1814,15 @@ paths:
                       message:
                         type: string
                         example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Tenant not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Tenant not found
+          $ref: '#/components/responses/NotFoundError'
 
   # Receipt Endpoints
   /api/v1/receipts:
@@ -1772,31 +1834,9 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: page
-          in: query
-          description: Page number for pagination
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            example: 1
-        - name: limit
-          in: query
-          description: Number of items per page
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            example: 10
-        - name: payment_method
-          in: query
-          description: Filter by payment method
-          required: false
-          schema:
-            type: string
-            enum: [Cash, Mobile Banking]
-            example: Cash
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/PaymentMethodFilterParam'
       responses:
         200:
           description: Receipts fetched successfully
@@ -1818,65 +1858,13 @@ paths:
                             items:
                               $ref: '#/components/schemas/Receipt'
                           pagination:
-                            type: object
-                            properties:
-                              count:
-                                type: integer
-                                example: 2
-                              hasPrevPage:
-                                type: boolean
-                                example: false
-                              hasNextPage:
-                                type: boolean
-                                example: true
-                              page:
-                                type: integer
-                                example: 1
-                              limit:
-                                type: integer
-                                example: 2
-                              totalPages:
-                                type: integer
-                                example: 267
-                              totalCount:
-                                type: integer
-                                example: 533
+                            $ref: '#/components/schemas/Pagination'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: No receipts found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: No receipts found
+          $ref: '#/components/responses/NotFoundError'
     post:
       tags:
         - Receipts
@@ -1885,11 +1873,7 @@ paths:
       security:
         - bearerAuth: []
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateReceiptRequest'
+        $ref: '#/components/requestBodies/CreateReceiptRequest'
       responses:
         201:
           description: Receipt created successfully
@@ -1923,42 +1907,16 @@ paths:
                       message:
                         type: string
                         example: Receipt already exists for this invoice
+                      status:
+                        type: integer
+                        example: 400
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Invoice not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Invoice not found
+          $ref: '#/components/responses/NotFoundError'
+
   /api/v1/receipts/{id}:
     get:
       tags:
@@ -1968,14 +1926,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          description: Receipt ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: 7fc98505-605f-49d2-a3b8-3c6f6eac0ad2
+        - $ref: '#/components/parameters/ReceiptIdParam'
       responses:
         200:
           description: Receipt fetched successfully
@@ -1995,63 +1946,22 @@ paths:
                           receipt:
                             $ref: '#/components/schemas/Receipt'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Receipt not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Receipt not found
+          $ref: '#/components/responses/NotFoundError'
     put:
       tags:
         - Receipts
       summary: Update receipt by ID (Admin & Staff only)
-      description: Update receipt information. At least one field must be provided. Accessible to Admin and Staff users.
+      description: Update receipt information. At least one field must be provided.
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          description: Receipt ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: 7fc98505-605f-49d2-a3b8-3c6f6eac0ad2
+        - $ref: '#/components/parameters/ReceiptIdParam'
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateReceiptRequest'
+        $ref: '#/components/requestBodies/UpdateReceiptRequest'
       responses:
         200:
           description: Receipt updated successfully
@@ -2082,59 +1992,26 @@ paths:
                       message:
                         type: string
                         example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Receipt not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Receipt not found
-  /api/v1/receipts/invoice/{invoiceId}:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/receipts/invoices/{invoiceId}:
     get:
       tags:
         - Receipts
       summary: Get receipt by invoice ID (Admin & Staff only)
-      description: Retrieve a receipt by its associated invoice ID. Accessible only to Admin and Staff users.
+      description: Retrieve a receipt by its associated invoice ID.
       security:
         - bearerAuth: []
       parameters:
-        - name: invoiceId
-          in: path
-          description: Invoice ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: d1ea2e8f-c047-48e0-bd90-d26356674d47
+        - $ref: '#/components/parameters/InvoiceIdParam'
       responses:
         200:
           description: Receipt fetched successfully
@@ -2154,41 +2031,12 @@ paths:
                           receipt:
                             $ref: '#/components/schemas/Receipt'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Receipt not found for this invoice
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Receipt not found for this invoice
+          $ref: '#/components/responses/NotFoundError'
+
   /api/v1/tenants/{tenantId}/receipts/latest:
     get:
       tags:
@@ -2198,14 +2046,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: tenantId
-          in: path
-          description: Tenant ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+        - $ref: '#/components/parameters/TenantIdParam'
       responses:
         200:
           description: Latest receipt fetched successfully
@@ -2225,29 +2066,10 @@ paths:
                           latestReceipt:
                             $ref: '#/components/schemas/Receipt'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Latest receipt not found or tenant not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Latest receipt not found
+          $ref: '#/components/responses/NotFoundError'
+
   /api/v1/tenants/{tenantId}/receipts/history:
     get:
       tags:
@@ -2257,31 +2079,9 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: tenantId
-          in: path
-          description: Tenant ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
-        - name: page
-          in: query
-          description: Page number for pagination
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            example: 1
-        - name: limit
-          in: query
-          description: Number of items per page
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            example: 10
+        - $ref: '#/components/parameters/TenantIdParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
       responses:
         200:
           description: Receipt history fetched successfully
@@ -2303,53 +2103,11 @@ paths:
                             items:
                               $ref: '#/components/schemas/Receipt'
                           pagination:
-                            type: object
-                            properties:
-                              count:
-                                type: integer
-                                example: 5
-                              hasPrevPage:
-                                type: boolean
-                                example: false
-                              hasNextPage:
-                                type: boolean
-                                example: true
-                              page:
-                                type: integer
-                                example: 1
-                              limit:
-                                type: integer
-                                example: 10
-                              totalPages:
-                                type: integer
-                                example: 15
-                              totalCount:
-                                type: integer
-                                example: 145
+                            $ref: '#/components/schemas/Pagination'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Receipt histories not found or tenant not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Receipt histories are not found
+          $ref: '#/components/responses/NotFoundError'
 
   # Total Units Endpoints
   /api/v1/total-units:
@@ -2357,27 +2115,12 @@ paths:
       tags:
         - Total Units
       summary: Get all total units (Admin & Staff only)
-      description: Retrieves a list of all total units with pagination support. Accessible only to Admin and Staff users.
+      description: Retrieves a list of all total units with pagination support.
       security:
         - bearerAuth: []
       parameters:
-        - name: page
-          in: query
-          description: Page number for pagination
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            example: 1
-        - name: limit
-          in: query
-          description: Number of items per page
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            example: 10
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
       responses:
         200:
           description: Total units fetched successfully
@@ -2399,78 +2142,22 @@ paths:
                             items:
                               $ref: '#/components/schemas/TotalUnits'
                           pagination:
-                            type: object
-                            properties:
-                              count:
-                                type: integer
-                                example: 10
-                              hasPrevPage:
-                                type: boolean
-                                example: false
-                              hasNextPage:
-                                type: boolean
-                                example: true
-                              page:
-                                type: integer
-                                example: 1
-                              limit:
-                                type: integer
-                                example: 10
-                              totalPages:
-                                type: integer
-                                example: 80
-                              totalCount:
-                                type: integer
-                                example: 797
+                            $ref: '#/components/schemas/Pagination'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: No total units found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: No total units found
+          $ref: '#/components/responses/NotFoundError'
     post:
       tags:
         - Total Units
       summary: Create new total units (Admin & Staff only)
-      description: Create new total units record for a bill. Accessible only to Admin and Staff users.
+      description: Create new total units record for a bill.
       security:
         - bearerAuth: []
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTotalUnitsRequest'
+        $ref: '#/components/requestBodies/CreateTotalUnitsRequest'
       responses:
         201:
           description: Total units created successfully
@@ -2504,60 +2191,26 @@ paths:
                       message:
                         type: string
                         example: Total-units already exists for this bill
+                      status:
+                        type: integer
+                        example: 400
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Bill not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Bill not found
+          $ref: '#/components/responses/NotFoundError'
 
   /api/v1/total-units/{id}:
     get:
       tags:
         - Total Units
       summary: Get total units by ID (Admin & Staff only)
-      description: Retrieve specific total units record by its ID. Accessible only to Admin and Staff users.
+      description: Retrieve specific total units record by its ID.
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          description: Total Units ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        - $ref: '#/components/parameters/TotalUnitsIdParam'
       responses:
         200:
           description: Total units fetched successfully
@@ -2577,63 +2230,22 @@ paths:
                           totalUnits:
                             $ref: '#/components/schemas/TotalUnits'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Total units not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Total-units not found
+          $ref: '#/components/responses/NotFoundError'
     put:
       tags:
         - Total Units
       summary: Update total units by ID (Admin & Staff only)
-      description: Update total units information. At least one field must be provided. Accessible to Admin and Staff users.
+      description: Update total units information. At least one field must be provided.
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          description: Total Units ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        - $ref: '#/components/parameters/TotalUnitsIdParam'
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateTotalUnitsRequest'
+        $ref: '#/components/requestBodies/UpdateTotalUnitsRequest'
       responses:
         200:
           description: Total units updated successfully
@@ -2664,60 +2276,26 @@ paths:
                       message:
                         type: string
                         example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Total units not found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Total-units not found
+          $ref: '#/components/responses/NotFoundError'
 
   /api/v1/total-units/bills/{billId}:
     get:
       tags:
         - Total Units
       summary: Get total units by bill ID (Admin & Staff only)
-      description: Retrieve total units record associated with a specific bill. Accessible only to Admin and Staff users.
+      description: Retrieve total units record associated with a specific bill.
       security:
         - bearerAuth: []
       parameters:
-        - name: billId
-          in: path
-          description: Bill ID (UUID)
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+        - $ref: '#/components/parameters/BillIdParam'
       responses:
         200:
           description: Total units fetched successfully
@@ -2737,31 +2315,46 @@ paths:
                           totalUnits:
                             $ref: '#/components/schemas/TotalUnits'
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Access token is required
+          $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: Forbidden - Admin or Staff role required
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiErrorResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Required roles: Admin, Staff'
+          $ref: '#/components/responses/ForbiddenError'
         404:
-          description: Total units not found for this bill
+          $ref: '#/components/responses/NotFoundError'
+
+  # Contract Endpoints
+  /api/v1/contracts:
+    post:
+      tags:
+        - Contracts
+      summary: Create a new contract (Admin & Staff only)
+      description: Create a new contract between tenant and room with contract type.
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/CreateContractRequest'
+      responses:
+        201:
+          description: Contract created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract created successfully
+                      content:
+                        type: object
+                        properties:
+                          contract:
+                            $ref: '#/components/schemas/Contract'
+                      status:
+                        type: number
+                        example: 201
+        400:
+          description: Bad Request - Validation error or contract already exists
           content:
             application/json:
               schema:
@@ -2771,4 +2364,531 @@ paths:
                     properties:
                       message:
                         type: string
-                        example: Total-units by bill id not found
+                        example: Tenant already has a contract
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    get:
+      tags:
+        - Contracts
+      summary: Get all contracts (Admin & Staff only)
+      description: Retrieves a list of all contracts with pagination support.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        200:
+          description: Contracts fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All Contracts fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          contracts:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Contract'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/contracts/{contractId}:
+    put:
+      tags:
+        - Contracts
+      summary: Update contract by ID (Admin & Staff only)
+      description: Update contract information. At least one field must be provided.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ContractIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateContractRequest'
+      responses:
+        200:
+          description: Contract updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract updated successfully
+                      content:
+                        type: object
+                        properties:
+                          contract:
+                            $ref: '#/components/schemas/Contract'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/contracts/show/{contractId}:
+    get:
+      tags:
+        - Contracts
+      summary: Get contract by ID (Admin & Staff only)
+      description: Retrieve a specific contract by its ID with tenant, room, and contract type details.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ContractIdParam'
+      responses:
+        200:
+          description: Contract fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          contract:
+                            $ref: '#/components/schemas/Contract'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/tenants/{tenantId}/contracts:
+    get:
+      tags:
+        - Contracts
+      summary: Get all contracts by tenant ID
+      description: Retrieve all contracts for a specific tenant. Accessible by Admin, Staff, and the tenant themselves.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdParam'
+      responses:
+        200:
+          description: Contracts fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All Contracts fetched By tenantId successfully
+                      content:
+                        type: object
+                        properties:
+                          contract:
+                            $ref: '#/components/schemas/Contract'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  # Contract Type Endpoints
+  /api/v1/contract-types:
+    post:
+      tags:
+        - Contract Types
+      summary: Create a new contract type (Admin & Staff only)
+      description: Create a new contract type with name, duration, price, and facilities.
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/CreateContractTypeRequest'
+      responses:
+        201:
+          description: Contract type created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract type created successfully
+                      content:
+                        type: object
+                        properties:
+                          contractType:
+                            $ref: '#/components/schemas/ContractType'
+                      status:
+                        type: number
+                        example: 201
+        400:
+          description: Bad Request - Validation error or contract type already exists
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract type already exists
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+    get:
+      tags:
+        - Contract Types
+      summary: Get all contract types (Admin & Staff only)
+      description: Retrieves a list of all contract types.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Contract types fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All Contract types fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          contractTypes:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ContractType'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/contract-types/{contractTypeId}:
+    get:
+      tags:
+        - Contract Types
+      summary: Get contract type by ID (Admin & Staff only)
+      description: Retrieve a specific contract type by its ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ContractTypeIdParam'
+      responses:
+        200:
+          description: Contract type retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract type retrieved successfully
+                      content:
+                        type: object
+                        properties:
+                          contractType:
+                            $ref: '#/components/schemas/ContractType'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      tags:
+        - Contract Types
+      summary: Update contract type by ID (Admin & Staff only)
+      description: Update contract type information. At least one field must be provided.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ContractTypeIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateContractTypeRequest'
+      responses:
+        200:
+          description: Contract type updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Contract type updated successfully
+                      content:
+                        type: object
+                        properties:
+                          contractType:
+                            $ref: '#/components/schemas/ContractType'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  # Room Endpoints
+  /api/v1/rooms:
+    post:
+      tags:
+        - Rooms
+      summary: Create a new room (Admin & Staff only)
+      description: Create a new room with room details. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/CreateRoomRequest'
+      responses:
+        201:
+          description: Room created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Room created successfully
+                      content:
+                        type: object
+                        properties:
+                          room:
+                            $ref: '#/components/schemas/Room'
+                      status:
+                        type: number
+                        example: 201
+        400:
+          description: Bad Request - Validation error or room already exists
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Room with this number already exists on this floor
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+    get:
+      tags:
+        - Rooms
+      summary: Get all rooms (Admin & Staff only)
+      description: Retrieves a list of all rooms with pagination and filtering support. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: room_no
+          in: query
+          description: Filter by room number
+          required: false
+          schema:
+            type: string
+            example: '414'
+        - name: floor
+          in: query
+          description: Filter by floor number
+          required: false
+          schema:
+            type: integer
+            example: 4
+        - $ref: '#/components/parameters/RoomStatusFilterParam'
+      responses:
+        200:
+          description: Rooms fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Rooms fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          rooms:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Room'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/rooms/{roomId}:
+    get:
+      tags:
+        - Rooms
+      summary: Get room by ID (Admin & Staff only)
+      description: Retrieve a specific room by its ID with contract, bill, customer service, and tenant details.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RoomIdParam'
+      responses:
+        200:
+          description: Room fetched successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Room fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          room:
+                            $ref: '#/components/schemas/Room'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      tags:
+        - Rooms
+      summary: Update room by ID (Admin & Staff only)
+      description: Update room information. At least one field must be provided.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RoomIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateRoomRequest'
+      responses:
+        200:
+          description: Room updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Room updated successfully
+                      content:
+                        type: object
+                        properties:
+                          room:
+                            $ref: '#/components/schemas/Room'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'

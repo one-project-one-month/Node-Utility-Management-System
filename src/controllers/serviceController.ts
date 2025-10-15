@@ -40,7 +40,8 @@ export const serviceHistoryController = async (
   try {
     const result = await cutomerServiceHistory(
       req.validatedParams,
-      req.validatedQuery
+      req.validatedQuery,
+      req
     );
     successResponse(res, 'Fetch service history successfullly', result, 200);
   } catch (error) {
@@ -55,9 +56,16 @@ export const updateServiceController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-
-    const service = await updateCustomerService(req.validatedParams.id, req.validatedBody);
-    successResponse(res, 'Customer service updated successfully', { service }, 200);
+    const service = await updateCustomerService(
+      req.validatedParams.id,
+      req.validatedBody
+    );
+    successResponse(
+      res,
+      'Customer service updated successfully',
+      { service },
+      200
+    );
   } catch (error) {
     next(error);
   }
@@ -70,7 +78,7 @@ export const getAllServiceController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await getAllCustomerService(req.validatedQuery);
+    const result = await getAllCustomerService(req.validatedQuery, req);
     successResponse(res, 'Fetch customer services successfully', result, 200);
   } catch (error) {
     next(error);

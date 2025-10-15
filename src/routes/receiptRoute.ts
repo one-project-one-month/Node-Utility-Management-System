@@ -52,7 +52,7 @@ router.get(
 
 // Get receipt by invoice Id
 router.get(
-  '/receipts/invoice/:invoiceId',
+  '/receipts/invoices/:invoiceId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetReceiptByInvoiceParamSchema),
   getReceiptByInvoiceIdController

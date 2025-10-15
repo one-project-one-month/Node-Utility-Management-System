@@ -6,11 +6,11 @@ Thank you for contributing to this project! Please follow the rules below to kee
 
 ## 🚀 Branch Naming
 
-- Use the following format for branch names:
-  - `feature/[description]` - For new features
-  - `fix/[description]` - For bug fixes
-  - `docs/[description]` - For documentation updates
-  - `refactor/[description]` - For code refactoring
+**Use the following format for branch names:**
+- `feature/[description]` - For new features
+- `fix/[description]` - For bug fixes
+- `docs/[description]` - For documentation updates
+- `refactor/[description]` - For code refactoring
 
 **Examples:**
 - `feature/add-authentication`
@@ -49,13 +49,15 @@ We follow the **conventional commit** style for consistency:
 
 ## 📂 Specific File Type Conventions
 
-- **Controllers**: [entity]Controller.ts (e.g., `userController.ts`, `roomController.ts`, `tenantController.ts`)
-- **Services**: [entity]Service.ts (e.g., `userService.ts`, `authService.ts`, `billingService.ts`)
-- **Routes**: [entity]Route.ts (e.g., `userRoute.ts`, `roomRoute.ts`, `contractRoute.ts`)
+- **Controllers**: [entity]Controller.ts (e.g., `userController.ts`, `tenantController.ts`, `contractController.ts`)
+- **Services**: [entity]Service.ts (e.g., `userService.ts`, `tenantService.ts`, `contractService.ts`)
+- **Routes**: [entity]Route.ts (e.g., `userRoute.ts`, `tenantRoute.ts`, `contractRoute.ts`)
 - **Middlewares**: [purpose]Middleware.ts (e.g., `validationMiddleware.ts`, `authMiddleware.ts`)
-- **Validations**: [entity]Schema.ts (e.g., `userSchema.ts`, `roomSchema.ts`, `tenantSchema.ts`)
+- **Validations**: [entity]Schema.ts (e.g., `userSchema.ts`, `tenantSchema.ts`, `contractSchema.ts`)
 - **Types**: [domain].d.ts or [entity]Types.ts (e.g., `express.d.ts`, `userTypes.ts`)
-- **Errors**: [type]Error.ts (e.g., `badRequestError.ts`, `notFoundError.ts`)
+- **Errors**: [type]Error.ts (e.g., `badRequestError.ts`, `notFoundError.ts`, `forbiddenError.ts`)
+- **Helpers**: [purpose].ts (e.g., `checkDuplicateTenantData.ts`)
+- **Config**: [purpose].ts (e.g., `swagger.ts`)
 
 ---
 
@@ -85,17 +87,31 @@ import {
   validateRequestParams,
   validateRequestQuery,
 } from "../middlewares/validationMiddlware";
+import { hasRole } from "../middlewares/authMiddleware";
 import { CreateUserSchema, GetUserParamSchema, GetUserQuerySchema } from "../validations/userSchema";
 
 const router = Router();
 
-router.get("/", validateRequestQuery(GetUserQuerySchema), getAllUsersController);
-router.get("/:userId", validateRequestParams(GetUserParamSchema) ,getUserController);
-router.post("/",validateRequestBody(CreateUserSchema), createUserController);
+router.get(
+  "/", 
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(GetUserQuerySchema), 
+  getAllUsersController
+);
+router.get(
+  "/:userId", 
+  hasRole(['Admin', 'Staff']),
+  validateRequestParams(GetUserParamSchema),
+  getUserController
+);
+router.post(
+  "/",
+  hasRole(['Admin', 'Staff']),
+  validateRequestBody(CreateUserSchema), 
+  createUserController
+);
 
 export default router;
-
-
 ```
 
 ---
@@ -169,18 +185,18 @@ export async function createUserController(
 ```ts
 // src/services/userService.ts
 
-import { BadRequestError } from '../common/errors';
+import { BadRequestError, NotFoundError } from '../common/errors';
+import { hashPassword } from '../common/auth/password';
 import prisma from '../lib/prismaClient';
 import {
   CreateUserType,
   GetUserQueryType,
+  UpdateUserType,
 } from '../validations/userSchema';
-// import { Prisma } from '../../generated/prisma';
+import { Prisma } from '../../generated/prisma';
 
 export async function getAllUsersService(query: GetUserQueryType) {
-  const whereClause: any = {}
-  // OR 
-  // const whereClause: Prisma.UserWhereInput = {} // for type safety
+  const whereClause: Prisma.UserWhereInput = {};
 
   if (query.email) {
     whereClause.email = query.email;
@@ -190,12 +206,14 @@ export async function getAllUsersService(query: GetUserQueryType) {
     where: whereClause,
     select: {
       id: true,
-      name: true,
+      user_name: true,
       email: true,
+      role: true,
+      is_active: true,
       updated_at: true,
       created_at: true,
       // Exclude password field from the result
-    }
+    },
   });
 }
 
@@ -219,32 +237,34 @@ export async function createUserService(data: CreateUserType) {
   // Check if user already exists
   const existingUser = await prisma.user.findUnique({
     where: { email: data.email },
+    select: { id: true },
   });
 
   if (existingUser) {
     throw new BadRequestError('User with this email already exists');
   }
 
-  // In real application, you would hash the password here
-  // const hashedPassword = await bcrypt.hash(data.password, 12);
+  // Hash password
+  const hashedPassword = await hashPassword(data.password);
 
   return await prisma.user.create({
     data: {
-      ...data,
-      // password: hashedPassword, // Use hashed password
+      user_name: data.user_name,
+      email: data.email,
+      password: hashedPassword,
+      role: data.role,
     },
     select: {
       id: true,
-      name: true,
+      user_name: true,
       email: true,
-      createdAt: true,
-      updatedAt: true,
-      // Exclude password from response
+      role: true,
+      is_active: true,
+      created_at: true,
+      updated_at: true,
     },
   });
 }
-
-
 ```
 
 ---
@@ -253,6 +273,7 @@ export async function createUserService(data: CreateUserType) {
 // src/validations/userSchema.ts
 
 import z from 'zod';
+import { UserRole } from '../../generated/prisma';
 
 export const GetUserParamSchema = z.object({
   userId: z.uuid({ version: 'v4' }),
@@ -263,14 +284,34 @@ export const GetUserQuerySchema = z.object({
 });
 
 export const CreateUserSchema = z.object({
-  name: z.string().min(3),
+  user_name: z.string().min(1, 'Username is required'),
   email: z.email(),
-  password: z.string().min(8),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
+  role: z
+    .enum(UserRole, "Role must be one of 'Admin', 'Staff', or 'Tenant'")
+    .default(UserRole.Tenant),
 });
+
+export const UpdateUserSchema = z
+  .object({
+    user_name: z.string().optional(),
+    email: z.email().optional(),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters long')
+      .optional(),
+    role: z
+      .enum(UserRole)
+      .optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: 'At least one field must be provided for update',
+  });
 
 export type GetUserParamType = z.infer<typeof GetUserParamSchema>;
 export type GetUserQueryType = z.infer<typeof GetUserQuerySchema>;
 export type CreateUserType = z.infer<typeof CreateUserSchema>;
+export type UpdateUserType = z.infer<typeof UpdateUserSchema>;
 ```
 
 ---
@@ -285,13 +326,16 @@ export type CreateUserType = z.infer<typeof CreateUserSchema>;
 
 ### Migration Best Practices
 ```bash
-# Create a new migration
+# Using Makefile (Recommended)
+make db-migrate       # Create new migration
+make db-push          # Push schema changes (dev only)
+make db-generate      # Generate Prisma client
+make db-setup         # Complete setup (generate + push + seed)
+make db-reset         # Reset database completely
+
+# Using NPM directly
 npm run db:migrate
-
-# Push schema changes without migration (development only)
 npm run db:push
-
-# Generate Prisma client after schema changes
 npm run db:generate
 ```
 
@@ -300,11 +344,15 @@ npm run db:generate
 ## 🔒 Security Guidelines
 
 - **Never commit sensitive data** (API keys, passwords, tokens)
-- **Always hash passwords** using bcrypt before storing
+- **Always hash passwords** using bcrypt before storing (12 salt rounds)
 - **Use JWT tokens** for authentication with proper expiration
 - **Validate all inputs** using Zod schemas
 - **Sanitize database queries** using Prisma (prevents SQL injection)
 - **Use HTTPS** in production environments
+- **Implement rate limiting** for sensitive endpoints (login attempts)
+- **Use role-based access control** with middleware
+- **Set proper CORS policies** for production
+- **Never expose sensitive fields** in API responses (passwords, refresh tokens)
 
 ---
 
@@ -328,7 +376,7 @@ npm run test:coverage
 
 ## 📝 API Response Format
 
-All API responses should follow this consistent format:
+All API responses should follow this consistent format using the `successResponse` helper:
 
 ```typescript
 // Success Response
@@ -339,24 +387,70 @@ All API responses should follow this consistent format:
   "status": 200
 }
 
-// Error Response
+// Error Response (handled by errorHandler middleware)
 {
   "success": false,
   "message": "Error description",
   "status": 400
 }
+
+// Usage in controllers
+import { successResponse } from '../common/apiResponse';
+
+successResponse(res, 'User created successfully', { user: newUser }, 201);
 ```
 
 ---
 
 ## 🚫 Common Mistakes to Avoid
 
-- Don't expose sensitive data in API responses (passwords, tokens)
-- Don't use `any` type in TypeScript - be specific with types
-- Don't skip input validation - always validate with Zod
+- Don't expose sensitive data in API responses (passwords, refresh_token)
+- Don't use `any` type in TypeScript - use Prisma types or define custom types
+- Don't skip input validation - always validate with Zod schemas
 - Don't commit `.env` files - use `.env.example` instead
-- Don't write business logic in controllers - use services
-- Don't forget error handling in async functions
+- Don't write business logic in controllers - use services layer
+- Don't forget error handling in async functions - use try/catch with next()
+- Don't forget to hash passwords before storing in database
+- Don't skip role-based access control for protected endpoints
+- Don't forget to exclude sensitive fields in Prisma select statements
+- Don't use direct database field names in API responses - use consistent naming
+
+---
+
+## 🛠️ Development Workflow with Makefile
+
+### Quick Start Commands
+```bash
+# New developer setup
+make quick-setup      # Install + env + docker + db setup
+
+# Daily development
+make dev              # Start development server
+make db-studio        # Open database GUI
+make docker-up        # Start PostgreSQL
+
+# Code quality checks
+make lint             # Run ESLint
+make format           # Format with Prettier
+make type-check       # TypeScript validation
+
+# Database operations
+make db-reset         # Fresh database
+make db-migrate       # Create migration
+make backup-db        # Backup database
+
+# View all commands
+make help
+```
+
+### Pre-commit Workflow
+```bash
+# Before committing code
+make lint-fix         # Fix linting issues
+make format           # Format code
+make type-check       # Check types
+make test             # Run tests (when available)
+```
 
 ---
 
@@ -370,7 +464,9 @@ All API responses should follow this consistent format:
 - Follow the PR template (if available)
 
 ### PR Checklist
-- [ ] Code follows the style guidelines
+- [ ] Code follows the style guidelines (`make lint`)
+- [ ] Code is properly formatted (`make format`)
+- [ ] TypeScript checks pass (`make type-check`)
 - [ ] Self-review of the code completed
 - [ ] Code is commented where necessary
 - [ ] Tests added/updated for new functionality

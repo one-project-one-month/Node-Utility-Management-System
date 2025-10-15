@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
 import { PaginationQueryType } from '../validations/paginationSchema';
@@ -5,50 +6,65 @@ import {
   CreateTotalUnitsType,
   UpdateTotalUnitsType,
 } from '../validations/totalUnitsSchema';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
-export async function getAllTotalUnitsService(query: PaginationQueryType) {
+// Get All Total Units
+export async function getAllTotalUnitsService(
+  query: PaginationQueryType,
+  req: Request
+) {
   const { page, limit } = query;
   const skip = (page - 1) * limit;
 
-  const [totalUnits, count] = await Promise.all([
+  // Get totalUnits & totalCount
+  const [totalUnits, totalCount] = await Promise.all([
     prisma.totalUnits.findMany({
       skip,
       take: limit,
       orderBy: { created_at: 'desc' },
+      select: {
+        id: true,
+        electricity_units: true,
+        water_units: true,
+        created_at: true,
+        updated_at: true,
+        bill: {
+          select: {
+            room: {
+              select: {
+                room_no: true,
+                floor: true,
+                status: true,
+              },
+            },
+          },
+        },
+      },
     }),
     prisma.totalUnits.count(),
   ]);
 
- if (totalUnits.length === 0) {
-   throw new NotFoundError('No total units found');
- }
+  if (totalUnits.length === 0) {
+    throw new NotFoundError('No total units found');
+  }
 
-  const totalPages = Math.ceil(count / limit);
-
-  const pagination = {
-    count: totalUnits.length,
-    hasPrevPage: page > 1,
-    hasNextPage: page < totalPages,
-    page,
-    limit,
-    totalPages,
-    totalCount: count,
-  };
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
     totalUnits,
-    pagination,
+    ...paginationData,
   };
 }
 
-// Get by id
+// Get Single Total Units By Id
 export async function getTotalUnitsByIdService(totalUnitId: string) {
   return await prisma.totalUnits.findUnique({
     where: { id: totalUnitId },
   });
 }
 
-// Get by bill id
+// Get Single Total Units By Bill Id
 export async function getTotalUnitsByBillIdService(billId: string) {
   return await prisma.totalUnits.findUnique({
     where: { bill_id: billId },
@@ -88,7 +104,7 @@ export async function createTotalUnitService({
 
 export async function updateTotalUnitsService(
   totalUnitsId: string,
-  { electricity_units, water_units }: Partial<UpdateTotalUnitsType>
+  { electricity_units, water_units, bill_id }: UpdateTotalUnitsType
 ) {
   // Find if total-units exists
   const existingTotalUnits = await prisma.totalUnits.findUnique({
@@ -97,9 +113,14 @@ export async function updateTotalUnitsService(
       id: true,
       electricity_units: true,
       water_units: true,
+      bill_id: true,
     },
   });
+
   if (!existingTotalUnits) throw new NotFoundError('Total-units not found');
+
+  if (existingTotalUnits.bill_id !== bill_id || !bill_id)
+    throw new BadRequestError('Bill id is not matched');
 
   return await prisma.totalUnits.update({
     where: { id: totalUnitsId },

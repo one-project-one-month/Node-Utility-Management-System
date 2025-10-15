@@ -41,10 +41,10 @@ export const validateUpdateTenantBody = async (
       }));
       return next(new ValidationError(formattedErrors));
     }
+
     req.validatedBody = validation.data;
     next();
   } catch (error) {
-    console.error('validateUpdateTenantBody error:', error);
     next(error);
   }
 };

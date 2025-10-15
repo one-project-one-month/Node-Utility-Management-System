@@ -1,0 +1,100 @@
+import { BadRequestError, NotFoundError } from '../common/errors';
+import prisma from '../lib/prismaClient';
+import {
+  CreateRoomType,
+  UpdateRoomType,
+  GetAllRoomsQueryType,
+} from '../validations/roomSchema';
+import { Prisma } from '../../generated/prisma';
+import { Request } from 'express';
+import { generatePaginationData } from '../common/utils/paginationHelper';
+
+export async function getAllRoomsService(
+  query: GetAllRoomsQueryType,
+  req: Request
+) {
+  // Calculate pagination
+  const { page, limit } = query;
+  const skip = (page - 1) * limit;
+
+  const whereClause: Prisma.RoomWhereInput = {};
+
+  // Optional filters
+  if (query.status) whereClause.status = query.status;
+  if (query.room_no) whereClause.room_no = Number(query.room_no);
+  if (query.floor) whereClause.floor = Number(query.floor);
+
+  // Get rooms & totalCount with filters
+  const [rooms, totalCount] = await prisma.$transaction([
+    prisma.room.findMany({
+      where: whereClause,
+      include: {
+        tenant: true,
+        bill: true,
+        customer_service: true,
+      },
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+    }),
+    prisma.room.count({ where: whereClause }),
+  ]);
+
+  if (rooms.length === 0) throw new NotFoundError('No rooms found');
+
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
+
+  return {
+    rooms,
+    ...paginationData,
+  };
+}
+
+export async function getRoomService(roomId: string) {
+  const room = await prisma.room.findUnique({
+    where: { id: roomId },
+    include: {
+      contract: true,
+      bill: true,
+      customer_service: true,
+      tenant: true,
+    },
+  });
+
+  if (!room) throw new NotFoundError('Room not found');
+  return room;
+}
+
+export async function createRoomService(data: CreateRoomType) {
+  const existingRoom = await prisma.room.findFirst({
+    where: { room_no: data.room_no, floor: data.floor },
+  });
+
+  if (existingRoom)
+    throw new BadRequestError(
+      'Room with this number already exists on this floor'
+    );
+
+  const room = await prisma.room.create({ data });
+  return room;
+}
+
+export async function updateRoomService(roomId: string, data: UpdateRoomType) {
+  const existingRoom = await prisma.room.findUnique({ where: { id: roomId } });
+  if (!existingRoom) throw new NotFoundError('Room not found');
+
+  const updatedRoom = await prisma.room.update({
+    where: { id: roomId },
+    data,
+  });
+  return updatedRoom;
+}
+
+// export async function deleteRoomService(roomId: string) {
+//   const existingRoom = await prisma.room.findUnique({ where: { id: roomId } });
+//   if (!existingRoom) throw new NotFoundError('Room not found');
+
+//   const deletedRoom = await prisma.room.delete({ where: { id: roomId } });
+//   return deletedRoom;
+// }

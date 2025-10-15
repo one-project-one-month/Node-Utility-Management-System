@@ -7,9 +7,18 @@ import {
   UpdateUserType,
 } from '../validations/userSchema';
 import { Prisma } from '../../generated/prisma';
+import { generatePaginationData } from '../common/utils/paginationHelper';
+import { Request } from 'express';
 
-export async function getAllUsersService(query: GetAllUsersQueryType) {
+export async function getAllUsersService(
+  query: GetAllUsersQueryType,
+  req: Request
+) {
   const whereClause: Prisma.UserWhereInput = {};
+
+  // Calculate pagination
+  const { page, limit } = query;
+  const skip = (page - 1) * limit;
 
   // Add role filter
   if (query.role) {
@@ -21,48 +30,34 @@ export async function getAllUsersService(query: GetAllUsersQueryType) {
     whereClause.is_active = query.is_active;
   }
 
-  // Calculate pagination
-  const page = query.page || 1;
-  const limit = query.limit || 10;
-  const skip = (page - 1) * limit;
+  // Get users & totalCount with pagination
+  const [users, totalCount] = await prisma.$transaction([
+    prisma.user.findMany({
+      where: whereClause,
+      select: {
+        id: true,
+        user_name: true,
+        email: true,
+        role: true,
+        tenant_id: true,
+        is_active: true,
+        updated_at: true,
+        created_at: true,
+        // Exclude password field from the result
+      },
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+    }),
+    prisma.user.count({ where: whereClause }),
+  ]);
 
-  // Get total count for pagination
-  const totalCount = await prisma.user.count({ where: whereClause });
-  const totalPages = Math.ceil(totalCount / limit);
-
-  // Get users with pagination
-  const users = await prisma.user.findMany({
-    where: whereClause,
-    select: {
-      id: true,
-      user_name: true,
-      email: true,
-      role: true,
-      tenant_id: true,
-      is_active: true,
-      updated_at: true,
-      created_at: true,
-      // Exclude password field from the result
-    },
-    skip,
-    take: limit,
-    orderBy: { created_at: 'desc' },
-  });
-
-  // Build pagination info
-  const pagination = {
-    count: users.length,
-    hasPrevPage: page > 1,
-    hasNextPage: page < totalPages,
-    page,
-    limit,
-    totalPages,
-    totalCount,
-  };
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
     users,
-    pagination,
+    ...paginationData,
   };
 }
 

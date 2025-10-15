@@ -8,6 +8,7 @@ import {
   Room,
   RoomStatus,
   ServiceStatus,
+  RelationshipToTenant,
 } from '../generated/prisma';
 
 // === Utility functions ===
@@ -37,12 +38,7 @@ function calculateUtilities() {
     water: faker.number.float({ min: 20, max: 100, fractionDigits: 1 }),
   };
 }
-
-async function main() {
-  console.log('🚀 Starting database seeding...');
-
-  // Clear all tables in proper order
-  const tables = [
+const tables = [
     'receipt',
     'invoice',
     'totalUnits',
@@ -50,14 +46,26 @@ async function main() {
     'customerService',
     'contract',
     'contractType',
+    'occupant',
     'user',
     'tenant',
     'room',
-  ];
+];
 
+async function cleanUpDatabase() {
   for (const table of tables) {
     await (prisma as any)[table].deleteMany();
   }
+  console.log('🧹 Database cleaned up successfully.');
+}
+
+// === Seeding Script ===
+async function main() {
+
+  console.log('🧹 Cleaning up existing data...');
+  await cleanUpDatabase();
+
+  console.log('🚀 Starting database seeding...');
 
   // Contract Types
   await prisma.contractType.createMany({
@@ -102,30 +110,29 @@ async function main() {
   // Create 100 rooms
   console.log('🏗️ Creating 100 rooms across 5 floors...');
   const rooms: Room[] = [];
-  const totalFloors = 2; // 5
-  const roomsPerFloor = 10; // 20
+  const totalFloors = 5;
+  const roomsPerFloor = 20;
 
   for (let floor = 1; floor <= totalFloors; floor++) {
     for (let roomIndex = 1; roomIndex <= roomsPerFloor; roomIndex++) {
       const roomNo = floor * 100 + roomIndex;
       const dimension = `${faker.number.int({ min: 12, max: 25 })}x${faker.number.int({ min: 12, max: 25 })}`;
 
-      // Determine room status with realistic distribution
+      // Initial room status (before tenant assignment)
       let status: RoomStatus;
       const random = Math.random();
 
       if (random < 0.7) {
         // 70% rented
         status = 'Rented';
-      } else if (random < 0.85) {
-        // 15% available
-        status = 'Available';
-      } else if (random < 0.95) {
+      } else if (random < 0.8) {
+        // 10% Purchased
+        status = 'Purchased';
+      } else if (random < 0.9) {
         // 10% in maintenance
         status = 'InMaintenance';
       } else {
-        // 5% purchased
-        status = 'Purchased';
+        status = 'Available'; // No tenants
       }
 
       const room = await prisma.room.create({
@@ -135,7 +142,10 @@ async function main() {
           dimension: `${dimension} ft`,
           no_of_bed_room: faker.number.int({ min: 1, max: 3 }),
           status: status,
-          selling_price: faker.number.int({ min: 250000, max: 1500000 }),
+          selling_price:
+            status === 'Purchased'
+              ? faker.number.int({ min: 250000, max: 1500000 })
+              : null,
           max_no_of_people: faker.number.int({ min: 2, max: 6 }),
           description: faker.helpers.arrayElement([
             'Spacious room with natural lighting',
@@ -149,40 +159,60 @@ async function main() {
     }
   }
 
-  // Tenants for rented rooms
-  const rentedRooms = rooms.filter((r) => r.status === 'Rented');
-  console.log(`👥 Creating tenants for ${rentedRooms.length} rented rooms...`);
+  // Tenants for rented and purchased rooms
+  const occupiedRooms = rooms.filter(
+    (r) => r.status === 'Rented' || r.status === 'Purchased'
+  );
+  console.log(
+    `👥 Creating tenants for ${occupiedRooms.length} occupied rooms...`
+  );
 
   const tenants = await Promise.all(
-    rentedRooms.map((room) => {
-      const numberOfOccupants = faker.number.int({ min: 1, max: 3 });
-      const names = Array.from({ length: numberOfOccupants }, () =>
-        faker.person.fullName()
-      );
-      const emails = names.map(
-        (name) =>
-          `${name.toLowerCase().replace(/\s+/g, '.')}${faker.number.int({ min: 1, max: 99 })}@gmail.com`
-      );
-      const nrcs = Array.from(
-        { length: numberOfOccupants },
-        () =>
-          `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`
-      );
-      const phone_nos = Array.from(
-        { length: numberOfOccupants },
-        () => `+959${faker.string.numeric(9)}`
-      );
+    occupiedRooms.map((room) => {
+      const name = faker.person.fullName();
+      const email = `${name.toLowerCase().replace(/\s+/g, '.')}${faker.number.int({ min: 1, max: 99 })}@gmail.com`;
+      const nrc = `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`;
+      const phone_no = `+959${faker.string.numeric(9)}`;
+      const emergency_no = `+959${faker.string.numeric(9)}`;
 
       return prisma.tenant.create({
         data: {
-          names: names,
-          emails: emails,
-          nrcs: nrcs,
-          phone_nos: phone_nos,
-          emergency_nos: [`+959${faker.string.numeric(9)}`],
+          name,
+          email,
+          nrc,
+          phone_no,
+          emergency_no,
           room_id: room.id,
         },
       });
+    })
+  );
+
+  // Occupants for tenants
+  console.log(`👪 Creating occupants for ${tenants.length} tenants...`);
+  await Promise.all(
+    tenants.map((tenant) => {
+      const numberOfOccupants = faker.number.int({ min: 0, max: 3 });
+      const relationships: RelationshipToTenant[] = faker.helpers.arrayElements(
+        ['SPOUSE', 'PARENT', 'CHILD', 'SIBLING', 'RELATIVE', 'FRIEND', 'OTHER'],
+        numberOfOccupants
+      );
+
+      return Promise.all(
+        relationships.map((relationship) =>
+          prisma.occupant.create({
+            data: {
+              name: faker.person.fullName(),
+              nrc:
+                Math.random() < 0.8
+                  ? `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`
+                  : null,
+              relationship_to_tenant: relationship,
+              tenant_id: tenant.id,
+            },
+          })
+        )
+      );
     })
   );
 
@@ -222,9 +252,9 @@ async function main() {
       prisma.user.create({
         data: {
           user_name:
-            tenant.names[0].split(' ')[0].toLowerCase() +
+            tenant.name.split(' ')[0].toLowerCase() +
             faker.number.int({ min: 1, max: 99 }),
-          email: tenant.emails[0],
+          email: tenant.email,
           password: tenantPassword,
           role: 'Tenant',
           tenant_id: tenant.id,
@@ -236,25 +266,28 @@ async function main() {
   // Contracts and bills
   console.log(`📜 Creating contracts for ${tenants.length} tenants...`);
   for (const tenant of tenants) {
-    const room = rentedRooms.find((r) => r.id === tenant.room_id)!;
+    const room = occupiedRooms.find((r) => r.id === tenant.room_id)!;
     const contractType = faker.helpers.arrayElement(allContractTypes);
 
     const contractStart = randomPastDate({ monthsAgoMin: 3, monthsAgoMax: 18 });
     const contractExpiry = new Date(contractStart);
     contractExpiry.setMonth(contractExpiry.getMonth() + contractType.duration);
 
-    await prisma.contract.create({
-      data: {
-        contract_type_id: contractType.id,
-        created_date: contractStart,
-        updated_date: randomDaysAfter(contractStart, 1, 7),
-        expiry_date: contractExpiry,
-        room_id: tenant.room_id,
-        tenant_id: tenant.id,
-      },
-    });
+    // Only create contracts for Rented rooms, not Purchased
+    if (room.status === 'Rented') {
+      await prisma.contract.create({
+        data: {
+          contract_type_id: contractType.id,
+          created_date: contractStart,
+          updated_date: randomDaysAfter(contractStart, 1, 7),
+          expiry_date: contractExpiry,
+          room_id: tenant.room_id,
+          tenant_id: tenant.id,
+        },
+      });
+    }
 
-    // Generate bills for each month
+    // Generate bills for each month (for both Rented and Purchased rooms)
     const currentDate = new Date();
     const billDates = [];
     let billDate = new Date(contractStart);
@@ -267,7 +300,8 @@ async function main() {
 
     for (const billDate of billDates) {
       const utilities = calculateUtilities();
-      const baseRental = Number(contractType.price);
+      const baseRental =
+        room.status === 'Rented' ? Number(contractType.price) : 0; // No rental fee for Purchased
       const electricityFee = utilities.electricity * 350;
       const waterFee = utilities.water * 150;
 
@@ -336,6 +370,7 @@ async function main() {
         data: {
           status: invoiceStatus,
           bill_id: bill.id,
+          invoice_no: `INV-${faker.string.alphanumeric(8).toUpperCase()}`,
           created_at: invoiceDate,
           updated_at: randomDaysAfter(invoiceDate, 0, 5),
         },
@@ -416,6 +451,42 @@ async function main() {
     }
   }
 
+  // Verify room status consistency
+  console.log('🔍 Verifying room status consistency...');
+  const roomsWithTenants = await prisma.room.findMany({
+    where: { tenant: { isNot: null } },
+    include: { tenant: true },
+  });
+
+  for (const room of roomsWithTenants) {
+    if (room.status !== 'Rented' && room.status !== 'Purchased') {
+      console.warn(
+        `⚠️ Inconsistent status: Room ${room.room_no} has tenant but status is ${room.status}`
+      );
+      // Fix the status
+      await prisma.room.update({
+        where: { id: room.id },
+        data: { status: 'Rented' }, // Default to Rented for correction
+      });
+    }
+  }
+
+  const roomsWithoutTenants = await prisma.room.findMany({
+    where: { tenant: { is: null } },
+  });
+
+  for (const room of roomsWithoutTenants) {
+    if (room.status === 'Rented' || room.status === 'Purchased') {
+      console.warn(
+        `⚠️ Inconsistent status: Room ${room.room_no} has no tenant but status is ${room.status}`
+      );
+      await prisma.room.update({
+        where: { id: room.id },
+        data: { status: 'Available' }, // Default to Available for correction
+      });
+    }
+  }
+
   // Print final statistics
   const roomStatusCount = await prisma.room.groupBy({
     by: ['status'],
@@ -423,12 +494,14 @@ async function main() {
   });
 
   console.log('✅ Database seeding completed!');
-  console.log(`🏠 Created: ${rooms.length} rooms across 5 floors`);
+  console.log(`🏠 Created: ${rooms.length} rooms across ${totalFloors} floors`);
   console.log('📊 Room Status Distribution:');
   roomStatusCount.forEach((status) => {
-    console.log(` -  ${status.status}: ${status._count} rooms`);
+    console.log(` - ${status.status}: ${status._count} rooms`);
   });
   console.log(`👥 Created: ${tenants.length} tenants`);
+  console.log(`👪 Created: ${await prisma.occupant.count()} occupants`);
+  console.log(`👤 Created: ${await prisma.user.count()} users`);
   console.log(`📊 Created: ${await prisma.contract.count()} contracts`);
   console.log(`💰 Created: ${await prisma.bill.count()} bills`);
   console.log(`🧾 Created: ${await prisma.invoice.count()} invoices`);
@@ -447,20 +520,11 @@ main()
     await prisma.$disconnect();
   });
 
-// ###High Volume (500-1000):###
-// Bills: 790-810
-// Invoices: 790-810
-// Receipts: 520-540
-
-// #####################################
-// ###Medium Volume (100-500):###
-// Rooms: 100 (fixed)
-// Tenants: 70-75
-// Contracts: 70-75
-// Customer Services: 160-200
-
-// #####################################
-// ###Low Volume (<100):###
-// Users: ~73-76
-// Contract Types: 3 (fixed)
-// Total Units: 790-810
+// cleanUpDatabase()
+//   .catch((e) => {
+//     console.error('❌ Seeding failed:', e);
+//     process.exit(1);
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });
