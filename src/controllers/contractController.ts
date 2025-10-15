@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import {
   createContractService,
-  getAllContractSrvice,
+  getAllContractService,
   getContractByIdService,
-  getContractByTenantService,
+  getContractByTenantIdService,
   updateContractService,
 } from '../services/contractService';
 import { successResponse } from '../common/apiResponse';
@@ -68,7 +68,7 @@ export const getAllContractController = async (
   next: NextFunction
 ) => {
   try {
-    const contracts = await getAllContractSrvice(req.validatedQuery);
+    const contracts = await getAllContractService(req.validatedQuery, req);
     successResponse(res, 'All Contracts fetched successfully', contracts, 200);
   } catch (error) {
     return next(error);
@@ -76,15 +76,15 @@ export const getAllContractController = async (
 };
 
 // @route GET | api/v1/tenants/:tenantId/contracts
-// @desc get all contracts by tenant
+// @desc get contract by tenant id
 // @access Client
-export const getAllContractByTenantIdController = async (
+export const getContractByTenantIdController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const contract = await getContractByTenantService(req.params.tenantId);
+    const contract = await getContractByTenantIdService(req.params.tenantId);
     successResponse(
       res,
       'All Contracts fetched By tenantId successfully',

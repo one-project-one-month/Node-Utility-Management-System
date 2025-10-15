@@ -15,8 +15,8 @@ import {
   createInvoiceController,
   getAllInvoicesController,
   getInvoiceController,
-  getTanentInvoiceHistoryController,
-  getTanentInvoiceLatestController,
+  getTenantInvoiceHistoryController,
+  getTenantInvoiceLatestController,
   updateInvoiceController,
 } from './../controllers/invoiceController';
 import { hasRole } from '../middlewares/authMiddleware';
@@ -52,13 +52,13 @@ router.get(
 router.get(
   '/tenants/:tenantId/invoices/latest',
   validateRequestParams(GetTenantInvoiceParamSchema),
-  getTanentInvoiceLatestController
+  getTenantInvoiceLatestController
 );
 router.get(
   '/tenants/:tenantId/invoices/history',
   validateRequestParams(GetTenantInvoiceParamSchema),
   validateRequestQuery(GetInvoiceQuerySchema),
-  getTanentInvoiceHistoryController
+  getTenantInvoiceHistoryController
 );
 
 export default router;

@@ -36,15 +36,11 @@ export async function getAllInvoicesController(
 ) {
   try {
     const query = req.validatedQuery;
-    const result = await getAllInvoicesService(query);
+    const result = await getAllInvoicesService(query, req);
     if (!result.invoices.length) {
       return next(new NotFoundError('No found invoice.'));
     }
-    successResponse(
-      res,
-      'Invoices fetched successfully',
-      { invoices: result.invoices, pagination: result.pagination }
-    );
+    successResponse(res, 'Invoices fetched successfully', result);
   } catch (error) {
     next(error);
   }
@@ -96,14 +92,14 @@ export async function getInvoiceController(
   }
 }
 
-export async function getTanentInvoiceLatestController(
+export async function getTenantInvoiceLatestController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const tenant_id = req.validatedParams;
-    const result = await getTenantInvoiceLatestService(tenant_id);
+    const tenantId = req.validatedParams;
+    const result = await getTenantInvoiceLatestService(tenantId);
 
     successResponse(
       res,
@@ -117,22 +113,17 @@ export async function getTanentInvoiceLatestController(
     return next(error);
   }
 }
-export async function getTanentInvoiceHistoryController(
+export async function getTenantInvoiceHistoryController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const tenant_id = req.validatedParams;
+    const tenantId = req.validatedParams;
     const query = req.validatedQuery;
-    const result = await getTenantInvoiceHistoryService(tenant_id, query);
+    const result = await getTenantInvoiceHistoryService(tenantId, query, req);
 
-    successResponse(
-      res,
-      'Invoice fetched successfully.',
-        result,
-      200
-    );
+    successResponse(res, 'Invoice fetched successfully.', result, 200);
   } catch (error) {
     return next(error);
   }

@@ -13,7 +13,7 @@ import {
 } from '../validations/contractSchema';
 import {
   createContractController,
-  getAllContractByTenantIdController,
+  getContractByTenantIdController,
   getAllContractController,
   getContractByIdController,
   updateContractController,
@@ -56,7 +56,7 @@ router.get(
   '/tenants/:tenantId/contracts',
   hasRole(['Admin', 'Staff', 'Tenant']),
   validateRequestParams(GetContractByTenantSchema),
-  getAllContractByTenantIdController
+  getContractByTenantIdController
 );
 
 export default router;
