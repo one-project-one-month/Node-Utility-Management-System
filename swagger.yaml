@@ -390,30 +390,41 @@ components:
           example: 2025-10-01T00:00:00.000Z
 
     # Pagination Schema
-    Pagination:
+    PaginationMeta:
       type: object
       properties:
-        count:
+        total:
           type: integer
-          example: 10
-        hasPrevPage:
-          type: boolean
-          example: false
-        hasNextPage:
-          type: boolean
-          example: true
-        page:
+          example: 80
+        currentPage:
           type: integer
           example: 1
-        limit:
+        lastPage:
+          type: integer
+          example: 80
+        perPage:
           type: integer
           example: 10
-        totalPages:
-          type: integer
-          example: 5
-        totalCount:
-          type: integer
-          example: 50
+
+    PaginationLinks:
+      type: object
+      properties:
+        next:
+          type: string
+          nullable: true
+          example: 'http://localhost:3000/api/v1/users/?page=2&limit=10'
+        prev:
+          type: string
+          nullable: true
+          example: null
+
+    PaginationResponse:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
 
   # Reusable Parameters
   parameters:
@@ -1099,69 +1110,241 @@ components:
 
   # Reusable Responses
   responses:
-      UnauthorizedError:
-        description: Unauthorized
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/ApiErrorResponse'
-                - type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Access token is required
-                    status:
-                      type: integer
-                      example: 401
+    # Error Response
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiErrorResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Access token is required
+                  status:
+                    type: integer
+                    example: 401
 
-      ForbiddenError:
-        description: Forbidden - Admin or Staff role required
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/ApiErrorResponse'
-                - type: object
-                  properties:
-                    message:
-                      type: string
-                      example: 'Required roles: Admin, Staff'
-                    status:
-                      type: integer
-                      example: 403
+    ForbiddenError:
+      description: Forbidden - Admin or Staff role required
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiErrorResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Required roles: Admin, Staff'
+                  status:
+                    type: integer
+                    example: 403
 
-      NotFoundError:
-        description: Resource not found
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/ApiErrorResponse'
-                - type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Resource not found
-                    status:
-                      type: integer
-                      example: 404
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiErrorResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Resource not found
+                  status:
+                    type: integer
+                    example: 404
 
-      BadRequestError:
-        description: Bad Request
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/ApiErrorResponse'
-                - type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Validation failed
-                    status:
-                      type: integer
-                      example: 400
+    BadRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiErrorResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Validation failed
+                  status:
+                    type: integer
+                    example: 400
+
+    # Paginated Response
+    PaginatedUsersResponse:
+      description: Users fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Users fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      users:
+                        type: array
+                        items:
+                          oneOf:
+                            - $ref: '#/components/schemas/AdminUser'
+                            - $ref: '#/components/schemas/TenantUser'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    PaginatedCustomerServicesResponse:
+      description: Customer services retrieved successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Fetch customer services successfully
+                  content:
+                    type: object
+                    properties:
+                      services:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CustomerService'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    PaginatedTenantsResponse:
+      description: Tenants retrieved successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: All tenants get successfully
+                  content:
+                    type: object
+                    properties:
+                      tenants:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Tenant'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    PaginatedReceiptsResponse:
+      description: Receipts fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Receipts fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      receipts:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Receipt'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    PaginatedTotalUnitsResponse:
+      description: Total units fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Total-units fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      totalUnits:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TotalUnits'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    PaginatedContractsResponse:
+      description: Contracts fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: All Contracts fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      contracts:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Contract'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    PaginatedRoomsResponse:
+      description: Rooms fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Rooms fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      rooms:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Room'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
 
 paths:
   # Authentication Endpoints
@@ -1271,28 +1454,7 @@ paths:
         - $ref: '#/components/parameters/ActiveFilterParam'
       responses:
         200:
-          description: Users fetched successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Users fetched successfully
-                      content:
-                        type: object
-                        properties:
-                          users:
-                            type: array
-                            items:
-                              oneOf:
-                                - $ref: '#/components/schemas/AdminUser'
-                                - $ref: '#/components/schemas/TenantUser'
-                          pagination:
-                            $ref: '#/components/schemas/Pagination'
+          $ref: '#/components/responses/PaginatedUsersResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
@@ -1504,7 +1666,7 @@ paths:
                     properties:
                       message:
                         type: string
-                        example: Fetch service history successfullly
+                        example: Fetch service history successfully
                       content:
                         type: object
                         properties:
@@ -1512,11 +1674,10 @@ paths:
                             type: array
                             items:
                               $ref: '#/components/schemas/CustomerService'
-                            pagination:
-                              $ref: '#/components/schemas/Pagination'
-                      status:
-                        type: integer
-                        example: 200
+                          meta:
+                            $ref: '#/components/schemas/PaginationMeta'
+                          links:
+                            $ref: '#/components/schemas/PaginationLinks'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -1534,26 +1695,7 @@ paths:
         - $ref: '#/components/parameters/LimitParam'
       responses:
         200:
-          description: Customer services retrieved successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Fetch customer services successfully
-                      content:
-                        type: object
-                        properties:
-                          services:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/CustomerService'
-                          pagination:
-                            $ref: '#/components/schemas/Pagination'
+          $ref: '#/components/responses/PaginatedCustomerServicesResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
@@ -1654,26 +1796,7 @@ paths:
         - $ref: '#/components/parameters/LimitParam'
       responses:
         200:
-          description: Tenants retrieved successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: All tenants get successfully
-                      content:
-                        type: object
-                        properties:
-                          tenants:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Tenant'
-                          pagination:
-                            $ref: '#/components/schemas/Pagination'
+          $ref: '#/components/responses/PaginatedTenantsResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
@@ -1839,26 +1962,7 @@ paths:
         - $ref: '#/components/parameters/PaymentMethodFilterParam'
       responses:
         200:
-          description: Receipts fetched successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Receipts fetched successfully
-                      content:
-                        type: object
-                        properties:
-                          receipts:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Receipt'
-                          pagination:
-                            $ref: '#/components/schemas/Pagination'
+          $ref: '#/components/responses/PaginatedReceiptsResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
@@ -2102,8 +2206,10 @@ paths:
                             type: array
                             items:
                               $ref: '#/components/schemas/Receipt'
-                          pagination:
-                            $ref: '#/components/schemas/Pagination'
+                          meta:
+                            $ref: '#/components/schemas/PaginationMeta'
+                          links:
+                            $ref: '#/components/schemas/PaginationLinks'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -2123,26 +2229,7 @@ paths:
         - $ref: '#/components/parameters/LimitParam'
       responses:
         200:
-          description: Total units fetched successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Total-units fetched successfully
-                      content:
-                        type: object
-                        properties:
-                          totalUnits:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/TotalUnits'
-                          pagination:
-                            $ref: '#/components/schemas/Pagination'
+          $ref: '#/components/responses/PaginatedTotalUnitsResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
@@ -2386,26 +2473,7 @@ paths:
         - $ref: '#/components/parameters/LimitParam'
       responses:
         200:
-          description: Contracts fetched successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: All Contracts fetched successfully
-                      content:
-                        type: object
-                        properties:
-                          contracts:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Contract'
-                          pagination:
-                            $ref: '#/components/schemas/Pagination'
+          $ref: '#/components/responses/PaginatedContractsResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
@@ -2781,26 +2849,7 @@ paths:
         - $ref: '#/components/parameters/RoomStatusFilterParam'
       responses:
         200:
-          description: Rooms fetched successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Rooms fetched successfully
-                      content:
-                        type: object
-                        properties:
-                          rooms:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Room'
-                          pagination:
-                            $ref: '#/components/schemas/Pagination'
+          $ref: '#/components/responses/PaginatedRoomsResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
