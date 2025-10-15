@@ -1,7 +1,6 @@
 import { BadRequestError } from '../common/errors/badRequestError';
 import { NotFoundError } from '../common/errors/notFoundError';
 import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
-
 import prisma from '../lib/prismaClient';
 import { PaginationQueryType } from '../validations/paginationSchema';
 import {
@@ -54,7 +53,7 @@ export async function createTenantService(data: CreateTenantType) {
         create: occupants.map((occupant) => ({
           name: occupant.name,
           nrc: occupant.nrc ?? null,
-          relationship_to_tenant: occupant.relationshipToTenant,
+          relationship_to_tenant: occupant.relationship_to_tenant,
         })),
       },
     },

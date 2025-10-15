@@ -9,7 +9,7 @@ export const OccupantBaseSchema = z
       .min(5, 'NRC must be at least 5 characters')
       .nullable()
       .optional(),
-    relationshipToTenant: z.enum(
+    relationship_to_tenant: z.enum(
       RelationshipToTenant,
       "Relationship must be one of 'SPOUSE','PARENT','CHILD','SIBLING','RELATIVE','FRIEND','OTHER'"
     ),
@@ -30,7 +30,33 @@ export const CreateOccupantSchema = z
     }
   );
 
-export const UpdateOccupantSchema = OccupantBaseSchema;
+export const UpdateOccupantSchema = z
+  .object({
+    name: z.string().min(1, 'Name is required').optional(),
+    nrc: z
+      .string()
+      .min(5, 'NRC must be at least 5 characters')
+      .nullable()
+      .optional(),
+    relationship_to_tenant: z
+      .enum(
+        RelationshipToTenant,
+        "Relationship must be one of 'SPOUSE','PARENT','CHILD','SIBLING','RELATIVE','FRIEND','OTHER'"
+      )
+      .optional(),
+    tenant_id: z.uuid({ version: 'v4' }),
+  })
+  .refine(
+    (data) =>
+      data.name !== undefined ||
+      data.nrc !== undefined ||
+      data.relationship_to_tenant !== undefined,
+    {
+      message:
+        'At least one of name, nrc or relationship_to_tenant must be provided',
+    }
+  )
+  .strict();
 
 export const GetOccupantParamSchema = z.object({
   occupantId: z.uuid({ version: 'v4' }),

@@ -4,7 +4,7 @@ import { RelationshipToTenant } from '../../generated/prisma';
 export const OccupantSchema = z.object({
   name: z.string().min(1, 'Occupant name is required'),
   nrc: z.string().min(5, 'NRC must be at least 5 characters').optional(),
-  relationshipToTenant: z.enum(
+  relationship_to_tenant: z.enum(
     RelationshipToTenant,
     "Relationship must be one of 'SPOUSE','PARENT','CHILD','SIBLING','RELATIVE','FRIEND','OTHER'"
   ),

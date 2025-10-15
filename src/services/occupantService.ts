@@ -42,7 +42,7 @@ export async function createOccupantService(data: CreateOccupantType) {
         tenant_id: occupant.tenant_id,
         name: occupant.name,
         nrc: occupant.nrc ?? null,
-        relationship_to_tenant: occupant.relationshipToTenant,
+        relationship_to_tenant: occupant.relationship_to_tenant,
       },
     });
     createdOccupants.push(created);
@@ -83,8 +83,8 @@ export async function updateOccupantService(
     data: {
       ...(data.name && { name: data.name }),
       ...(data.nrc && { nrc: data.nrc }),
-      ...(data.relationshipToTenant && {
-        relationship_to_tenant: data.relationshipToTenant,
+      ...(data.relationship_to_tenant && {
+        relationship_to_tenant: data.relationship_to_tenant,
       }),
     },
   });
