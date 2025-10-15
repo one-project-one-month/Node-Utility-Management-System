@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
 import { PaginationQueryType } from '../validations/paginationSchema';
@@ -5,12 +6,18 @@ import {
   CreateTotalUnitsType,
   UpdateTotalUnitsType,
 } from '../validations/totalUnitsSchema';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
-export async function getAllTotalUnitsService(query: PaginationQueryType) {
+// Get All Total Units
+export async function getAllTotalUnitsService(
+  query: PaginationQueryType,
+  req: Request
+) {
   const { page, limit } = query;
   const skip = (page - 1) * limit;
 
-  const [totalUnits, count] = await Promise.all([
+  // Get totalUnits & totalCount
+  const [totalUnits, totalCount] = await Promise.all([
     prisma.totalUnits.findMany({
       skip,
       take: limit,
@@ -28,6 +35,11 @@ export async function getAllTotalUnitsService(query: PaginationQueryType) {
                 room_no: true,
                 floor: true,
                 status: true,
+                tenant: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
             },
           },
@@ -41,32 +53,23 @@ export async function getAllTotalUnitsService(query: PaginationQueryType) {
     throw new NotFoundError('No total units found');
   }
 
-  const totalPages = Math.ceil(count / limit);
-
-  const pagination = {
-    count: totalUnits.length,
-    hasPrevPage: page > 1,
-    hasNextPage: page < totalPages,
-    page,
-    limit,
-    totalPages,
-    totalCount: count,
-  };
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
     totalUnits,
-    pagination,
+    ...paginationData,
   };
 }
 
-// Get by id
+// Get Single Total Units By Id
 export async function getTotalUnitsByIdService(totalUnitId: string) {
   return await prisma.totalUnits.findUnique({
     where: { id: totalUnitId },
   });
 }
 
-// Get by bill id
+// Get Single Total Units By Bill Id
 export async function getTotalUnitsByBillIdService(billId: string) {
   return await prisma.totalUnits.findUnique({
     where: { bill_id: billId },

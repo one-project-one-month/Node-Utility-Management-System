@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import prisma from '../lib/prismaClient';
 import { Prisma } from '../../generated/prisma';
 import {
@@ -9,6 +10,7 @@ import {
 } from '../validations/invoiceSchema';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import getTimeLimitQuery from '../common/utils/timeLimitQuery';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
 export async function createInvoiceService(body: CreateInvoiceType) {
   const existingBill = await prisma.bill.findUnique({
@@ -42,74 +44,55 @@ export async function createInvoiceService(body: CreateInvoiceType) {
   });
 }
 
-export async function getAllInvoicesService(query: GetInvoiceQueryType) {
+export async function getAllInvoicesService(
+  query: GetInvoiceQueryType,
+  req: Request
+) {
   const { startDate, endDate } = getTimeLimitQuery(query);
   const whereClause: Prisma.InvoiceWhereInput = {
     status: query.status,
   };
 
-  const selectedInvoice = {
-    id: true,
-    status: true,
-    invoice_no: true,
-    bill_id: true,
-    created_at: true,
-    updated_at: true,
-  };
-
   // Calculate pagination
-  const page = query.page || 1;
-  const limit = query.limit || 10;
+  const { page, limit } = query;
   const skip = (page - 1) * limit;
 
-  //   Get total count for pagination
-  let totalCount =
+  // The final where clause based on date filters
+  const finalWhereClause: Prisma.InvoiceWhereInput =
     query.month || query.year
-      ? await prisma.invoice.count({
-          where: {
-            ...whereClause,
-            created_at: {
-              gte: startDate,
-              lt: endDate,
-            },
-          },
-        })
-      : await prisma.invoice.count({ where: whereClause });
-  const totalPages = Math.ceil(totalCount / limit);
+      ? {
+          ...whereClause,
+          created_at: { gte: startDate, lt: endDate },
+        }
+      : whereClause;
 
-  // Get users with pagination
-  const invoices = await prisma.invoice.findMany({
-    where:
-      query.month || query.year
-        ? { ...whereClause, created_at: { gte: startDate, lt: endDate } }
-        : whereClause,
-    select: {
-      id: true,
-      status: true,
-      bill_id: true,
-      invoice_no: true,
-      created_at: true,
-      updated_at: true,
-    },
-    skip,
-    take: limit,
-    orderBy: { created_at: 'desc' },
-  });
+  // Get users and totalCount with pagination
+  const [invoices, totalCount] = await prisma.$transaction([
+    prisma.invoice.findMany({
+      where: finalWhereClause,
+      select: {
+        id: true,
+        status: true,
+        bill_id: true,
+        invoice_no: true,
+        created_at: true,
+        updated_at: true,
+      },
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+    }),
+    prisma.invoice.count({
+      where: finalWhereClause,
+    }),
+  ]);
 
-  // Build pagination info
-  const pagination = {
-    count: invoices.length,
-    hasPrevPage: page > 1,
-    hasNextPage: page < totalPages,
-    page,
-    limit,
-    totalPages,
-    totalCount,
-  };
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
     invoices,
-    pagination,
+    ...paginationData,
   };
 }
 
@@ -174,9 +157,9 @@ export async function getInvoiceService(param: GetInvoiceParamType) {
 export async function getTenantInvoiceLatestService(
   param: GetTenantInvoiceParamType
 ) {
-  const tenant_id = param.tenantId;
+  const tenantId = param.tenantId;
   const tenant = await prisma.tenant.findUnique({
-    where: { id: tenant_id },
+    where: { id: tenantId },
   });
 
   if (!tenant) throw new NotFoundError('Tenant not found.');
@@ -186,7 +169,7 @@ export async function getTenantInvoiceLatestService(
       bill: {
         room: {
           tenant: {
-            id: tenant_id,
+            id: tenantId,
           },
         },
       },
@@ -199,7 +182,8 @@ export async function getTenantInvoiceLatestService(
 
 export async function getTenantInvoiceHistoryService(
   param: GetTenantInvoiceParamType,
-  query: GetInvoiceQueryType
+  query: GetInvoiceQueryType,
+  req: Request
 ) {
   const { startDate, endDate } = getTimeLimitQuery(query);
   const whereClause: Prisma.InvoiceWhereInput = {
@@ -214,57 +198,40 @@ export async function getTenantInvoiceHistoryService(
   };
 
   // Calculate pagination
-  const page = query.page || 1;
-  const limit = query.limit || 10;
+  const { page, limit } = query;
   const skip = (page - 1) * limit;
 
-  // Get total count for pagination
-  let totalCount =
+  const finalWhereClause: Prisma.InvoiceWhereInput =
     query.month || query.year
-      ? await prisma.invoice.count({
-          where: {
-            ...whereClause,
-            created_at: {
-              gte: startDate,
-              lt: endDate,
-            },
-          },
-        })
-      : await prisma.invoice.count({ where: whereClause });
-  const totalPages = Math.ceil(totalCount / limit);
+      ? { ...whereClause, created_at: { gte: startDate, lt: endDate } }
+      : whereClause;
 
-  //   Get users with pagination
-  const invoices = await prisma.invoice.findMany({
-    where:
-      query.month || query.year
-        ? { ...whereClause, created_at: { gte: startDate, lt: endDate } }
-        : whereClause,
-    select: {
-      id: true,
-      status: true,
-      bill_id: true,
-      invoice_no: true,
-      created_at: true,
-      updated_at: true,
-    },
-    skip,
-    take: limit,
-    orderBy: { created_at: 'desc' },
-  });
+  // Get users and totalCount with pagination
+  const [invoices, totalCount] = await prisma.$transaction([
+    prisma.invoice.findMany({
+      where: finalWhereClause,
+      select: {
+        id: true,
+        status: true,
+        bill_id: true,
+        invoice_no: true,
+        created_at: true,
+        updated_at: true,
+      },
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+    }),
+    prisma.invoice.count({
+      where: finalWhereClause,
+    }),
+  ]);
 
-  //   Build pagination info
-  const pagination = {
-    count: invoices.length,
-    hasPrevPage: page > 1,
-    hasNextPage: page < totalPages,
-    page,
-    limit,
-    totalPages,
-    totalCount,
-  };
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    data: invoices,
-    pagination,
+    invoices,
+    ...paginationData,
   };
 }

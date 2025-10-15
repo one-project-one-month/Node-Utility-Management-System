@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
 import { PaginationQueryType } from '../validations/paginationSchema';
@@ -6,6 +7,7 @@ import {
   TenantIdAndStatusType,
   UpdateServiceType,
 } from '../validations/serviceSchema';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
 //create customer service
 export const createCustomerService = async (
@@ -38,9 +40,11 @@ export const createCustomerService = async (
 //get service history by tenantId
 export const cutomerServiceHistory = async (
   { id, status }: TenantIdAndStatusType,
-  { page, limit }: PaginationQueryType
+  { page, limit }: PaginationQueryType,
+  req: Request
 ) => {
   const skip = (page - 1) * limit;
+
   // Check if tenant exists
   const tenant = await prisma.tenant.findUnique({
     where: { id },
@@ -52,7 +56,7 @@ export const cutomerServiceHistory = async (
   }
 
   //Get customer service history and total count
-  const [history, total] = await Promise.all([
+  const [history, totalCount] = await Promise.all([
     prisma.customerService.findMany({
       where: {
         room_id: tenant.room_id,
@@ -74,20 +78,12 @@ export const cutomerServiceHistory = async (
     throw new NotFoundError('No customer service history found.');
   }
 
-  //Total pages for pagination
-  const totalPages = Math.ceil(total / limit);
-
-  const pagination = {
-    hasPrevPage: page > 1,
-    hasNextPage: page < totalPages,
-    page,
-    limit,
-    totalPages,
-  };
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
     history,
-    pagination,
+    ...paginationData,
   };
 };
 
@@ -111,14 +107,15 @@ export const updateCustomerService = async (
 };
 
 //get all cutomer service
-export const getAllCustomerService = async ({
-  page,
-  limit,
-}: PaginationQueryType) => {
+export const getAllCustomerService = async (
+  query: PaginationQueryType,
+  req: Request
+) => {
+  const { page, limit } = query;
   const skip = (page - 1) * limit;
 
-  //Get sevices and count
-  const [services, count] = await Promise.all([
+  //Get sevices and totalCount
+  const [services, totalCount] = await Promise.all([
     prisma.customerService.findMany({
       skip,
       take: limit,
@@ -130,19 +127,12 @@ export const getAllCustomerService = async ({
     throw new NotFoundError('No customer services found.');
   }
 
-  //Total pages for pagination
-  const totalPages = Math.ceil(count / limit);
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
     services,
-    pagination: {
-      count: services.length,
-      hasPrevPage: page > 1,
-      hasNextPage: page < totalPages,
-      page,
-      limit,
-      totalPages,
-    },
+    ...paginationData,
   };
 };
 
