@@ -10,7 +10,7 @@ import {
 } from '../validations/invoiceSchema';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import getTimeLimitQuery from '../common/utils/timeLimitQuery';
-import { generatePaginationData } from '../common/utils/pagination-helper';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
 export async function createInvoiceService(body: CreateInvoiceType) {
   const existingBill = await prisma.bill.findUnique({

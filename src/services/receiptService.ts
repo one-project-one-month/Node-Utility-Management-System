@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { Prisma } from '../../generated/prisma';
 import { BadRequestError, NotFoundError } from '../common/errors';
-import { generatePaginationData } from '../common/utils/pagination-helper';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 import prisma from '../lib/prismaClient';
 import { PaginationQueryType } from '../validations/paginationSchema';
 import {

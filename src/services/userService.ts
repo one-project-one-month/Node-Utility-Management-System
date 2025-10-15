@@ -7,7 +7,7 @@ import {
   UpdateUserType,
 } from '../validations/userSchema';
 import { Prisma } from '../../generated/prisma';
-import { generatePaginationData } from '../common/utils/pagination-helper';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 import { Request } from 'express';
 
 export async function getAllUsersService(

@@ -7,7 +7,7 @@ import {
   TenantIdAndStatusType,
   UpdateServiceType,
 } from '../validations/serviceSchema';
-import { generatePaginationData } from '../common/utils/pagination-helper';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
 //create customer service
 export const createCustomerService = async (

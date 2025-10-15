@@ -6,7 +6,7 @@ import {
   UpdateContractSchemaType,
 } from '../validations/contractSchema';
 import { PaginationQueryType } from '../validations/paginationSchema';
-import { generatePaginationData } from '../common/utils/pagination-helper';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
 export const createContractService = async (data: CreateContractSchemaType) => {
   // check room exists

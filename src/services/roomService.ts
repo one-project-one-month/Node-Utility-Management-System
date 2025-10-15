@@ -7,7 +7,7 @@ import {
 } from '../validations/roomSchema';
 import { Prisma } from '../../generated/prisma';
 import { Request } from 'express';
-import { generatePaginationData } from '../common/utils/pagination-helper';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
 export async function getAllRoomsService(
   query: GetAllRoomsQueryType,

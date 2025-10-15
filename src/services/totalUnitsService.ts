@@ -6,7 +6,7 @@ import {
   CreateTotalUnitsType,
   UpdateTotalUnitsType,
 } from '../validations/totalUnitsSchema';
-import { generatePaginationData } from '../common/utils/pagination-helper';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 
 // Get All Total Units
 export async function getAllTotalUnitsService(
