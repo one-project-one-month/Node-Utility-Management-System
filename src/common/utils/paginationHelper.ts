@@ -37,6 +37,13 @@ export function generatePaginationData(
   currentPage: number,
   perPage: number
 ): PaginationData {
+  if (total === 0) {
+    return {
+      meta: { total: 0, currentPage: 1, lastPage: 1, perPage },
+      links: { next: null, prev: null },
+    };
+  }
+
   const lastPage = Math.ceil(total / perPage);
 
   // Generate metadata
@@ -51,11 +58,9 @@ export function generatePaginationData(
   const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}${req.path}`;
   const queryParams = new URLSearchParams();
 
-  // Preserve existing query parameters except page
+  // Preserve existing query parameters
   Object.entries(req.validatedQuery).forEach(([key, value]) => {
-    if (key !== 'page' && value !== undefined && value !== null) {
-      queryParams.set(key, value.toString());
-    }
+    queryParams.set(key, value!.toString());
   });
 
   queryParams.set('limit', perPage.toString());
