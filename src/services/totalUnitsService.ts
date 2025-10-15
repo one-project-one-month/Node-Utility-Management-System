@@ -35,6 +35,11 @@ export async function getAllTotalUnitsService(
                 room_no: true,
                 floor: true,
                 status: true,
+                tenant: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
             },
           },
