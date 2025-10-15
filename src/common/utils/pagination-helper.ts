@@ -52,8 +52,8 @@ export function generatePaginationData(
   const queryParams = new URLSearchParams();
 
   // Preserve existing query parameters except page
-  Object.entries(req.query).forEach(([key, value]) => {
-    if (key !== 'page' && value !== undefined) {
+  Object.entries(req.validatedQuery).forEach(([key, value]) => {
+    if (key !== 'page' && value !== undefined && value !== null) {
       queryParams.set(key, value.toString());
     }
   });
