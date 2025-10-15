@@ -125,7 +125,7 @@ export async function updateTenantService(
   });
 }
 
-export const getByIdTenantService = async (tenantId: string) => {
+export async function getByIdTenantService(tenantId: string) {
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     include: {
@@ -137,12 +137,12 @@ export const getByIdTenantService = async (tenantId: string) => {
     throw new NotFoundError('Tenant Not Found');
   }
   return tenant;
-};
+}
 
-export const getAllTenantService = async (
+export async function getAllTenantService(
   query: PaginationQueryType,
   req: Request
-) => {
+) {
   const { page, limit } = query;
   const skip = (page - 1) * limit;
 
@@ -169,4 +169,4 @@ export const getAllTenantService = async (
     tenants,
     ...paginationData,
   };
-};
+}
