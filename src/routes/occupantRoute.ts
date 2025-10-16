@@ -3,6 +3,7 @@ import { Router } from 'express';
 import {
   validateRequestBody,
   validateRequestParams,
+  validateRequestQuery,
 } from '../middlewares/validationMiddlware';
 
 import { hasRole } from '../middlewares/authMiddleware';
@@ -10,6 +11,8 @@ import { hasRole } from '../middlewares/authMiddleware';
 import {
   createOccupantController,
   deleteOccupantController,
+  getAllOccupantController,
+  getByIdOccupantController,
   updateOccupantController,
 } from '../controllers/occupantController';
 import {
@@ -18,8 +21,23 @@ import {
   GetOccupantParamSchema,
   UpdateOccupantSchema,
 } from '../validations/occupantSchema';
+import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
+
+router.get(
+  '/:occupantId',
+  hasRole(['Admin', 'Staff', 'Tenant']),
+  validateRequestParams(GetOccupantParamSchema),
+  getByIdOccupantController
+);
+
+router.get(
+  '/',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(PaginationQuerySchema),
+  getAllOccupantController
+);
 
 router.post(
   '/',
