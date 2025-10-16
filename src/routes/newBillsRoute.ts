@@ -63,6 +63,7 @@ router.get(
   '/tenants/:tenantId/bills/history',
   hasRole(['Admin', 'Staff', 'Tenant']),
   validateRequestParams(GetBillByTenantIdSchema),
+  validateRequestQuery(PaginationQuerySchema),
   getBillHistoryByTenantIdController
 );
 

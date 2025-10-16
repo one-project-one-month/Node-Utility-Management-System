@@ -54,8 +54,8 @@ export const getAllBillsController = async (
   next: NextFunction
 ) => {
   try {
-    const bills = await getAllBillsService(req.validatedQuery);
-    successResponse(res, 'All Bills fetched successfully', { bills }, 200);
+    const bills = await getAllBillsService(req.validatedQuery, req);
+    successResponse(res, 'All Bills fetched successfully', bills, 200);
   } catch (error) {
     return next(error);
   }
@@ -88,14 +88,11 @@ export const getBillHistoryByTenantIdController = async (
 ) => {
   try {
     const billHistory = await getBillHistoryByTenantIdService(
-      req.params.tenantId
+      req.validatedParams.tenantId,
+      req.validatedQuery,
+      req
     );
-    successResponse(
-      res,
-      'Bill History fetched successfully',
-      { billHistory },
-      200
-    );
+    successResponse(res, 'Bill History fetched successfully', billHistory, 200);
   } catch (error) {
     return next(error);
   }

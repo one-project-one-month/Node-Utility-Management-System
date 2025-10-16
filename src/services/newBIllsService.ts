@@ -1,4 +1,6 @@
+import { Request } from 'express';
 import { NotFoundError } from '../common/errors';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 import prisma from '../lib/prismaClient';
 import {
   CreateBillSchemaType,
@@ -199,42 +201,40 @@ export const getBillsByIdService = async (billId: string) => {
   return bill;
 };
 
-export const getAllBillsService = async (query: PaginationQueryType) => {
-  // pagination
-  const page = query.page || 1;
-  const limit = query.limit || 10;
+export const getAllBillsService = async (
+  query: PaginationQueryType,
+  req: Request
+) => {
+  // Calculate pagination
+  const { page, limit } = query;
   const skip = (page - 1) * limit;
-  const totalCount = await prisma.bill.count();
-  const totalPages = Math.ceil(totalCount / limit);
 
-  // get all bills
-  const bills = await prisma.bill.findMany({
-    skip,
-    take: limit,
-    orderBy: { created_at: 'desc' },
-    include: {
-      room: true,
-      total_unit: true,
-      invoice: {
-        include: {
-          receipt: true,
+  // get all bills and total count
+  const [bills, totalCount] = await prisma.$transaction([
+    prisma.bill.findMany({
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+      include: {
+        room: true,
+        total_unit: true,
+        invoice: {
+          include: {
+            receipt: true,
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.bill.count(),
+  ]);
+
   if (Array.isArray(bills) && !bills.length)
     throw new NotFoundError('Bills not found');
 
-  const pagination = {
-    count: bills.length,
-    hasPrevPage: page > 1,
-    hasNextPage: page < totalPages,
-    page,
-    limit,
-    totalCount,
-    totalPages,
-  };
-  return { bills, pagination };
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
+
+  return { bills, ...paginationData };
 };
 
 export const getLatestBillByTenantIdService = async (tenantId: string) => {
@@ -262,26 +262,43 @@ export const getLatestBillByTenantIdService = async (tenantId: string) => {
   return latestBill;
 };
 
-export const getBillHistoryByTenantIdService = async (tenantId: string) => {
+export const getBillHistoryByTenantIdService = async (
+  tenantId: string,
+  query: PaginationQueryType,
+  req: Request
+) => {
+  // Calculate pagination
+  const { page, limit } = query;
+  const skip = (page - 1) * limit;
+
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     select: { room_id: true },
   });
   if (!tenant) throw new NotFoundError('Tenant not found');
 
-  const bills = await prisma.bill.findMany({
-    where: { room_id: tenant.room_id },
-    orderBy: { created_at: 'desc' },
-    include: {
-      total_unit: true,
-      invoice: {
-        include: {
-          receipt: true,
+  const [bills, totalCount] = await prisma.$transaction([
+    prisma.bill.findMany({
+      where: { room_id: tenant.room_id },
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+      include: {
+        total_unit: true,
+        invoice: {
+          include: {
+            receipt: true,
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.bill.count(),
+  ]);
 
   if (!bills.length) throw new NotFoundError('No bills found for this tenant');
-  return bills;
+
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
+
+  return { bills, ...paginationData };
 };
