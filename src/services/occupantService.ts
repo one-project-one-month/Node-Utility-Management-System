@@ -1,13 +1,15 @@
+import { Request } from 'express';
 import { BadRequestError } from '../common/errors/badRequestError';
 import { NotFoundError } from '../common/errors/notFoundError';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
-
 import prisma from '../lib/prismaClient';
 import {
   CreateOccupantType,
   DeleteOccupantType,
   UpdateOccupantType,
 } from '../validations/occupantSchema';
+import { PaginationQueryType } from '../validations/paginationSchema';
 
 export async function createOccupantService(data: CreateOccupantType) {
   // Check all tenant_id values are the same
@@ -113,4 +115,48 @@ export async function deleteOccupantService(
   await prisma.occupant.delete({
     where: { id: occupantId },
   });
+}
+
+export async function getByIdOccupantService(occupantId: string) {
+  const occupant = await prisma.occupant.findUnique({
+    where: { id: occupantId },
+    include: {
+      tenant: true,
+    },
+  });
+  if (!occupant) {
+    throw new NotFoundError('Occupant Not Found');
+  }
+  return occupant;
+}
+
+export async function getAllOccupantService(
+  query: PaginationQueryType,
+  req: Request
+) {
+  const { page, limit } = query;
+  const skip = (page - 1) * limit;
+
+  const [occupants, totalCount] = await Promise.all([
+    prisma.occupant.findMany({
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+      include: {
+        tenant: true,
+      },
+    }),
+    prisma.occupant.count(),
+  ]);
+
+  if (occupants.length === 0) {
+    throw new NotFoundError('No occupants found');
+  }
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
+
+  return {
+    occupants,
+    ...paginationData,
+  };
 }

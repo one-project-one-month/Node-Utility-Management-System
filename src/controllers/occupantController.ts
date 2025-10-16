@@ -3,8 +3,38 @@ import { successResponse } from '../common/apiResponse';
 import {
   createOccupantService,
   deleteOccupantService,
+  getAllOccupantService,
+  getByIdOccupantService,
   updateOccupantService,
 } from '../services/occupantService';
+
+export async function getByIdOccupantController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const occupant = await getByIdOccupantService(
+      req.validatedParams.occupantId
+    );
+    successResponse(res, 'Occupant gets successfull.', { occupant }, 200);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getAllOccupantController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const result = await getAllOccupantService(req.validatedQuery, req);
+    successResponse(res, 'All occupants get successfully', result, 200);
+  } catch (error) {
+    return next(error);
+  }
+}
 
 export async function createOccupantController(
   req: Request,
