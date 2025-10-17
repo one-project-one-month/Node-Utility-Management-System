@@ -1,4 +1,4 @@
-import z from 'zod';
+import * as z from 'zod';
 import { RelationshipToTenant } from '../../generated/prisma';
 
 export const OccupantBaseSchema = z
@@ -68,7 +68,12 @@ export const DeleteOccupantSchema = z
   })
   .strict();
 
+export const GetOccupantByTenantParamSchema = z.object({
+  tenantId: z.uuid({ version: 'v4' }),
+});
+
 export type CreateOccupantType = z.infer<typeof CreateOccupantSchema>;
 export type UpdateOccupantType = z.infer<typeof UpdateOccupantSchema>;
 export type GetOccupantParamType = z.infer<typeof GetOccupantParamSchema>;
 export type DeleteOccupantType = z.infer<typeof DeleteOccupantSchema>;
+export type GetOccupantByTenantParamType = z.infer<typeof GetOccupantByTenantParamSchema>;

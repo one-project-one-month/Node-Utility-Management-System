@@ -5,6 +5,7 @@ import {
   deleteOccupantService,
   getAllOccupantService,
   getByIdOccupantService,
+  getByTenantIdOccupantService,
   updateOccupantService,
 } from '../services/occupantService';
 
@@ -18,6 +19,21 @@ export async function getByIdOccupantController(
       req.validatedParams.occupantId
     );
     successResponse(res, 'Occupant gets successfull.', { occupant }, 200);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getByTenantIdOccupantController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const occupants = await getByTenantIdOccupantService(
+      req.validatedParams.tenantId
+    );
+    successResponse(res, 'Occupants gets successfully.', { occupants }, 200);
   } catch (error) {
     return next(error);
   }

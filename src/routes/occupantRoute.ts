@@ -14,40 +14,49 @@ import {
   getAllOccupantController,
   getByIdOccupantController,
   updateOccupantController,
+  getByTenantIdOccupantController,
 } from '../controllers/occupantController';
 import {
   CreateOccupantSchema,
   DeleteOccupantSchema,
   GetOccupantParamSchema,
   UpdateOccupantSchema,
+  GetOccupantByTenantParamSchema,
 } from '../validations/occupantSchema';
 import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
 
 router.get(
-  '/:occupantId',
-  hasRole(['Admin', 'Staff', 'Tenant']),
+  'occupants/:occupantId',
+  hasRole(['Admin', 'Staff']),
   validateRequestParams(GetOccupantParamSchema),
   getByIdOccupantController
 );
 
 router.get(
-  '/',
+  '/tenants/:tenantId/occupants',
+  hasRole(['Admin', 'Staff', 'Tenant']),
+  validateRequestParams(GetOccupantByTenantParamSchema),
+  getByTenantIdOccupantController
+);
+
+router.get(
+  '/occupants',
   hasRole(['Admin', 'Staff']),
   validateRequestQuery(PaginationQuerySchema),
   getAllOccupantController
 );
 
 router.post(
-  '/',
+  '/occupants',
   hasRole(['Admin', 'Staff']),
   validateRequestBody(CreateOccupantSchema),
   createOccupantController
 );
 
 router.put(
-  '/:occupantId',
+  '/occupants/:occupantId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetOccupantParamSchema),
   validateRequestBody(UpdateOccupantSchema),
@@ -55,7 +64,7 @@ router.put(
 );
 
 router.delete(
-  '/:occupantId',
+  '/occupants/:occupantId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetOccupantParamSchema),
   validateRequestBody(DeleteOccupantSchema),
