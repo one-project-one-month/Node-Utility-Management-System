@@ -146,33 +146,22 @@ components:
           type: string
           format: uuid
           example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
-        names:
-          type: array
-          items:
-            type: string
-          example: ['Lyle Willms', 'Maxine Ankunding IV']
-        emails:
-          type: array
-          items:
-            type: string
-            format: email
-          example:
-            ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
-        nrcs:
-          type: array
-          items:
-            type: string
-          example: ['12/ABCD(N)854324', '12/ABCD(N)895764']
-        phone_nos:
-          type: array
-          items:
-            type: string
-          example: ['+959452897714', '+959553996447']
-        emergency_nos:
-          type: array
-          items:
-            type: string
-          example: ['+959202435118']
+        name:
+          type: string
+          example: John Doe
+        nrc:
+          type: string
+          example: '12/ABCD(N)854324'
+        email:
+          type: string
+          format: email
+          example: john.doe@gmail.com
+        phone_no:
+          type: string
+          example: '+959452897714'
+        emergency_no:
+          type: string
+          example: '+959202435118'
         created_at:
           type: string
           format: date-time
@@ -187,6 +176,50 @@ components:
           example: d44605d3-4f8e-4057-b778-201111db860d
         room:
           $ref: '#/components/schemas/Room'
+        occupants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Occupant'
+
+    # Occupant Schema
+    Occupant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        name:
+          type: string
+          example: Jane Doe
+        nrc:
+          type: string
+          nullable: true
+          example: '12/EFGH(N)123456'
+        relationship_to_tenant:
+          type: string
+          enum: [SPOUSE, PARENT, CHILD, SIBLING, RELATIVE, FRIEND, OTHER]
+          example: SPOUSE
+        tenant_id:
+          type: string
+          format: uuid
+          example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-05T19:17:18.241Z
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+
+    # RelationshipToTenant
+    RelationshipToTenant:
+      type: string
+      enum: [SPOUSE, PARENT, CHILD, SIBLING, RELATIVE, FRIEND, OTHER]
+      example: SPOUSE
 
     # Room Schema
     Room:
@@ -469,6 +502,16 @@ components:
         format: uuid
         example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
 
+    OccupantIdParam:
+      name: occupantId
+      in: path
+      description: Occupant ID (UUID)
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
     CustomerServiceIdParam:
       name: id
       in: path
@@ -722,46 +765,59 @@ components:
         application/json:
           schema:
             type: object
-            required: [names, emails, nrcs, phone_nos, emergency_nos, room_id]
+            required: [name, nrc, email, phone_no, emergency_no, room_id]
             properties:
-              names:
-                type: array
-                items:
-                  type: string
-                  minLength: 1
-                minItems: 1
-                example: ['Lyle Willms', 'Maxine Ankunding IV']
-              emails:
-                type: array
-                items:
-                  type: string
-                  format: email
-                minItems: 1
-                example:
-                  ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
-              nrcs:
-                type: array
-                items:
-                  type: string
-                  minLength: 3
-                minItems: 1
-                example: ['12/ABCD(N)854324', '12/ABCD(N)895764']
-              phone_nos:
-                type: array
-                items:
-                  type: string
-                  minLength: 6
-                example: ['+959452897714', '+959553996447']
-              emergency_nos:
-                type: array
-                items:
-                  type: string
-                  minLength: 6
-                example: ['+959202435118']
+              name:
+                type: string
+                minLength: 1
+                example: John Doe
+              nrc:
+                type: string
+                minLength: 5
+                example: '12/ABCD(N)854324'
+              email:
+                type: string
+                format: email
+                example: john.doe@gmail.com
+              phone_no:
+                type: string
+                pattern: '^[0-9]{6,15}$'
+                example: '959452897714'
+              emergency_no:
+                type: string
+                pattern: '^[0-9]{6,15}$'
+                example: '959202435118'
               room_id:
                 type: string
                 format: uuid
                 example: d44605d3-4f8e-4057-b778-201111db860d
+              occupants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      minLength: 1
+                      example: Jane Doe
+                    nrc:
+                      type: string
+                      minLength: 5
+                      nullable: true
+                      example: '12/EFGH(N)123456'
+                    relationship_to_tenant:
+                      type: string
+                      enum:
+                        [
+                          SPOUSE,
+                          PARENT,
+                          CHILD,
+                          SIBLING,
+                          RELATIVE,
+                          FRIEND,
+                          OTHER,
+                        ]
+                      example: SPOUSE
 
     UpdateTenantRequest:
       required: true
@@ -770,41 +826,102 @@ components:
           schema:
             type: object
             properties:
-              names:
-                type: array
-                items:
-                  type: string
-                  minLength: 1
-                example: ['Lyle Willms', 'Maxine Ankunding IV']
-              emails:
-                type: array
-                items:
-                  type: string
-                  format: email
-                example:
-                  ['lyle.willms79@gmail.com', 'maxine.ankunding.iv90@gmail.com']
-              nrcs:
-                type: array
-                items:
-                  type: string
-                  minLength: 3
-                example: ['12/ABCD(N)854324', '12/ABCD(N)895764']
-              phone_nos:
-                type: array
-                items:
-                  type: string
-                  minLength: 6
-                example: ['+959452897714', '+959553996447']
-              emergency_nos:
-                type: array
-                items:
-                  type: string
-                  minLength: 6
-                example: ['+959202435118']
+              name:
+                type: string
+                minLength: 1
+                example: John Doe Updated
+              nrc:
+                type: string
+                minLength: 5
+                example: '12/ABCD(N)854325'
+              email:
+                type: string
+                format: email
+                example: john.updated@gmail.com
+              phone_no:
+                type: string
+                pattern: '^[0-9]{6,15}$'
+                example: '959452897715'
+              emergency_no:
+                type: string
+                pattern: '^[0-9]{6,15}$'
+                example: '959202435119'
               room_id:
                 type: string
                 format: uuid
                 example: d44605d3-4f8e-4057-b778-201111db860d
+              occupant_id:
+                type: string
+                format: uuid
+                example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+    CreateOccupantRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            minItems: 1
+            items:
+              type: object
+              required: [name, relationship_to_tenant, tenant_id]
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  example: Jane Doe
+                nrc:
+                  type: string
+                  minLength: 5
+                  nullable: true
+                  example: '12/EFGH(N)123456'
+                relationship_to_tenant:
+                  type: string
+                  enum:
+                    [SPOUSE, PARENT, CHILD, SIBLING, RELATIVE, FRIEND, OTHER]
+                  example: SPOUSE
+                tenant_id:
+                  type: string
+                  format: uuid
+                  example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+
+    UpdateOccupantRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                minLength: 1
+                example: Jane Doe Updated
+              nrc:
+                type: string
+                minLength: 5
+                nullable: true
+                example: '12/EFGH(N)123457'
+              relationship_to_tenant:
+                type: string
+                enum: [SPOUSE, PARENT, CHILD, SIBLING, RELATIVE, FRIEND, OTHER]
+                example: SPOUSE
+              tenant_id:
+                type: string
+                format: uuid
+                example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
+
+    DeleteOccupantRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [tenant_id]
+            properties:
+              tenant_id:
+                type: string
+                format: uuid
+                example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
 
     CreateReceiptRequest:
       required: true
@@ -1245,6 +1362,30 @@ components:
                         type: array
                         items:
                           $ref: '#/components/schemas/Tenant'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    PaginatedOccupantsResponse:
+      description: Occupants retrieved successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: All occupants get successfully
+                  content:
+                    type: object
+                    properties:
+                      occupants:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Occupant'
                       meta:
                         $ref: '#/components/schemas/PaginationMeta'
                       links:
@@ -1786,7 +1927,7 @@ paths:
   /api/v1/tenants:
     get:
       tags:
-        - Tenants - (In Maintenance)
+        - Tenants
       summary: Get all tenants (Admin & Staff only)
       description: Retrieves a list of all tenants with pagination support. Accessible only to Admin and Staff users.
       security:
@@ -1803,7 +1944,7 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
     post:
       tags:
-        - Tenants - (In Maintenance)
+        - Tenants
       summary: Create a new tenant (Admin & Staff only)
       description: Create a new tenant with name, email, NRC, etc. Accessible only to Admin and Staff users.
       security:
@@ -1850,13 +1991,10 @@ paths:
                           properties:
                             path:
                               type: string
-                              example: names
+                              example: name
                             message:
                               type: string
-                              example: Array fields must have the same length
-                            status:
-                              type: integer
-                              example: 400
+                              example: Name is required
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
@@ -1865,7 +2003,7 @@ paths:
   /api/v1/tenants/{tenantId}:
     get:
       tags:
-        - Tenants - (In Maintenance)
+        - Tenants
       summary: Get tenant by ID (Admin & Staff only)
       description: Retrieve a specific tenant by their ID. Accessible only to Admin and Staff users.
       security:
@@ -1898,7 +2036,7 @@ paths:
           $ref: '#/components/responses/NotFoundError'
     put:
       tags:
-        - Tenants - (In Maintenance)
+        - Tenants
       summary: Update tenant by ID (Admin & Staff only)
       description: Update tenant information. At least one field must be provided. Accessible to Admin and Staff users.
       security:
@@ -1937,6 +2075,216 @@ paths:
                       message:
                         type: string
                         example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  # Occupant Endpoints
+  /api/v1/occupants:
+    get:
+      tags:
+        - Occupants
+      summary: Get all occupants (Admin & Staff only)
+      description: Retrieves a list of all occupants with pagination support. Accessible only to Admin and Staff users.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        200:
+          $ref: '#/components/responses/PaginatedOccupantsResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    post:
+      tags:
+        - Occupants
+      summary: Create new occupants (Admin & Staff only)
+      description: Create one or more occupants for a tenant. All occupants must belong to the same tenant.
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/CreateOccupantRequest'
+      responses:
+        201:
+          description: Occupant(s) created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Occupant created successfully
+                      content:
+                        type: object
+                        properties:
+                          occupant:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Occupant'
+                      status:
+                        type: number
+                        example: 201
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All occupants must belong to the same tenant
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/occupants/{occupantId}:
+    get:
+      tags:
+        - Occupants
+      summary: Get occupant by ID (Admin, Staff & Tenant only)
+      description: Retrieve a specific occupant by their ID. Accessible to Admin, Staff, and the tenant themselves.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OccupantIdParam'
+      responses:
+        200:
+          description: Occupant retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Occupant gets successfully
+                      content:
+                        type: object
+                        properties:
+                          occupant:
+                            $ref: '#/components/schemas/Occupant'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      tags:
+        - Occupants
+      summary: Update occupant by ID (Admin & Staff only)
+      description: Update occupant information. At least one field must be provided.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OccupantIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateOccupantRequest'
+      responses:
+        200:
+          description: Occupant updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Occupant updated successfully
+                      content:
+                        type: object
+                        properties:
+                          occupant:
+                            $ref: '#/components/schemas/Occupant'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    delete:
+      tags:
+        - Occupants
+      summary: Delete occupant by ID (Admin & Staff only)
+      description: Delete an occupant. Requires tenant_id in request body for verification.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OccupantIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/DeleteOccupantRequest'
+      responses:
+        200:
+          description: Occupant deleted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Occupant deleted successfully
+                      content:
+                        type: object
+                        properties:
+                          occupant:
+                            $ref: '#/components/schemas/Occupant'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Tenant mismatch - cannot delete occupant from another tenant
                       status:
                         type: integer
                         example: 400
