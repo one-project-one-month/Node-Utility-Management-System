@@ -47,7 +47,7 @@ swaggerDocs(app, port || 3000);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute); // user endpoint
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
-app.use('/api/v1/occupants', isAuthenticated, occupantRoute); //occupant endpoint
+app.use('/api/v1', isAuthenticated, occupantRoute); //occupant endpoint
 app.use(
   '/api/v1/total-units',
   isAuthenticated,

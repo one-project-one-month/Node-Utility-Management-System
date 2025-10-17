@@ -37,7 +37,7 @@ export async function createTenantService(data: CreateTenantType) {
     nrc,
     ...occupants
       .map((occupant) => occupant.nrc)
-      .filter((v): v is string => !!v),
+      .filter((nrc): nrc is string => !!nrc),
   ];
 
   //Check for duplicates tenant data

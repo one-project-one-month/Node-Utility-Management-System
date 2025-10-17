@@ -130,6 +130,19 @@ export async function getByIdOccupantService(occupantId: string) {
   return occupant;
 }
 
+export async function getByTenantIdOccupantService(tenantId: string) {
+  const occupants = await prisma.occupant.findMany({
+    where: { tenant_id: tenantId },
+    include: {
+      tenant: true,
+    },
+  });
+  if (occupants.length === 0) {
+    throw new NotFoundError('No occupants found for the given tenantId');
+  }
+  return occupants;
+}
+
 export async function getAllOccupantService(
   query: PaginationQueryType,
   req: Request
