@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { BadRequestError } from '../common/errors/badRequestError';
 import { NotFoundError } from '../common/errors/notFoundError';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
 import prisma from '../lib/prismaClient';
 import { PaginationQueryType } from '../validations/paginationSchema';
@@ -8,7 +9,6 @@ import {
   CreateTenantType,
   UpdateTenantType,
 } from '../validations/tenantSchema';
-import { generatePaginationData } from '../common/utils/paginationHelper';
 
 export async function createTenantService(data: CreateTenantType) {
   const {
@@ -131,6 +131,11 @@ export async function getByIdTenantService(tenantId: string) {
     include: {
       room: true,
       occupants: true,
+      contract: {
+        include: {
+          contract_type: true,
+        },
+      },
     },
   });
   if (!tenant) {
@@ -154,6 +159,11 @@ export async function getAllTenantService(
       include: {
         room: true,
         occupants: true,
+        contract: {
+          include: {
+            contract_type: true,
+          },
+        },
       },
     }),
     prisma.tenant.count(),
