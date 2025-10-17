@@ -76,4 +76,6 @@ export type CreateOccupantType = z.infer<typeof CreateOccupantSchema>;
 export type UpdateOccupantType = z.infer<typeof UpdateOccupantSchema>;
 export type GetOccupantParamType = z.infer<typeof GetOccupantParamSchema>;
 export type DeleteOccupantType = z.infer<typeof DeleteOccupantSchema>;
-export type GetOccupantByTenantParamType = z.infer<typeof GetOccupantByTenantParamSchema>;
+export type GetOccupantByTenantParamType = z.infer<
+  typeof GetOccupantByTenantParamSchema
+>;

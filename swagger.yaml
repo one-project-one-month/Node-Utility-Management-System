@@ -174,12 +174,6 @@ components:
           type: string
           format: uuid
           example: d44605d3-4f8e-4057-b778-201111db860d
-        room:
-          $ref: '#/components/schemas/Room'
-        occupants:
-          type: array
-          items:
-            $ref: '#/components/schemas/Occupant'
 
     # Occupant Schema
     Occupant:
@@ -212,8 +206,6 @@ components:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
-        tenant:
-          $ref: '#/components/schemas/Tenant'
 
     # RelationshipToTenant
     RelationshipToTenant:
@@ -511,6 +503,16 @@ components:
         type: string
         format: uuid
         example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+    GetOccupantByTenantParam:
+      name: tenantId
+      in: path
+      description: Tenant ID (UUID) to get occupants for
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
 
     CustomerServiceIdParam:
       name: id
@@ -1292,6 +1294,33 @@ components:
                     type: integer
                     example: 400
 
+    # Response
+    OccupantsByTenantResponse:
+      description: Occupants fetched successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Occupants fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      occupants:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/Occupant'
+                            - type: object
+                              properties:
+                                tenant:
+                                  type: object
+                                  $ref: '#/components/schemas/Tenant'
+
     # Paginated Response
     PaginatedUsersResponse:
       description: Users fetched successfully with pagination
@@ -1361,7 +1390,17 @@ components:
                       tenants:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Tenant'
+                          allOf:
+                            - $ref: '#/components/schemas/Tenant'
+                            - type: object
+                              properties:
+                                room: 
+                                  type: object
+                                  $ref: '#/components/schemas/Room'
+                                occupants:
+                                  type: array
+                                  items:
+                                    $ref: '#/components/schemas/Occupant'
                       meta:
                         $ref: '#/components/schemas/PaginationMeta'
                       links:
@@ -1385,107 +1424,113 @@ components:
                       occupants:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Occupant'
+                          allOf:
+                            - $ref: '#/components/schemas/Occupant'
+                            - type: object
+                              properties:
+                                tenants:
+                                  type: object
+                                  $ref: '#/components/schemas/Tenant'
                       meta:
                         $ref: '#/components/schemas/PaginationMeta'
                       links:
                         $ref: '#/components/schemas/PaginationLinks'
 
-    PaginatedReceiptsResponse:
-      description: Receipts fetched successfully with pagination
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/ApiSuccessResponse'
-              - type: object
-                properties:
-                  message:
-                    type: string
-                    example: Receipts fetched successfully
-                  content:
-                    type: object
+        PaginatedReceiptsResponse:
+          description: Receipts fetched successfully with pagination
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
                     properties:
-                      receipts:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Receipt'
-                      meta:
-                        $ref: '#/components/schemas/PaginationMeta'
-                      links:
-                        $ref: '#/components/schemas/PaginationLinks'
+                      message:
+                        type: string
+                        example: Receipts fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          receipts:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Receipt'
+                          meta:
+                            $ref: '#/components/schemas/PaginationMeta'
+                          links:
+                            $ref: '#/components/schemas/PaginationLinks'
 
-    PaginatedTotalUnitsResponse:
-      description: Total units fetched successfully with pagination
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/ApiSuccessResponse'
-              - type: object
-                properties:
-                  message:
-                    type: string
-                    example: Total-units fetched successfully
-                  content:
-                    type: object
+        PaginatedTotalUnitsResponse:
+          description: Total units fetched successfully with pagination
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
                     properties:
-                      totalUnits:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/TotalUnits'
-                      meta:
-                        $ref: '#/components/schemas/PaginationMeta'
-                      links:
-                        $ref: '#/components/schemas/PaginationLinks'
+                      message:
+                        type: string
+                        example: Total-units fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          totalUnits:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/TotalUnits'
+                          meta:
+                            $ref: '#/components/schemas/PaginationMeta'
+                          links:
+                            $ref: '#/components/schemas/PaginationLinks'
 
-    PaginatedContractsResponse:
-      description: Contracts fetched successfully with pagination
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/ApiSuccessResponse'
-              - type: object
-                properties:
-                  message:
-                    type: string
-                    example: All Contracts fetched successfully
-                  content:
-                    type: object
+        PaginatedContractsResponse:
+          description: Contracts fetched successfully with pagination
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
                     properties:
-                      contracts:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Contract'
-                      meta:
-                        $ref: '#/components/schemas/PaginationMeta'
-                      links:
-                        $ref: '#/components/schemas/PaginationLinks'
+                      message:
+                        type: string
+                        example: All Contracts fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          contracts:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Contract'
+                          meta:
+                            $ref: '#/components/schemas/PaginationMeta'
+                          links:
+                            $ref: '#/components/schemas/PaginationLinks'
 
-    PaginatedRoomsResponse:
-      description: Rooms fetched successfully with pagination
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/ApiSuccessResponse'
-              - type: object
-                properties:
-                  message:
-                    type: string
-                    example: Rooms fetched successfully
-                  content:
-                    type: object
+        PaginatedRoomsResponse:
+          description: Rooms fetched successfully with pagination
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
                     properties:
-                      rooms:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Room'
-                      meta:
-                        $ref: '#/components/schemas/PaginationMeta'
-                      links:
-                        $ref: '#/components/schemas/PaginationLinks'
+                      message:
+                        type: string
+                        example: Rooms fetched successfully
+                      content:
+                        type: object
+                        properties:
+                          rooms:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Room'
+                          meta:
+                            $ref: '#/components/schemas/PaginationMeta'
+                          links:
+                            $ref: '#/components/schemas/PaginationLinks'
 
 paths:
   # Authentication Endpoints
@@ -1968,7 +2013,16 @@ paths:
                         type: object
                         properties:
                           tenant:
-                            $ref: '#/components/schemas/Tenant'
+                            allOf:
+                              - $ref: '#/components/schemas/Tenant'
+                              - type: object
+                                properties:
+                                  room: 
+                                    type: object
+                                    $ref: '#/components/schemas/Room'
+                                  occupants:
+                                    type: array
+                                    example: []
                       status:
                         type: number
                         example: 201
@@ -2027,7 +2081,17 @@ paths:
                         type: object
                         properties:
                           tenant:
-                            $ref: '#/components/schemas/Tenant'
+                            allOf:
+                              - $ref: '#/components/schemas/Tenant'
+                              - type: object
+                                properties:
+                                  room: 
+                                    type: object
+                                    $ref: '#/components/schemas/Room'
+                                  occupants:
+                                    type: array
+                                    items:
+                                      $ref: '#/components/schemas/Occupant'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
@@ -2062,7 +2126,17 @@ paths:
                         type: object
                         properties:
                           tenant:
-                            $ref: '#/components/schemas/Tenant'
+                            allOf:
+                              - $ref: '#/components/schemas/Tenant'
+                              - type: object
+                                properties:
+                                  room: 
+                                    type: object
+                                    $ref: '#/components/schemas/Room'
+                                  occupants:
+                                    type: array
+                                    items:
+                                      $ref: '#/components/schemas/Occupant'
         400:
           description: Bad Request - Validation error
           content:
@@ -2288,6 +2362,26 @@ paths:
                       status:
                         type: integer
                         example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/tenants/{tenantId}/occupants:
+    get:
+      tags:
+        - Occupants
+      summary: Get occupants by tenant ID
+      description: Retrieve all occupants for a specific tenant. Accessible by Admin, Staff, and the tenant themselves.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GetOccupantByTenantParam'
+      responses:
+        200:
+          $ref: '#/components/responses/OccupantsByTenantResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
