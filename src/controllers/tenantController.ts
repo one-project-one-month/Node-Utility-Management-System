@@ -7,31 +7,31 @@ import {
   updateTenantService,
 } from '../services/tenantService';
 
-export const getByIdTenantController = async (
+export async function getByIdTenantController(
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> => {
+): Promise<void> {
   try {
     const tenant = await getByIdTenantService(req.validatedParams.tenantId);
     successResponse(res, 'Tenant gets successfull.', { tenant }, 200);
   } catch (error) {
     return next(error);
   }
-};
+}
 
-export const getAllTenantController = async (
+export async function getAllTenantController(
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> => {
+): Promise<void> {
   try {
-    const result = await getAllTenantService(req.validatedQuery);
+    const result = await getAllTenantService(req.validatedQuery, req);
     successResponse(res, 'All tenants get successfully', result, 200);
   } catch (error) {
     return next(error);
   }
-};
+}
 
 export async function createTenantController(
   req: Request,
