@@ -28,14 +28,15 @@ export async function createTenantService(data: CreateTenantType) {
   const existingTenantForRoom = await prisma.tenant.findUnique({
     where: { room_id },
   });
-
   if (existingTenantForRoom)
     throw new BadRequestError('Room already occupied!');
 
   //Gather all NRCs for duplicate check
   const allNrcsToCheck: string[] = [
     nrc,
-    ...occupants.map((occ) => occ.nrc).filter((v): v is string => !!v),
+    ...occupants
+      .map((occupant) => occupant.nrc)
+      .filter((v): v is string => !!v),
   ];
 
   //Check for duplicates tenant data
@@ -75,13 +76,28 @@ export async function updateTenantService(
   });
   if (!tenant) throw new NotFoundError('Tenant not found');
 
-  // Ensure occupant belongs to this tenant
-  const occupant = await prisma.occupant.findUnique({
-    where: { id: data.occupant_id },
+  // Check that the provided room_id exists
+  const room = await prisma.room.findUnique({
+    where: { id: data.room_id },
   });
+  if (!room) throw new NotFoundError('Room not found.');
 
-  if (!occupant || occupant.tenant_id !== tenant.id) {
-    throw new BadRequestError('Invalid occupant for this tenant.');
+  // Ensure the provided room_id matches the tenant’s current room_id
+  if (tenant.room_id !== data.room_id) {
+    throw new BadRequestError(
+      'RoomId mismatch: tenant is not assigned to this room.'
+    );
+  }
+
+  // Ensure occupant belongs to this tenant
+  if (data.occupant_id) {
+    const occupant = await prisma.occupant.findUnique({
+      where: { id: data.occupant_id },
+    });
+
+    if (!occupant || occupant.tenant_id !== tenant.id) {
+      throw new BadRequestError('Invalid occupant for this tenant.');
+    }
   }
 
   //Check for duplicates excluding the current tenant

@@ -2,21 +2,23 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
+import { deployedUrls } from './common/auth/allowedOrigins';
 import corsOptions from './common/auth/corsOptions';
 import { crediential } from './common/auth/credential';
 import { customLogger } from './common/utils/customLogger';
 import swaggerDocs from './config/swagger';
 import { hasRole, isAuthenticated } from './middlewares/authMiddleware';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
-import { deployedUrls } from './common/auth/allowedOrigins';
 
 // ROUTE IMPORTS
 import authRoute from './routes/authRoute';
+import contractRoute from './routes/contractRoute';
+import contractTypeRoute from './routes/contractTypeRoute';
+import occupantRoute from './routes/occupantRoute';
 import receiptRoute from './routes/receiptRoute';
+import roomRoute from './routes/roomRoute';
 import serviceRoute from './routes/serviceRoute';
 import tenantRoute from './routes/tenantRoute';
-import userRoute from './routes/userRoute';
-import contractTypeRoute from './routes/contractTypeRoute';
 import totalUnitsRoute from './routes/totalUnitsRoute';
 import contractRoute from './routes/contractRoute';
 import roomRoute from './routes/roomRoute';
@@ -45,6 +47,7 @@ swaggerDocs(app, port || 3000);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', isAuthenticated, userRoute); // user endpoint
 app.use('/api/v1/tenants', isAuthenticated, tenantRoute); //tenant endpoint
+app.use('/api/v1/occupants', isAuthenticated, occupantRoute); //occupant endpoint
 app.use(
   '/api/v1/total-units',
   isAuthenticated,

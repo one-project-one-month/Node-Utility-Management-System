@@ -8,7 +8,6 @@ export const OccupantSchema = z.object({
     RelationshipToTenant,
     "Relationship must be one of 'SPOUSE','PARENT','CHILD','SIBLING','RELATIVE','FRIEND','OTHER'"
   ),
-  tenant_id: z.uuid({ version: 'v4' }).optional().nullable(),
 });
 
 export const CreateTenantSchema = z
@@ -56,7 +55,7 @@ export const UpdateTenantSchema = z
       )
       .optional(),
     room_id: z.uuid({ message: 'Invalid room ID' }),
-    occupant_id: z.uuid({ message: 'Invalid occupant ID' }),
+    occupant_id: z.uuid({ message: 'Invalid occupant ID' }).optional(),
   })
   .refine(
     (data) =>
@@ -78,4 +77,4 @@ export const GetTenantParamSchema = z.object({
 
 export type CreateTenantType = z.infer<typeof CreateTenantSchema>;
 export type UpdateTenantType = z.infer<typeof UpdateTenantSchema>;
-export type GetUserParamType = z.infer<typeof GetTenantParamSchema>;
+export type GetTenantParamType = z.infer<typeof GetTenantParamSchema>;

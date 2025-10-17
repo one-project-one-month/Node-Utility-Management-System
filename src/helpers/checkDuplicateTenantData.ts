@@ -4,7 +4,8 @@ import prisma from '../lib/prismaClient';
 export const checkDuplicateTenantData = async (
   nrcs?: string[],
   email?: string,
-  excludeTenantId?: string
+  excludeTenantId?: string,
+  excludeOccupantId?: string
 ) => {
   // Filter out undefined or empty NRCs
   const validNRCs = nrcs?.filter((v): v is string => !!v) ?? [];
@@ -38,7 +39,7 @@ export const checkDuplicateTenantData = async (
     ? await prisma.occupant.findMany({
         where: {
           nrc: { in: validNRCs },
-          ...(excludeTenantId && { tenant_id: { not: excludeTenantId } }),
+          ...(excludeOccupantId && { id: { not: excludeOccupantId } }),
         },
         select: { nrc: true },
       })
