@@ -14,15 +14,14 @@ import { errorHandler } from './middlewares/errorHandlingMiddleware';
 import authRoute from './routes/authRoute';
 import contractRoute from './routes/contractRoute';
 import contractTypeRoute from './routes/contractTypeRoute';
+import invoiceRoute from './routes/invoiceRoute';
 import occupantRoute from './routes/occupantRoute';
 import receiptRoute from './routes/receiptRoute';
 import roomRoute from './routes/roomRoute';
 import serviceRoute from './routes/serviceRoute';
 import tenantRoute from './routes/tenantRoute';
 import totalUnitsRoute from './routes/totalUnitsRoute';
-import contractRoute from './routes/contractRoute';
-import roomRoute from './routes/roomRoute';
-import invoiceRoute from './routes/invoiceRoute';
+import userRoute from './routes/userRoute';
 import newBillsRoute from './routes/newBillsRoute';
 
 dotenv.config();
