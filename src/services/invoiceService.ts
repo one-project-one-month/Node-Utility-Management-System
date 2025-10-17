@@ -91,7 +91,7 @@ export async function getAllInvoicesService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    invoices,
+    data: invoices,
     ...paginationData,
   };
 }
@@ -231,7 +231,7 @@ export async function getTenantInvoiceHistoryService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    invoices,
+    data: invoices,
     ...paginationData,
   };
 }

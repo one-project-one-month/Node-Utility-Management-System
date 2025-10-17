@@ -169,7 +169,7 @@ export async function getAllOccupantService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    occupants,
+    data: occupants,
     ...paginationData,
   };
 }

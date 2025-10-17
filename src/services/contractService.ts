@@ -138,7 +138,7 @@ export const getAllContractService = async (
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    contracts,
+    data: contracts,
     ...paginationData,
   };
 };

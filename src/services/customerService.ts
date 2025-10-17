@@ -82,7 +82,7 @@ export const cutomerServiceHistory = async (
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    history,
+    data: history,
     ...paginationData,
   };
 };
@@ -131,7 +131,7 @@ export const getAllCustomerService = async (
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    services,
+    data: services,
     ...paginationData,
   };
 };

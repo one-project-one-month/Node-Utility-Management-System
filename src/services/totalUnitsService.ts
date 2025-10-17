@@ -57,7 +57,7 @@ export async function getAllTotalUnitsService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    totalUnits,
+    data: totalUnits,
     ...paginationData,
   };
 }

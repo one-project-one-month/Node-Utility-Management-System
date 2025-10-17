@@ -166,7 +166,7 @@ export async function getAllTenantService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    tenants,
+    data: tenants,
     ...paginationData,
   };
 }

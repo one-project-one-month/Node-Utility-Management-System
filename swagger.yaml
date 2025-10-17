@@ -1337,7 +1337,7 @@ components:
                   content:
                     type: object
                     properties:
-                      users:
+                      data:
                         type: array
                         items:
                           oneOf:
@@ -1363,7 +1363,7 @@ components:
                   content:
                     type: object
                     properties:
-                      services:
+                      data:
                         type: array
                         items:
                           $ref: '#/components/schemas/CustomerService'
@@ -1387,7 +1387,7 @@ components:
                   content:
                     type: object
                     properties:
-                      tenants:
+                      data:
                         type: array
                         items:
                           allOf:
@@ -1421,7 +1421,7 @@ components:
                   content:
                     type: object
                     properties:
-                      occupants:
+                      data:
                         type: array
                         items:
                           allOf:
@@ -1451,7 +1451,7 @@ components:
                       content:
                         type: object
                         properties:
-                          receipts:
+                          data:
                             type: array
                             items:
                               $ref: '#/components/schemas/Receipt'
@@ -1475,7 +1475,7 @@ components:
                       content:
                         type: object
                         properties:
-                          totalUnits:
+                          data:
                             type: array
                             items:
                               $ref: '#/components/schemas/TotalUnits'
@@ -1499,7 +1499,7 @@ components:
                       content:
                         type: object
                         properties:
-                          contracts:
+                          data:
                             type: array
                             items:
                               $ref: '#/components/schemas/Contract'
@@ -1523,7 +1523,7 @@ components:
                       content:
                         type: object
                         properties:
-                          rooms:
+                          data:
                             type: array
                             items:
                               $ref: '#/components/schemas/Room'
