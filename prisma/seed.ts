@@ -5,14 +5,36 @@ import {
   Category,
   InvoiceStatus,
   PriorityLevel,
-  Room,
   RoomStatus,
   ServiceStatus,
   RelationshipToTenant,
+  UserRole,
+  PaymentMethod,
+  Prisma,
 } from '../generated/prisma';
 
+// === Type Definitions ===
+interface RandomDateOptions {
+  monthsAgoMin?: number;
+  monthsAgoMax?: number;
+}
+
+interface Utilities {
+  electricity: number;
+  water: number;
+}
+
+interface ServiceTypeConfig {
+  category: Category;
+  weight: number;
+  priorities: PriorityLevel[];
+}
+
 // === Utility functions ===
-function randomPastDate({ monthsAgoMin = 1, monthsAgoMax = 12 } = {}) {
+function randomPastDate({
+  monthsAgoMin = 1,
+  monthsAgoMax = 12,
+}: RandomDateOptions = {}): Date {
   const monthsAgo = faker.number.int({ min: monthsAgoMin, max: monthsAgoMax });
   const date = new Date();
   date.setMonth(date.getMonth() - monthsAgo);
@@ -22,7 +44,7 @@ function randomPastDate({ monthsAgoMin = 1, monthsAgoMax = 12 } = {}) {
   return date;
 }
 
-function randomDaysAfter(date: Date, minDays = 1, maxDays = 30) {
+function randomDaysAfter(date: Date, minDays = 1, maxDays = 30): Date {
   const newDate = new Date(date);
   newDate.setDate(
     newDate.getDate() + faker.number.int({ min: minDays, max: maxDays })
@@ -32,40 +54,467 @@ function randomDaysAfter(date: Date, minDays = 1, maxDays = 30) {
   return newDate;
 }
 
-function calculateUtilities() {
+function calculateUtilities(): Utilities {
   return {
     electricity: faker.number.float({ min: 50, max: 200, fractionDigits: 1 }),
     water: faker.number.float({ min: 20, max: 100, fractionDigits: 1 }),
   };
 }
+
 const tables = [
-    'receipt',
-    'invoice',
-    'totalUnits',
-    'bill',
-    'customerService',
-    'contract',
-    'contractType',
-    'occupant',
-    'user',
-    'tenant',
-    'room',
-];
+  'receipt',
+  'invoice',
+  'totalUnits',
+  'bill',
+  'customerService',
+  'contract',
+  'contractType',
+  'occupant',
+  'user',
+  'tenant',
+  'room',
+] as const;
 
 async function cleanUpDatabase() {
-  for (const table of tables) {
-    await (prisma as any)[table].deleteMany();
-  }
+  // Use transaction for faster cleanup
+  await prisma.$transaction([
+    ...tables.map((table) => (prisma as any)[table].deleteMany()),
+  ]);
   console.log('🧹 Database cleaned up successfully.');
 }
 
-// === Seeding Script ===
-async function main() {
+// Batch creation functions
+async function createRoomsBatch(totalFloors: number, roomsPerFloor: number) {
+  console.log('🏗️ Creating rooms in batch...');
+  const roomData: Prisma.RoomCreateManyInput[] = [];
 
+  for (let floor = 1; floor <= totalFloors; floor++) {
+    for (let roomIndex = 1; roomIndex <= roomsPerFloor; roomIndex++) {
+      const roomNo = floor * 100 + roomIndex;
+      const dimension = `${faker.number.int({ min: 12, max: 25 })}x${faker.number.int({ min: 12, max: 25 })}`;
+
+      let status: RoomStatus;
+      const random = Math.random();
+      if (random < 0.7) status = 'Rented';
+      else if (random < 0.8) status = 'Purchased';
+      else if (random < 0.9) status = 'InMaintenance';
+      else status = 'Available';
+
+      roomData.push({
+        room_no: roomNo,
+        floor: floor,
+        dimension: `${dimension} ft`,
+        no_of_bed_room: faker.number.int({ min: 1, max: 3 }),
+        status: status,
+        selling_price:
+          status === 'Purchased'
+            ? new Prisma.Decimal(
+                faker.number.int({ min: 250000, max: 1500000 })
+              )
+            : null,
+        max_no_of_people: faker.number.int({ min: 2, max: 6 }),
+        description: faker.helpers.arrayElement([
+          'Spacious room with natural lighting',
+          'Modern design with built-in furniture',
+          'City view with balcony',
+          'Standard room with essential amenities',
+        ]),
+      });
+    }
+  }
+
+  // Batch create all rooms
+  await prisma.room.createMany({ data: roomData });
+  return await prisma.room.findMany();
+}
+
+async function createTenantsAndUsersBatch(
+  occupiedRooms: Prisma.RoomGetPayload<object>[]
+) {
+  console.log(
+    `👥 Creating ${occupiedRooms.length} tenants and users in batch...`
+  );
+
+  const tenantData: Prisma.TenantCreateManyInput[] = [];
+  const userData: Prisma.UserCreateManyInput[] = [];
+  const tenantPassword = await hashPassword('tenant123');
+
+  for (const room of occupiedRooms) {
+    const name = faker.person.fullName();
+    const email = `${name.toLowerCase().replace(/\s+/g, '.')}${faker.number.int({ min: 1, max: 99 })}@gmail.com`;
+    const nrc = `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`;
+    const phone_no = `+959${faker.string.numeric(9)}`;
+    const emergency_no = `+959${faker.string.numeric(9)}`;
+
+    tenantData.push({
+      name,
+      email,
+      nrc,
+      phone_no,
+      emergency_no,
+      room_id: room.id,
+    });
+  }
+
+  // Batch create tenants
+  await prisma.tenant.createMany({ data: tenantData });
+  const tenants = await prisma.tenant.findMany({
+    where: { room_id: { in: occupiedRooms.map((r) => r.id) } },
+  });
+
+  // Prepare user data
+  for (const tenant of tenants) {
+    userData.push({
+      user_name:
+        tenant.name.split(' ')[0].toLowerCase() +
+        faker.number.int({ min: 1, max: 99 }),
+      email: tenant.email,
+      password: tenantPassword,
+      role: 'Tenant' as UserRole,
+      tenant_id: tenant.id,
+    });
+  }
+
+  // Add admin/staff users
+  const [adminPassword, staffPassword] = await Promise.all([
+    hashPassword('admin123'),
+    hashPassword('staff123'),
+  ]);
+
+  userData.push(
+    {
+      user_name: 'admin',
+      email: 'admin@gmail.com',
+      password: adminPassword,
+      role: 'Admin' as UserRole,
+    },
+    {
+      user_name: 'staff.john',
+      email: 'john.staff@gmail.com',
+      password: staffPassword,
+      role: 'Staff' as UserRole,
+    },
+    {
+      user_name: 'staff.sarah',
+      email: 'sarah.staff@gmail.com',
+      password: staffPassword,
+      role: 'Staff' as UserRole,
+    }
+  );
+
+  // Batch create all users
+  await prisma.user.createMany({ data: userData });
+  return tenants;
+}
+
+async function createOccupantsBatch(
+  tenants: Prisma.TenantGetPayload<object>[]
+) {
+  console.log(`👪 Creating occupants in batch...`);
+
+  const occupantData: Prisma.OccupantCreateManyInput[] = [];
+
+  for (const tenant of tenants) {
+    const numberOfOccupants = faker.number.int({ min: 0, max: 3 });
+    const relationships: RelationshipToTenant[] = faker.helpers.arrayElements(
+      ['SPOUSE', 'PARENT', 'CHILD', 'SIBLING', 'RELATIVE', 'FRIEND', 'OTHER'],
+      numberOfOccupants
+    );
+
+    relationships.forEach((relationship) => {
+      occupantData.push({
+        name: faker.person.fullName(),
+        nrc:
+          Math.random() < 0.8
+            ? `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`
+            : null,
+        relationship_to_tenant: relationship,
+        tenant_id: tenant.id,
+      });
+    });
+  }
+
+  // Batch create all occupants
+  if (occupantData.length > 0) {
+    await prisma.occupant.createMany({ data: occupantData });
+  }
+}
+
+async function createContractsBatch(
+  tenants: Prisma.TenantGetPayload<object>[],
+  allContractTypes: Prisma.ContractTypeGetPayload<object>[],
+  occupiedRooms: Prisma.RoomGetPayload<object>[]
+) {
+  console.log(`📜 Creating contracts in batch...`);
+
+  const contractData: Prisma.ContractCreateManyInput[] = [];
+  const rentedRooms = occupiedRooms.filter((r) => r.status === 'Rented');
+  const rentedTenants = tenants.filter((t) =>
+    rentedRooms.some((r) => r.id === t.room_id)
+  );
+
+  for (const tenant of rentedTenants) {
+    const contractType = faker.helpers.arrayElement(allContractTypes);
+    const contractStart = randomPastDate({ monthsAgoMin: 3, monthsAgoMax: 18 });
+    const contractExpiry = new Date(contractStart);
+    contractExpiry.setMonth(contractExpiry.getMonth() + contractType.duration);
+
+    contractData.push({
+      contract_type_id: contractType.id,
+      created_date: contractStart,
+      updated_date: randomDaysAfter(contractStart, 1, 7),
+      expiry_date: contractExpiry,
+      room_id: tenant.room_id,
+      tenant_id: tenant.id,
+    });
+  }
+
+  if (contractData.length > 0) {
+    await prisma.contract.createMany({ data: contractData });
+  }
+}
+
+async function createBillsAndInvoicesBatch(
+  tenants: Prisma.TenantGetPayload<object>[],
+  allContractTypes: Prisma.ContractTypeGetPayload<object>[],
+  occupiedRooms: Prisma.RoomGetPayload<object>[]
+) {
+  console.log(`💰 Creating bills and invoices in batch...`);
+
+  const billData: Prisma.BillCreateManyInput[] = [];
+  const totalUnitsData: Prisma.TotalUnitsCreateManyInput[] = [];
+  const invoiceData: Prisma.InvoiceCreateManyInput[] = [];
+  const receiptData: Prisma.ReceiptCreateManyInput[] = [];
+  const currentDate = new Date();
+
+  for (const tenant of tenants) {
+    const room = occupiedRooms.find((r) => r.id === tenant.room_id)!;
+    const contractType = faker.helpers.arrayElement(allContractTypes);
+    const contractStart = randomPastDate({ monthsAgoMin: 3, monthsAgoMax: 18 });
+
+    // Generate bill dates
+    const billDates: Date[] = [];
+    let billDate = new Date(contractStart);
+    billDate.setDate(1);
+
+    while (billDate < currentDate) {
+      billDates.push(new Date(billDate));
+      billDate.setMonth(billDate.getMonth() + 1);
+    }
+
+    for (const billDate of billDates) {
+      const utilities = calculateUtilities();
+      const baseRental =
+        room.status === 'Rented' ? Number(contractType.price) : 0;
+      const electricityFee = utilities.electricity * 350;
+      const waterFee = utilities.water * 150;
+      const hasFine =
+        Math.random() < 0.2 ? faker.number.int({ min: 5000, max: 20000 }) : 0;
+      const hasCarParking =
+        Math.random() < 0.4 ? faker.number.int({ min: 10000, max: 20000 }) : 0;
+      const totalAmount =
+        baseRental +
+        electricityFee +
+        waterFee +
+        hasFine +
+        hasCarParking +
+        10000;
+
+      const billId = faker.string.uuid();
+      const dueDate = randomDaysAfter(billDate, 7, 14);
+
+      billData.push({
+        id: billId,
+        rental_fee: new Prisma.Decimal(baseRental),
+        electricity_fee: new Prisma.Decimal(electricityFee),
+        water_fee: new Prisma.Decimal(waterFee),
+        fine_fee: hasFine ? new Prisma.Decimal(hasFine) : null,
+        service_fee: new Prisma.Decimal(5000),
+        ground_fee: new Prisma.Decimal(5000),
+        car_parking_fee: hasCarParking
+          ? new Prisma.Decimal(hasCarParking)
+          : null,
+        wifi_fee: new Prisma.Decimal(10000),
+        total_amount: new Prisma.Decimal(totalAmount),
+        due_date: dueDate,
+        created_at: billDate,
+        updated_at: randomDaysAfter(billDate, 0, 2),
+        room_id: tenant.room_id,
+      });
+
+      totalUnitsData.push({
+        electricity_units: new Prisma.Decimal(utilities.electricity),
+        water_units: new Prisma.Decimal(utilities.water),
+        created_at: billDate,
+        updated_at: randomDaysAfter(billDate, 0, 2),
+        bill_id: billId,
+      });
+
+      const invoiceDate = randomDaysAfter(billDate, 0, 3);
+      let invoiceStatus: InvoiceStatus;
+      const daysSinceInvoice =
+        (currentDate.getTime() - invoiceDate.getTime()) / (1000 * 60 * 60 * 24);
+
+      if (daysSinceInvoice > 30) {
+        invoiceStatus = faker.helpers.weightedArrayElement([
+          { weight: 7, value: 'Paid' as InvoiceStatus },
+          { weight: 2, value: 'Overdue' as InvoiceStatus },
+          { weight: 1, value: 'Pending' as InvoiceStatus },
+        ]);
+      } else {
+        invoiceStatus = faker.helpers.weightedArrayElement([
+          { weight: 3, value: 'Paid' as InvoiceStatus },
+          { weight: 6, value: 'Pending' as InvoiceStatus },
+          { weight: 1, value: 'Overdue' as InvoiceStatus },
+        ]);
+      }
+
+      const invoiceId = faker.string.uuid();
+      invoiceData.push({
+        id: invoiceId,
+        status: invoiceStatus,
+        bill_id: billId,
+        invoice_no: `INV-${faker.string.alphanumeric(8).toUpperCase()}`,
+        created_at: invoiceDate,
+        updated_at: randomDaysAfter(invoiceDate, 0, 5),
+      });
+
+      if (invoiceStatus === 'Paid') {
+        const paidDate = randomDaysAfter(invoiceDate, 1, 10);
+        receiptData.push({
+          payment_method: faker.helpers.weightedArrayElement([
+            { weight: 6, value: 'Cash' as PaymentMethod },
+            { weight: 4, value: 'Mobile_Banking' as PaymentMethod },
+          ]),
+          paid_date: paidDate,
+          invoice_id: invoiceId,
+          created_at: paidDate,
+          updated_at: randomDaysAfter(paidDate, 0, 1),
+        });
+      }
+    }
+  }
+
+  // Batch create all bills and related data in transaction
+  console.log('💾 Saving bills and related data...');
+  const chunkSize = 1000;
+  // Bills
+  for (let i = 0; i < billData.length; i += chunkSize) {
+    const chunk = billData.slice(i, i + chunkSize);
+    await prisma.bill.createMany({ data: chunk });
+  }
+
+  // Total units
+  for (let i = 0; i < totalUnitsData.length; i += chunkSize) {
+    const chunk = totalUnitsData.slice(i, i + chunkSize);
+    await prisma.totalUnits.createMany({ data: chunk });
+  }
+
+  // Invoices
+  for (let i = 0; i < invoiceData.length; i += chunkSize) {
+    const chunk = invoiceData.slice(i, i + chunkSize);
+    await prisma.invoice.createMany({ data: chunk });
+  }
+
+  // Receipts
+  if (receiptData.length > 0) {
+    for (let i = 0; i < receiptData.length; i += chunkSize) {
+      const chunk = receiptData.slice(i, i + chunkSize);
+      await prisma.receipt.createMany({ data: chunk });
+    }
+  }
+}
+
+async function createCustomerServicesBatch(
+  tenants: Prisma.TenantGetPayload<object>[],
+  occupiedRooms: Prisma.RoomGetPayload<object>[]
+) {
+  console.log(`🛠️ Creating customer services in batch...`);
+
+  const serviceData: Prisma.CustomerServiceCreateManyInput[] = [];
+  const serviceTypes: ServiceTypeConfig[] = [
+    {
+      category: Category.Maintenance,
+      weight: 6,
+      priorities: [PriorityLevel.Low, PriorityLevel.Medium],
+    },
+    {
+      category: Category.Complain,
+      weight: 3,
+      priorities: [PriorityLevel.Medium, PriorityLevel.High],
+    },
+    { category: Category.Other, weight: 1, priorities: [PriorityLevel.Low] },
+  ];
+
+  for (const tenant of tenants) {
+    const room = occupiedRooms.find((r) => r.id === tenant.room_id)!;
+    const contractStart = randomPastDate({ monthsAgoMin: 3, monthsAgoMax: 18 });
+    const serviceCount = faker.number.int({ min: 0, max: 5 });
+
+    for (let i = 0; i < serviceCount; i++) {
+      const selectedService = faker.helpers.weightedArrayElement(
+        serviceTypes.map((s) => ({ weight: s.weight, value: s }))
+      ) as ServiceTypeConfig;
+      const issuedDate = randomDaysAfter(contractStart, 10, 180);
+
+      let status: ServiceStatus;
+      const daysSinceRequest =
+        (new Date().getTime() - issuedDate.getTime()) / (1000 * 60 * 60 * 24);
+
+      if (daysSinceRequest > 14) {
+        status = faker.helpers.weightedArrayElement([
+          { value: 'Resolved' as ServiceStatus, weight: 7 },
+          { value: 'Ongoing' as ServiceStatus, weight: 2 },
+          { value: 'Pending' as ServiceStatus, weight: 1 },
+        ]);
+      } else if (daysSinceRequest > 3) {
+        status = faker.helpers.weightedArrayElement([
+          { value: 'Resolved' as ServiceStatus, weight: 4 },
+          { value: 'Ongoing' as ServiceStatus, weight: 4 },
+          { value: 'Pending' as ServiceStatus, weight: 2 },
+        ]);
+      } else {
+        status = 'Pending';
+      }
+
+      const serviceConfig = serviceTypes.find(
+        (s) => s.category === selectedService.category
+      )!;
+
+      const priority = faker.helpers.arrayElement(
+        serviceConfig.priorities
+      ) as PriorityLevel;
+
+      serviceData.push({
+        description: faker.lorem.sentence(),
+        category: selectedService.category,
+        status: status,
+        priority_level: priority,
+        issued_date: issuedDate,
+        created_at: issuedDate,
+        updated_at: randomDaysAfter(issuedDate, 1, 7),
+        room_id: room.id,
+      });
+    }
+  }
+
+  // Batch create services
+  if (serviceData.length > 0) {
+    const chunkSize = 1000;
+    for (let i = 0; i < serviceData.length; i += chunkSize) {
+      const chunk = serviceData.slice(i, i + chunkSize);
+      await prisma.customerService.createMany({ data: chunk });
+    }
+  }
+}
+
+// === Main Seeding Function ===
+async function main() {
   console.log('🧹 Cleaning up existing data...');
   await cleanUpDatabase();
 
   console.log('🚀 Starting database seeding...');
+  const startTime = Date.now();
 
   // Contract Types
   await prisma.contractType.createMany({
@@ -73,13 +522,13 @@ async function main() {
       {
         name: '6 Months',
         duration: 6,
-        price: 320000,
+        price: new Prisma.Decimal(320000),
         facilities: ['WiFi', 'Water', 'Electricity', 'Security', 'Cleaning'],
       },
       {
         name: '12 Months',
         duration: 12,
-        price: 300000,
+        price: new Prisma.Decimal(300000),
         facilities: [
           'WiFi',
           'Water',
@@ -92,7 +541,7 @@ async function main() {
       {
         name: '24 Months',
         duration: 24,
-        price: 280000,
+        price: new Prisma.Decimal(280000),
         facilities: [
           'WiFi',
           'Water',
@@ -107,393 +556,42 @@ async function main() {
   });
   const allContractTypes = await prisma.contractType.findMany();
 
-  // Create 100 rooms
-  console.log('🏗️ Creating 100 rooms across 5 floors...');
-  const rooms: Room[] = [];
+  // Create rooms
   const totalFloors = 5;
   const roomsPerFloor = 20;
+  const rooms = await createRoomsBatch(totalFloors, roomsPerFloor);
 
-  for (let floor = 1; floor <= totalFloors; floor++) {
-    for (let roomIndex = 1; roomIndex <= roomsPerFloor; roomIndex++) {
-      const roomNo = floor * 100 + roomIndex;
-      const dimension = `${faker.number.int({ min: 12, max: 25 })}x${faker.number.int({ min: 12, max: 25 })}`;
-
-      // Initial room status (before tenant assignment)
-      let status: RoomStatus;
-      const random = Math.random();
-
-      if (random < 0.7) {
-        // 70% rented
-        status = 'Rented';
-      } else if (random < 0.8) {
-        // 10% Purchased
-        status = 'Purchased';
-      } else if (random < 0.9) {
-        // 10% in maintenance
-        status = 'InMaintenance';
-      } else {
-        status = 'Available'; // No tenants
-      }
-
-      const room = await prisma.room.create({
-        data: {
-          room_no: roomNo,
-          floor: floor,
-          dimension: `${dimension} ft`,
-          no_of_bed_room: faker.number.int({ min: 1, max: 3 }),
-          status: status,
-          selling_price:
-            status === 'Purchased'
-              ? faker.number.int({ min: 250000, max: 1500000 })
-              : null,
-          max_no_of_people: faker.number.int({ min: 2, max: 6 }),
-          description: faker.helpers.arrayElement([
-            'Spacious room with natural lighting',
-            'Modern design with built-in furniture',
-            'City view with balcony',
-            'Standard room with essential amenities',
-          ]),
-        },
-      });
-      rooms.push(room);
-    }
-  }
-
-  // Tenants for rented and purchased rooms
+  // Filter occupied rooms
   const occupiedRooms = rooms.filter(
     (r) => r.status === 'Rented' || r.status === 'Purchased'
   );
-  console.log(
-    `👥 Creating tenants for ${occupiedRooms.length} occupied rooms...`
-  );
 
-  const tenants = await Promise.all(
-    occupiedRooms.map((room) => {
-      const name = faker.person.fullName();
-      const email = `${name.toLowerCase().replace(/\s+/g, '.')}${faker.number.int({ min: 1, max: 99 })}@gmail.com`;
-      const nrc = `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`;
-      const phone_no = `+959${faker.string.numeric(9)}`;
-      const emergency_no = `+959${faker.string.numeric(9)}`;
+  // Create tenants and users
+  const tenants = await createTenantsAndUsersBatch(occupiedRooms);
 
-      return prisma.tenant.create({
-        data: {
-          name,
-          email,
-          nrc,
-          phone_no,
-          emergency_no,
-          room_id: room.id,
-        },
-      });
-    })
-  );
+  // Create occupants
+  await createOccupantsBatch(tenants);
 
-  // Occupants for tenants
-  console.log(`👪 Creating occupants for ${tenants.length} tenants...`);
-  await Promise.all(
-    tenants.map((tenant) => {
-      const numberOfOccupants = faker.number.int({ min: 0, max: 3 });
-      const relationships: RelationshipToTenant[] = faker.helpers.arrayElements(
-        ['SPOUSE', 'PARENT', 'CHILD', 'SIBLING', 'RELATIVE', 'FRIEND', 'OTHER'],
-        numberOfOccupants
-      );
+  // Create contracts
+  await createContractsBatch(tenants, allContractTypes, occupiedRooms);
 
-      return Promise.all(
-        relationships.map((relationship) =>
-          prisma.occupant.create({
-            data: {
-              name: faker.person.fullName(),
-              nrc:
-                Math.random() < 0.8
-                  ? `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`
-                  : null,
-              relationship_to_tenant: relationship,
-              tenant_id: tenant.id,
-            },
-          })
-        )
-      );
-    })
-  );
+  // Create bills and invoices (this is the most time-consuming part)
+  await createBillsAndInvoicesBatch(tenants, allContractTypes, occupiedRooms);
 
-  // Users
-  const [adminPassword, staffPassword, tenantPassword] = await Promise.all([
-    hashPassword('admin123'),
-    hashPassword('staff123'),
-    hashPassword('tenant123'),
-  ]);
+  // Create customer services
+  await createCustomerServicesBatch(tenants, occupiedRooms);
 
-  await prisma.user.createMany({
-    data: [
-      {
-        user_name: 'admin',
-        email: 'admin@gmail.com',
-        password: adminPassword,
-        role: 'Admin',
-      },
-      {
-        user_name: 'staff.john',
-        email: 'john.staff@gmail.com',
-        password: staffPassword,
-        role: 'Staff',
-      },
-      {
-        user_name: 'staff.sarah',
-        email: 'sarah.staff@gmail.com',
-        password: staffPassword,
-        role: 'Staff',
-      },
-    ],
-  });
-
-  console.log(`👤 Creating user accounts for ${tenants.length} tenants...`);
-  await Promise.all(
-    tenants.map((tenant) =>
-      prisma.user.create({
-        data: {
-          user_name:
-            tenant.name.split(' ')[0].toLowerCase() +
-            faker.number.int({ min: 1, max: 99 }),
-          email: tenant.email,
-          password: tenantPassword,
-          role: 'Tenant',
-          tenant_id: tenant.id,
-        },
-      })
-    )
-  );
-
-  // Contracts and bills
-  console.log(`📜 Creating contracts for ${tenants.length} tenants...`);
-  for (const tenant of tenants) {
-    const room = occupiedRooms.find((r) => r.id === tenant.room_id)!;
-    const contractType = faker.helpers.arrayElement(allContractTypes);
-
-    const contractStart = randomPastDate({ monthsAgoMin: 3, monthsAgoMax: 18 });
-    const contractExpiry = new Date(contractStart);
-    contractExpiry.setMonth(contractExpiry.getMonth() + contractType.duration);
-
-    // Only create contracts for Rented rooms, not Purchased
-    if (room.status === 'Rented') {
-      await prisma.contract.create({
-        data: {
-          contract_type_id: contractType.id,
-          created_date: contractStart,
-          updated_date: randomDaysAfter(contractStart, 1, 7),
-          expiry_date: contractExpiry,
-          room_id: tenant.room_id,
-          tenant_id: tenant.id,
-        },
-      });
-    }
-
-    // Generate bills for each month (for both Rented and Purchased rooms)
-    const currentDate = new Date();
-    const billDates = [];
-    let billDate = new Date(contractStart);
-    billDate.setDate(1);
-
-    while (billDate < currentDate) {
-      billDates.push(new Date(billDate));
-      billDate.setMonth(billDate.getMonth() + 1);
-    }
-
-    for (const billDate of billDates) {
-      const utilities = calculateUtilities();
-      const baseRental =
-        room.status === 'Rented' ? Number(contractType.price) : 0; // No rental fee for Purchased
-      const electricityFee = utilities.electricity * 350;
-      const waterFee = utilities.water * 150;
-
-      const hasFine =
-        Math.random() < 0.2 ? faker.number.int({ min: 5000, max: 20000 }) : 0;
-      const hasCarParking =
-        Math.random() < 0.4 ? faker.number.int({ min: 10000, max: 20000 }) : 0;
-
-      const totalAmount =
-        baseRental +
-        electricityFee +
-        waterFee +
-        hasFine +
-        hasCarParking +
-        10000;
-
-      const bill = await prisma.bill.create({
-        data: {
-          rental_fee: baseRental,
-          electricity_fee: electricityFee,
-          water_fee: waterFee,
-          fine_fee: hasFine || null,
-          service_fee: 5000,
-          ground_fee: 5000,
-          car_parking_fee: hasCarParking || null,
-          wifi_fee: 10000,
-          total_amount: totalAmount,
-          due_date: randomDaysAfter(billDate, 7, 14),
-          created_at: billDate,
-          updated_at: randomDaysAfter(billDate, 0, 2),
-          room_id: tenant.room_id,
-        },
-      });
-
-      await prisma.totalUnits.create({
-        data: {
-          electricity_units: utilities.electricity,
-          water_units: utilities.water,
-          created_at: billDate,
-          updated_at: randomDaysAfter(billDate, 0, 2),
-          bill_id: bill.id,
-        },
-      });
-
-      const invoiceDate = randomDaysAfter(billDate, 0, 3);
-
-      let invoiceStatus: InvoiceStatus = 'Pending';
-      const daysSinceInvoice =
-        (currentDate.getTime() - invoiceDate.getTime()) / (1000 * 60 * 60 * 24);
-
-      if (daysSinceInvoice > 30) {
-        invoiceStatus = faker.helpers.weightedArrayElement([
-          { weight: 7, value: 'Paid' },
-          { weight: 2, value: 'Overdue' },
-          { weight: 1, value: 'Pending' },
-        ]);
-      } else {
-        invoiceStatus = faker.helpers.weightedArrayElement([
-          { weight: 3, value: 'Paid' },
-          { weight: 6, value: 'Pending' },
-          { weight: 1, value: 'Overdue' },
-        ]);
-      }
-
-      const invoice = await prisma.invoice.create({
-        data: {
-          status: invoiceStatus,
-          bill_id: bill.id,
-          invoice_no: `INV-${faker.string.alphanumeric(8).toUpperCase()}`,
-          created_at: invoiceDate,
-          updated_at: randomDaysAfter(invoiceDate, 0, 5),
-        },
-      });
-
-      if (invoice.status === 'Paid') {
-        const paidDate = randomDaysAfter(invoiceDate, 1, 10);
-        await prisma.receipt.create({
-          data: {
-            payment_method: faker.helpers.weightedArrayElement([
-              { weight: 6, value: 'Cash' },
-              { weight: 4, value: 'Mobile_Banking' },
-            ]),
-            paid_date: paidDate,
-            invoice_id: invoice.id,
-            created_at: paidDate,
-            updated_at: randomDaysAfter(paidDate, 0, 1),
-          },
-        });
-      }
-    }
-
-    // Customer service requests
-    const serviceCount = faker.number.int({ min: 0, max: 5 });
-    const serviceTypes: {
-      value: Category;
-      weight: number;
-      priorities: PriorityLevel[];
-    }[] = [
-      { value: 'Maintenance', weight: 6, priorities: ['Low', 'Medium'] },
-      { value: 'Complain', weight: 3, priorities: ['Medium', 'High'] },
-      { value: 'Other', weight: 1, priorities: ['Low'] },
-    ];
-
-    for (let i = 0; i < serviceCount; i++) {
-      const selectedService = faker.helpers.weightedArrayElement(serviceTypes);
-      const issuedDate = randomDaysAfter(
-        contractStart,
-        10,
-        contractType.duration * 30 - 30
-      );
-
-      // Status depends on how old the request is
-      let status: ServiceStatus = 'Pending';
-      const daysSinceRequest =
-        (currentDate.getTime() - issuedDate.getTime()) / (1000 * 60 * 60 * 24);
-
-      if (daysSinceRequest > 14) {
-        status = faker.helpers.weightedArrayElement([
-          { value: 'Resolved', weight: 7 },
-          { value: 'Ongoing', weight: 2 },
-          { value: 'Pending', weight: 1 },
-        ]);
-      } else if (daysSinceRequest > 3) {
-        status = faker.helpers.weightedArrayElement([
-          { value: 'Resolved', weight: 4 },
-          { value: 'Ongoing', weight: 4 },
-          { value: 'Pending', weight: 2 },
-        ]);
-      }
-
-      const serviceConfig = serviceTypes.find(
-        (s) => s.value === selectedService
-      )!;
-
-      await prisma.customerService.create({
-        data: {
-          description: faker.lorem.sentence(),
-          category: selectedService,
-          status: status,
-          priority_level: faker.helpers.arrayElement(serviceConfig.priorities),
-          issued_date: issuedDate,
-          created_at: issuedDate,
-          updated_at: randomDaysAfter(issuedDate, 1, 7),
-          room_id: tenant.room_id,
-        },
-      });
-    }
-  }
-
-  // Verify room status consistency
-  console.log('🔍 Verifying room status consistency...');
-  const roomsWithTenants = await prisma.room.findMany({
-    where: { tenant: { isNot: null } },
-    include: { tenant: true },
-  });
-
-  for (const room of roomsWithTenants) {
-    if (room.status !== 'Rented' && room.status !== 'Purchased') {
-      console.warn(
-        `⚠️ Inconsistent status: Room ${room.room_no} has tenant but status is ${room.status}`
-      );
-      // Fix the status
-      await prisma.room.update({
-        where: { id: room.id },
-        data: { status: 'Rented' }, // Default to Rented for correction
-      });
-    }
-  }
-
-  const roomsWithoutTenants = await prisma.room.findMany({
-    where: { tenant: { is: null } },
-  });
-
-  for (const room of roomsWithoutTenants) {
-    if (room.status === 'Rented' || room.status === 'Purchased') {
-      console.warn(
-        `⚠️ Inconsistent status: Room ${room.room_no} has no tenant but status is ${room.status}`
-      );
-      await prisma.room.update({
-        where: { id: room.id },
-        data: { status: 'Available' }, // Default to Available for correction
-      });
-    }
-  }
-
-  // Print final statistics
+  // Print statistics
   const roomStatusCount = await prisma.room.groupBy({
     by: ['status'],
     _count: true,
   });
 
+  const endTime = Date.now();
   console.log('✅ Database seeding completed!');
+  console.log(
+    `⏱️ Total time: ${((endTime - startTime) / 1000).toFixed(2)} seconds`
+  );
   console.log(`🏠 Created: ${rooms.length} rooms across ${totalFloors} floors`);
   console.log('📊 Room Status Distribution:');
   roomStatusCount.forEach((status) => {
@@ -519,12 +617,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-
-// cleanUpDatabase()
-//   .catch((e) => {
-//     console.error('❌ Seeding failed:', e);
-//     process.exit(1);
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect();
-//   });
