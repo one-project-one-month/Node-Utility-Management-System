@@ -1310,7 +1310,7 @@ components:
                   content:
                     type: object
                     properties:
-                      occupants:
+                      data:
                         type: array
                         items:
                           allOf:
@@ -1436,101 +1436,101 @@ components:
                       links:
                         $ref: '#/components/schemas/PaginationLinks'
 
-        PaginatedReceiptsResponse:
-          description: Receipts fetched successfully with pagination
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
+    PaginatedReceiptsResponse:
+      description: Receipts fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Receipts fetched successfully
+                  content:
+                    type: object
                     properties:
-                      message:
-                        type: string
-                        example: Receipts fetched successfully
-                      content:
-                        type: object
-                        properties:
-                          data:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Receipt'
-                          meta:
-                            $ref: '#/components/schemas/PaginationMeta'
-                          links:
-                            $ref: '#/components/schemas/PaginationLinks'
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Receipt'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
 
-        PaginatedTotalUnitsResponse:
-          description: Total units fetched successfully with pagination
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
+    PaginatedTotalUnitsResponse:
+      description: Total units fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Total-units fetched successfully
+                  content:
+                    type: object
                     properties:
-                      message:
-                        type: string
-                        example: Total-units fetched successfully
-                      content:
-                        type: object
-                        properties:
-                          data:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/TotalUnits'
-                          meta:
-                            $ref: '#/components/schemas/PaginationMeta'
-                          links:
-                            $ref: '#/components/schemas/PaginationLinks'
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TotalUnits'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
 
-        PaginatedContractsResponse:
-          description: Contracts fetched successfully with pagination
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
+    PaginatedContractsResponse:
+      description: Contracts fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: All Contracts fetched successfully
+                  content:
+                    type: object
                     properties:
-                      message:
-                        type: string
-                        example: All Contracts fetched successfully
-                      content:
-                        type: object
-                        properties:
-                          data:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Contract'
-                          meta:
-                            $ref: '#/components/schemas/PaginationMeta'
-                          links:
-                            $ref: '#/components/schemas/PaginationLinks'
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Contract'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
 
-        PaginatedRoomsResponse:
-          description: Rooms fetched successfully with pagination
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/ApiSuccessResponse'
-                  - type: object
+    PaginatedRoomsResponse:
+      description: Rooms fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Rooms fetched successfully
+                  content:
+                    type: object
                     properties:
-                      message:
-                        type: string
-                        example: Rooms fetched successfully
-                      content:
-                        type: object
-                        properties:
-                          data:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Room'
-                          meta:
-                            $ref: '#/components/schemas/PaginationMeta'
-                          links:
-                            $ref: '#/components/schemas/PaginationLinks'
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Room'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
 
 paths:
   # Authentication Endpoints
@@ -1856,7 +1856,7 @@ paths:
                       content:
                         type: object
                         properties:
-                          history:
+                          data:
                             type: array
                             items:
                               $ref: '#/components/schemas/CustomerService'
@@ -2609,7 +2609,7 @@ paths:
                       content:
                         type: object
                         properties:
-                          latestReceipt:
+                          data:
                             $ref: '#/components/schemas/Receipt'
         401:
           $ref: '#/components/responses/UnauthorizedError'
@@ -2644,7 +2644,7 @@ paths:
                       content:
                         type: object
                         properties:
-                          receiptHistories:
+                          data:
                             type: array
                             items:
                               $ref: '#/components/schemas/Receipt'
@@ -3014,7 +3014,7 @@ paths:
     get:
       tags:
         - Contracts
-      summary: Get all contracts by tenant ID
+      summary: Get contract by tenant ID
       description: Retrieve all contracts for a specific tenant. Accessible by Admin, Staff, and the tenant themselves.
       security:
         - bearerAuth: []
@@ -3117,7 +3117,7 @@ paths:
                       content:
                         type: object
                         properties:
-                          contractTypes:
+                          data:
                             type: array
                             items:
                               $ref: '#/components/schemas/ContractType'

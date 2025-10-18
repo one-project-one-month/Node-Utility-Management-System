@@ -160,10 +160,10 @@ export async function getAllTenantService(
         room: true,
         occupants: true,
         contract: {
-        include: {
-          contractType: true,
+          include: {
+            contractType: true,
+          },
         },
-      },
       },
     }),
     prisma.tenant.count(),

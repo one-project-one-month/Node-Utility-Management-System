@@ -41,7 +41,7 @@ export const getAllContractTypeController = async (
     successResponse(
       res,
       'All Contract types fetched successfully',
-      { contractTypes },
+      { data: contractTypes },
       200
     );
   } catch (error) {
