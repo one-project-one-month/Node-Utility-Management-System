@@ -46,7 +46,7 @@ export async function getAllRoomsService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    rooms,
+    data: rooms,
     ...paginationData,
   };
 }

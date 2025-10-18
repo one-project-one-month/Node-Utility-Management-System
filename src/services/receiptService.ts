@@ -40,7 +40,7 @@ export async function getAllReceiptsService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    receipts,
+    data: receipts,
     ...paginationData,
   };
 }
@@ -248,7 +248,7 @@ export async function getReceiptHistoriesByTenantIdService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    receiptHistories,
+    data: receiptHistories,
     ...paginationData,
   };
 }

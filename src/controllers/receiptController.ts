@@ -18,7 +18,7 @@ export async function getAllReceiptsController(
 ): Promise<void> {
   try {
     const result = await getAllReceiptsService(req.validatedQuery, req);
-    if (!result || !result.receipts || !result.receipts.length)
+    if (!result || !result.data || !result.data.length)
       return next(new NotFoundError('No receipts found'));
 
     successResponse(res, 'Receipts fetched successfully', result);
@@ -78,7 +78,7 @@ export async function getReceiptHistoriesByTenantIdController(
       req
     );
 
-    if (!result.receiptHistories || !result.receiptHistories.length)
+    if (!result.data || !result.data.length)
       return next(new NotFoundError('Receipt histories are not found'));
 
     successResponse(

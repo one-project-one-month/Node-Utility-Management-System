@@ -37,7 +37,7 @@ export async function getAllInvoicesController(
   try {
     const query = req.validatedQuery;
     const result = await getAllInvoicesService(query, req);
-    if (!result.invoices.length) {
+    if (!result.data.length) {
       return next(new NotFoundError('No found invoice.'));
     }
     successResponse(res, 'Invoices fetched successfully', result);

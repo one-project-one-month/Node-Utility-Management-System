@@ -56,7 +56,7 @@ export async function getAllUsersService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    users,
+    data: users,
     ...paginationData,
   };
 }
