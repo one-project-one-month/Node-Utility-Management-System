@@ -13,7 +13,8 @@ export const CreateContractSchema = z
       .refine((date) => !isNaN(date.getTime()), 'Invalid expiry date'),
     updatedDate: z.coerce
       .date()
-      .refine((date) => !isNaN(date.getTime()), 'Invalid updated date'),
+      .refine((date) => !isNaN(date.getTime()), 'Invalid updated date')
+      .optional(),
   })
   .strict();
 

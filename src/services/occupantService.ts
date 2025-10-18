@@ -12,8 +12,8 @@ import {
 import { PaginationQueryType } from '../validations/paginationSchema';
 
 export async function createOccupantService(data: CreateOccupantType) {
-  // Check all tenant_id values are the same
-  const tenantIds = [...new Set(data.map((occupant) => occupant.tenant_id))];
+  // Check all tenantId values are the same
+  const tenantIds = [...new Set(data.map((occupant) => occupant.tenantId))];
   if (tenantIds.length !== 1) {
     throw new BadRequestError('All occupants must belong to the same tenant');
   }
@@ -41,10 +41,10 @@ export async function createOccupantService(data: CreateOccupantType) {
   for (const occupant of data) {
     const created = await prisma.occupant.create({
       data: {
-        tenant_id: occupant.tenant_id,
+        tenantId: occupant.tenantId,
         name: occupant.name,
         nrc: occupant.nrc ?? null,
-        relationship_to_tenant: occupant.relationship_to_tenant,
+        relationshipToTenant: occupant.relationshipToTenant,
       },
     });
     createdOccupants.push(created);
@@ -65,7 +65,7 @@ export async function updateOccupantService(
   }
 
   // Ensure occupant belongs to this tenant
-  if (existingOccupant.tenant_id !== data.tenant_id) {
+  if (existingOccupant.tenantId !== data.tenantId) {
     throw new BadRequestError(
       'Tenant mismatch — occupant does not belong to the given tenant.'
     );
@@ -85,8 +85,8 @@ export async function updateOccupantService(
     data: {
       ...(data.name && { name: data.name }),
       ...(data.nrc && { nrc: data.nrc }),
-      ...(data.relationship_to_tenant && {
-        relationship_to_tenant: data.relationship_to_tenant,
+      ...(data.relationshipToTenant && {
+        relationshipToTenant: data.relationshipToTenant,
       }),
     },
   });
@@ -105,7 +105,7 @@ export async function deleteOccupantService(
   }
 
   // Ensure occupant belongs to this tenant
-  if (existingOccupant.tenant_id !== data.tenant_id) {
+  if (existingOccupant.tenantId !== data.tenantId) {
     throw new BadRequestError(
       'Tenant mismatch — cannot delete occupant from another tenant.'
     );
@@ -132,7 +132,7 @@ export async function getByIdOccupantService(occupantId: string) {
 
 export async function getByTenantIdOccupantService(tenantId: string) {
   const occupants = await prisma.occupant.findMany({
-    where: { tenant_id: tenantId },
+    where: { tenantId: tenantId },
     include: {
       tenant: true,
     },
@@ -154,7 +154,7 @@ export async function getAllOccupantService(
     prisma.occupant.findMany({
       skip,
       take: limit,
-      orderBy: { created_at: 'desc' },
+      orderBy: { createdAt: 'desc' },
       include: {
         tenant: true,
       },

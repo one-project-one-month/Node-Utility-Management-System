@@ -32,7 +32,7 @@ export const UpdateInvoiceSchema = z
   })
   .refine((data) => {
     return !data.invoiceNo;
-  }, 'you cannot update invoice_no')
+  }, 'you cannot update invoiceNo')
   .strict();
 
 export type GetTenantInvoiceParamType = z.infer<

@@ -26,7 +26,7 @@ export const CreateOccupantSchema = z
       return arr.every((item) => item.tenantId === firstTenantId);
     },
     {
-      message: 'All occupants must have the same tenant_id',
+      message: 'All occupants must have the same tenantId',
     }
   );
 
@@ -53,7 +53,7 @@ export const UpdateOccupantSchema = z
       data.relationshipToTenant !== undefined,
     {
       message:
-        'At least one of name, nrc or relationship_to_tenant must be provided',
+        'At least one of name, nrc or relationshipToTenant must be provided',
     }
   )
   .strict();
