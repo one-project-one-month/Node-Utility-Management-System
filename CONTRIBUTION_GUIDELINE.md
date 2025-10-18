@@ -7,12 +7,14 @@ Thank you for contributing to this project! Please follow the rules below to kee
 ## 🚀 Branch Naming
 
 **Use the following format for branch names:**
+
 - `feature/[description]` - For new features
 - `fix/[description]` - For bug fixes
 - `docs/[description]` - For documentation updates
 - `refactor/[description]` - For code refactoring
 
 **Examples:**
+
 - `feature/add-authentication`
 - `feature/user-management`
 - `fix/billing-calculation`
@@ -24,15 +26,16 @@ Thank you for contributing to this project! Please follow the rules below to kee
 
 We follow the **conventional commit** style for consistency:
 
-- `feat:` → For new features  
-- `fix:` → For bug fixes  
-- `docs:` → For documentation changes  
+- `feat:` → For new features
+- `fix:` → For bug fixes
+- `docs:` → For documentation changes
 - `refactor:` → For code refactoring without changing functionality
 - `style:` → For formatting changes
 - `test:` → For adding or updating tests
 - `chore:` → For maintenance tasks
 
 **Examples:**
+
 - `feat: add user authentication system`
 - `fix: resolve billing calculation error`
 - `docs: update API documentation`
@@ -43,7 +46,7 @@ We follow the **conventional commit** style for consistency:
 ## 📂 File Naming Convention
 
 - Use **camelCase** for all files:
-**Examples:**
+  **Examples:**
 - `userController.ts`
 - `userService.ts`
 
@@ -61,14 +64,14 @@ We follow the **conventional commit** style for consistency:
 
 ---
 
-## 📂 Example 
+## 📂 Example
 
 ```ts
 // src/index.ts
 
-import userRoute from './routes/userRoute'
+import userRoute from './routes/userRoute';
 
-app.use("/api/v1/users", userRoute)
+app.use('/api/v1/users', userRoute);
 ```
 
 ---
@@ -76,38 +79,42 @@ app.use("/api/v1/users", userRoute)
 ```ts
 // src/routes/userRoute.ts
 
-import { Router } from "express";
+import { Router } from 'express';
 import {
   getAllUsersController,
   getUserController,
   createUserController,
-} from "../controllers/userController";
+} from '../controllers/userController';
 import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from "../middlewares/validationMiddlware";
-import { hasRole } from "../middlewares/authMiddleware";
-import { CreateUserSchema, GetUserParamSchema, GetUserQuerySchema } from "../validations/userSchema";
+} from '../middlewares/validationMiddlware';
+import { hasRole } from '../middlewares/authMiddleware';
+import {
+  CreateUserSchema,
+  GetUserParamSchema,
+  GetUserQuerySchema,
+} from '../validations/userSchema';
 
 const router = Router();
 
 router.get(
-  "/", 
+  '/',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(GetUserQuerySchema), 
+  validateRequestQuery(GetUserQuerySchema),
   getAllUsersController
 );
 router.get(
-  "/:userId", 
+  '/:userId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetUserParamSchema),
   getUserController
 );
 router.post(
-  "/",
+  '/',
   hasRole(['Admin', 'Staff']),
-  validateRequestBody(CreateUserSchema), 
+  validateRequestBody(CreateUserSchema),
   createUserController
 );
 
@@ -206,12 +213,12 @@ export async function getAllUsersService(query: GetUserQueryType) {
     where: whereClause,
     select: {
       id: true,
-      user_name: true,
+      userName: true,
       email: true,
       role: true,
-      is_active: true,
-      updated_at: true,
-      created_at: true,
+      isActive: true,
+      updatedAt: true,
+      createdAt: true,
       // Exclude password field from the result
     },
   });
@@ -249,19 +256,19 @@ export async function createUserService(data: CreateUserType) {
 
   return await prisma.user.create({
     data: {
-      user_name: data.user_name,
+      userName: data.userName,
       email: data.email,
       password: hashedPassword,
       role: data.role,
     },
     select: {
       id: true,
-      user_name: true,
+      userName: true,
       email: true,
       role: true,
-      is_active: true,
-      created_at: true,
-      updated_at: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
 }
@@ -284,7 +291,7 @@ export const GetUserQuerySchema = z.object({
 });
 
 export const CreateUserSchema = z.object({
-  user_name: z.string().min(1, 'Username is required'),
+  userName: z.string().min(1, 'Username is required'),
   email: z.email(),
   password: z.string().min(8, 'Password must be at least 8 characters long'),
   role: z
@@ -294,15 +301,13 @@ export const CreateUserSchema = z.object({
 
 export const UpdateUserSchema = z
   .object({
-    user_name: z.string().optional(),
+    userName: z.string().optional(),
     email: z.email().optional(),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters long')
       .optional(),
-    role: z
-      .enum(UserRole)
-      .optional(),
+    role: z.enum(UserRole).optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: 'At least one field must be provided for update',
@@ -319,12 +324,14 @@ export type UpdateUserType = z.infer<typeof UpdateUserSchema>;
 ## 📊 Database Guidelines
 
 ### Prisma Schema Conventions
-- Use `snake_case` for database column names
+
+- Use `camelCase` for database column names
 - Use `PascalCase` for model names
-- Always include `created_at` and `updated_at` timestamps
+- Always include `createdAt` and `updatedAt` timestamps
 - Use meaningful enum names (e.g., `UserRole`, `RoomStatus`)
 
 ### Migration Best Practices
+
 ```bash
 # Using Makefile (Recommended)
 make db-migrate       # Create new migration
@@ -420,6 +427,7 @@ successResponse(res, 'User created successfully', { user: newUser }, 201);
 ## 🛠️ Development Workflow with Makefile
 
 ### Quick Start Commands
+
 ```bash
 # New developer setup
 make quick-setup      # Install + env + docker + db setup
@@ -444,6 +452,7 @@ make help
 ```
 
 ### Pre-commit Workflow
+
 ```bash
 # Before committing code
 make lint-fix         # Fix linting issues
@@ -464,6 +473,7 @@ make test             # Run tests (when available)
 - Follow the PR template (if available)
 
 ### PR Checklist
+
 - [ ] Code follows the style guidelines (`make lint`)
 - [ ] Code is properly formatted (`make format`)
 - [ ] TypeScript checks pass (`make type-check`)

@@ -15,19 +15,19 @@ export async function createTenantService(data: CreateTenantType) {
     name,
     nrc,
     email,
-    phone_no,
-    emergency_no,
+    phoneNo,
+    emergencyNo,
     occupants = [],
-    room_id,
+    roomId,
   } = data;
   //Check if room exists
-  const room = await prisma.room.findUnique({ where: { id: room_id } });
+  const room = await prisma.room.findUnique({ where: { id: roomId } });
   if (!room) {
     throw new BadRequestError('Room not found');
   }
 
   const existingTenantForRoom = await prisma.tenant.findUnique({
-    where: { room_id },
+    where: { roomId },
   });
   if (existingTenantForRoom)
     throw new BadRequestError('Room already occupied!');
@@ -48,20 +48,25 @@ export async function createTenantService(data: CreateTenantType) {
       name,
       nrc,
       email,
-      phone_no,
-      emergency_no,
-      room_id,
+      phoneNo,
+      emergencyNo,
+      roomId,
       occupants: {
         create: occupants.map((occupant) => ({
           name: occupant.name,
           nrc: occupant.nrc ?? null,
-          relationship_to_tenant: occupant.relationship_to_tenant,
+          relationshipToTenant: occupant.relationshipToTenant,
         })),
       },
     },
     include: {
       occupants: true,
       room: true,
+      contract: {
+        include: {
+          contractType: true,
+        },
+      },
     },
   });
 }
@@ -77,26 +82,26 @@ export async function updateTenantService(
   });
   if (!tenant) throw new NotFoundError('Tenant not found');
 
-  // Check that the provided room_id exists
+  // Check that the provided roomId exists
   const room = await prisma.room.findUnique({
-    where: { id: data.room_id },
+    where: { id: data.roomId },
   });
   if (!room) throw new NotFoundError('Room not found.');
 
-  // Ensure the provided room_id matches the tenant’s current room_id
-  if (tenant.room_id !== data.room_id) {
+  // Ensure the provided roomId matches the tenant’s current roomId
+  if (tenant.roomId !== data.roomId) {
     throw new BadRequestError(
       'RoomId mismatch: tenant is not assigned to this room.'
     );
   }
 
   // Ensure occupant belongs to this tenant
-  if (data.occupant_id) {
+  if (data.occupantId) {
     const occupant = await prisma.occupant.findUnique({
-      where: { id: data.occupant_id },
+      where: { id: data.occupantId },
     });
 
-    if (!occupant || occupant.tenant_id !== tenant.id) {
+    if (!occupant || occupant.tenantId !== tenant.id) {
       throw new BadRequestError('Invalid occupant for this tenant.');
     }
   }
@@ -115,8 +120,8 @@ export async function updateTenantService(
       ...(data.name && { name: data.name }),
       ...(data.email && { email: data.email }),
       ...(data.nrc && { nrc: data.nrc }),
-      ...(data.phone_no && { phone_no: data.phone_no }),
-      ...(data.emergency_no && { emergency_no: data.emergency_no }),
+      ...(data.phoneNo && { phoneNo: data.phoneNo }),
+      ...(data.emergencyNo && { emergencyNo: data.emergencyNo }),
     },
     include: {
       occupants: true,
@@ -150,10 +155,15 @@ export async function getAllTenantService(
     prisma.tenant.findMany({
       skip,
       take: limit,
-      orderBy: { created_at: 'desc' },
+      orderBy: { createdAt: 'desc' },
       include: {
         room: true,
         occupants: true,
+        contract: {
+        include: {
+          contractType: true,
+        },
+      },
       },
     }),
     prisma.tenant.count(),
@@ -166,7 +176,7 @@ export async function getAllTenantService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    tenants,
+    data: tenants,
     ...paginationData,
   };
 }

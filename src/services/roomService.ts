@@ -21,7 +21,7 @@ export async function getAllRoomsService(
 
   // Optional filters
   if (query.status) whereClause.status = query.status;
-  if (query.room_no) whereClause.room_no = Number(query.room_no);
+  if (query.roomNo) whereClause.roomNo = Number(query.roomNo);
   if (query.floor) whereClause.floor = Number(query.floor);
 
   // Get rooms & totalCount with filters
@@ -31,11 +31,11 @@ export async function getAllRoomsService(
       include: {
         tenant: true,
         bill: true,
-        customer_service: true,
+        customerService: true,
       },
       skip,
       take: limit,
-      orderBy: { created_at: 'desc' },
+      orderBy: { createdAt: 'desc' },
     }),
     prisma.room.count({ where: whereClause }),
   ]);
@@ -46,7 +46,7 @@ export async function getAllRoomsService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    rooms,
+    data: rooms,
     ...paginationData,
   };
 }
@@ -57,7 +57,7 @@ export async function getRoomService(roomId: string) {
     include: {
       contract: true,
       bill: true,
-      customer_service: true,
+      customerService: true,
       tenant: true,
     },
   });
@@ -68,7 +68,7 @@ export async function getRoomService(roomId: string) {
 
 export async function createRoomService(data: CreateRoomType) {
   const existingRoom = await prisma.room.findFirst({
-    where: { room_no: data.room_no, floor: data.floor },
+    where: { roomNo: data.roomNo, floor: data.floor },
   });
 
   if (existingRoom)

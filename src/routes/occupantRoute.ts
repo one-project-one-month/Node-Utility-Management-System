@@ -28,7 +28,7 @@ import { PaginationQuerySchema } from '../validations/paginationSchema';
 const router = Router();
 
 router.get(
-  'occupants/:occupantId',
+  '/occupants/:occupantId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(GetOccupantParamSchema),
   getByIdOccupantController

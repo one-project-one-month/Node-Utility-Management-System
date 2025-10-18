@@ -18,21 +18,21 @@ export const GetInvoiceQuerySchema = PaginationQuerySchema.extend({
 
 export const CreateInvoiceSchema = z.object({
   status: z.enum(InvoiceStatus).default('Pending'),
-  bill_id: z.uuid({ version: 'v4' }),
+  billId: z.uuid({ version: 'v4' }),
 });
 
 export const UpdateInvoiceSchema = z
   .object({
     status: z.enum(InvoiceStatus).default('Pending').optional(),
-    invoice_no: z.string().optional(),
-    bill_id: z.uuid({ version: 'v4' }),
+    invoiceNo: z.string().optional(),
+    billId: z.uuid({ version: 'v4' }),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
   })
   .refine((data) => {
-    return !data.invoice_no;
-  }, 'you cannot update invoice_no')
+    return !data.invoiceNo;
+  }, 'you cannot update invoiceNo')
   .strict();
 
 export type GetTenantInvoiceParamType = z.infer<
