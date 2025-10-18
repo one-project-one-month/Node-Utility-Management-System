@@ -7,6 +7,7 @@ import {
   UpdateTotalUnitsType,
 } from '../validations/totalUnitsSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
+import { TOTAL_UNIT_FLATTENER_CONFIG, universalFlattener } from '../common/utils/objFlattener';
 
 // Get All Total Units
 export async function getAllTotalUnitsService(
@@ -28,6 +29,7 @@ export async function getAllTotalUnitsService(
         waterUnits: true,
         createdAt: true,
         updatedAt: true,
+        billId: true,
         bill: {
           select: {
             id: true,
@@ -57,9 +59,10 @@ export async function getAllTotalUnitsService(
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
-
+  const flattenedUnits = universalFlattener(totalUnits, TOTAL_UNIT_FLATTENER_CONFIG);
+  
   return {
-    data: totalUnits,
+    data: flattenedUnits || totalUnits,
     ...paginationData,
   };
 }
