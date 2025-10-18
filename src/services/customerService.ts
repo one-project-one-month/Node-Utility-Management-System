@@ -24,9 +24,9 @@ export const createCustomerService = async (
     throw new NotFoundError('Tenant not found');
   }
 
-  // Check if room_id exists
+  // Check if roomId exists
   const room = await prisma.room.findUnique({
-    where: { id: data.room_id },
+    where: { id: data.roomId },
     select: { id: true },
   });
 
@@ -48,7 +48,7 @@ export const cutomerServiceHistory = async (
   // Check if tenant exists
   const tenant = await prisma.tenant.findUnique({
     where: { id },
-    select: { id: true, room_id: true },
+    select: { id: true, roomId: true },
   });
 
   if (!tenant) {
@@ -59,7 +59,7 @@ export const cutomerServiceHistory = async (
   const [history, totalCount] = await Promise.all([
     prisma.customerService.findMany({
       where: {
-        room_id: tenant.room_id,
+        roomId: tenant.roomId,
         status,
       },
       skip,
@@ -67,7 +67,7 @@ export const cutomerServiceHistory = async (
     }),
     prisma.customerService.count({
       where: {
-        room_id: tenant.room_id,
+        roomId: tenant.roomId,
         status,
       },
     }),
@@ -82,7 +82,7 @@ export const cutomerServiceHistory = async (
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    history,
+    data: history,
     ...paginationData,
   };
 };
@@ -131,7 +131,7 @@ export const getAllCustomerService = async (
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    services,
+    data: services,
     ...paginationData,
   };
 };

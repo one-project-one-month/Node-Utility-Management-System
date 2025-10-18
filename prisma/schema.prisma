@@ -61,36 +61,36 @@ enum RelationshipToTenant {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  user_name     String
-  email         String   @unique
-  password      String
-  role          UserRole
-  refresh_token String?
-  is_active     Boolean  @default(true)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  id           String   @id @default(uuid())
+  userName     String
+  email        String   @unique
+  password     String
+  role         UserRole
+  refreshToken String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // relations
-  tenant    Tenant? @relation(fields: [tenant_id], references: [id])
-  tenant_id String? @unique
+  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+  tenantId String? @unique
 
   @@map("users")
 }
 
 model Tenant {
-  id           String   @id @default(uuid())
-  name         String
-  email        String
-  nrc          String
-  phone_no     String
-  emergency_no String
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  nrc         String
+  phoneNo     String
+  emergencyNo String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // relations
-  room_id   String     @unique
-  room      Room       @relation(fields: [room_id], references: [id])
+  roomId    String     @unique
+  room      Room       @relation(fields: [roomId], references: [id])
   occupants Occupant[]
   user      User?
   contract  Contract? // typo fixed
@@ -99,55 +99,55 @@ model Tenant {
 }
 
 model Occupant {
-  id                     String               @id @default(uuid())
-  name                   String
-  nrc                    String?
-  relationship_to_tenant RelationshipToTenant
-  created_at             DateTime             @default(now())
-  updated_at             DateTime             @updatedAt
+  id                   String               @id @default(uuid())
+  name                 String
+  nrc                  String?
+  relationshipToTenant RelationshipToTenant
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
 
   // relations
-  tenant    Tenant @relation(fields: [tenant_id], references: [id])
-  tenant_id String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  tenantId String
 
   @@map("occupants")
 }
 
 model Room {
-  id               String     @id @default(uuid())
-  room_no          Int        @unique
-  floor            Int
-  dimension        String
-  no_of_bed_room   Int
-  status           RoomStatus @default(Available)
-  selling_price    Decimal?
-  max_no_of_people Int
-  description      String?
-  created_at       DateTime   @default(now())
-  updated_at       DateTime   @updatedAt
+  id            String     @id @default(uuid())
+  roomNo        Int        @unique
+  floor         Int
+  dimension     String
+  noOfBedRoom   Int
+  status        RoomStatus @default(Available)
+  sellingPrice  Decimal?
+  maxNoOfPeople Int
+  description   String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   // relations
-  contract         Contract[]
-  tenant           Tenant?
-  customer_service CustomerService[]
-  bill             Bill[]
+  contract        Contract[]
+  tenant          Tenant?
+  customerService CustomerService[]
+  bill            Bill[]
 
   @@map("rooms")
 }
 
 model Contract {
-  id           String   @id @default(uuid())
-  expiry_date  DateTime
-  created_date DateTime
-  updated_date DateTime
+  id          String   @id @default(uuid())
+  expiryDate  DateTime
+  createdDate DateTime
+  updatedDate DateTime?  
 
   // relations
-  room_id          String       @unique
-  room             Room         @relation(fields: [room_id], references: [id])
-  tenant_id        String       @unique
-  tenant           Tenant       @relation(fields: [tenant_id], references: [id])
-  contract_type_id String
-  contract_type    ContractType @relation(fields: [contract_type_id], references: [id])
+  roomId         String       @unique
+  room           Room         @relation(fields: [roomId], references: [id])
+  tenantId       String       @unique
+  tenant         Tenant       @relation(fields: [tenantId], references: [id])
+  contractTypeId String
+  contractType   ContractType @relation(fields: [contractTypeId], references: [id])
 
   @@map("contracts")
 }
@@ -158,8 +158,8 @@ model ContractType {
   duration   Int
   price      Decimal
   facilities String[]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   contract Contract[]
 
@@ -167,69 +167,69 @@ model ContractType {
 }
 
 model CustomerService {
-  id             String        @id @default(uuid())
-  description    String
-  category       Category
-  status         ServiceStatus
-  priority_level PriorityLevel
-  issued_date    DateTime      @default(now())
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @updatedAt
+  id            String        @id @default(uuid())
+  description   String
+  category      Category
+  status        ServiceStatus
+  priorityLevel PriorityLevel
+  issuedDate    DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
-  room    Room   @relation(fields: [room_id], references: [id])
-  room_id String
+  room   Room   @relation(fields: [roomId], references: [id])
+  roomId String
 
   @@map("customer_services")
 }
 
 model Bill {
-  id              String   @id @default(uuid())
-  rental_fee      Decimal
-  electricity_fee Decimal
-  water_fee       Decimal
-  fine_fee        Decimal?
-  service_fee     Decimal?
-  ground_fee      Decimal
-  car_parking_fee Decimal?
-  wifi_fee        Decimal?
-  total_amount    Decimal
-  due_date        DateTime
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  id             String   @id @default(uuid())
+  rentalFee      Decimal
+  electricityFee Decimal
+  waterFee       Decimal
+  fineFee        Decimal?
+  serviceFee     Decimal?
+  groundFee      Decimal
+  carParkingFee  Decimal?
+  wifiFee        Decimal?
+  totalAmount    Decimal
+  dueDate        DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   //relations
-  room       Room        @relation(fields: [room_id], references: [id])
-  room_id    String
-  total_unit TotalUnits?
-  invoice    Invoice?
+  room      Room        @relation(fields: [roomId], references: [id])
+  roomId    String
+  totalUnit TotalUnits?
+  invoice   Invoice?
 
   @@map("bills")
 }
 
 model TotalUnits {
-  id                String   @id @default(uuid())
-  electricity_units Decimal
-  water_units       Decimal
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  id               String   @id @default(uuid())
+  electricityUnits Decimal
+  waterUnits       Decimal
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // relations
-  bill    Bill   @relation(fields: [bill_id], references: [id])
-  bill_id String @unique
+  bill   Bill   @relation(fields: [billId], references: [id])
+  billId String @unique
 
   @@map("total_units")
 }
 
 model Invoice {
-  id         String        @id @default(uuid())
-  invoice_no String        @unique
-  status     InvoiceStatus
+  id        String        @id @default(uuid())
+  invoiceNo String        @unique
+  status    InvoiceStatus
 
   // relations
-  bill       Bill     @relation(fields: [bill_id], references: [id])
-  bill_id    String   @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  bill      Bill     @relation(fields: [billId], references: [id])
+  billId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   receipt Receipt?
 
@@ -237,15 +237,15 @@ model Invoice {
 }
 
 model Receipt {
-  id             String        @id @default(uuid())
-  payment_method PaymentMethod @default(Cash)
-  paid_date      DateTime?
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @updatedAt
+  id            String        @id @default(uuid())
+  paymentMethod PaymentMethod @default(Cash)
+  paidDate      DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   //relations
-  invoice    Invoice @relation(fields: [invoice_id], references: [id])
-  invoice_id String  @unique
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String  @unique
 
   @@map("receipts")
 }

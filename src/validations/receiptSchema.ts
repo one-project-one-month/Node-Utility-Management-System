@@ -15,7 +15,7 @@ export const GetReceiptByTenantParamSchema = z.object({
 });
 
 export const GetAllReceiptsQuerySchema = PaginationQuerySchema.extend({
-  payment_method: z
+  paymentMethod: z
     .enum(
       PaymentMethod,
       "Payment method must be one of 'Cash' or 'Mobile_Banking'"
@@ -24,24 +24,24 @@ export const GetAllReceiptsQuerySchema = PaginationQuerySchema.extend({
 }).strict();
 
 export const CreateReceiptSchema = z.object({
-  payment_method: z.enum(
+  paymentMethod: z.enum(
     PaymentMethod,
     "Payment method must be one of 'Cash' or 'Mobile_Banking'"
   ),
-  paid_date: z.coerce.date().optional(),
-  invoice_id: z.uuid({ version: 'v4' }),
+  paidDate: z.coerce.date().optional(),
+  invoiceId: z.uuid({ version: 'v4' }),
 });
 
 export const UpdateReceiptSchema = z
   .object({
-    payment_method: z
+    paymentMethod: z
       .enum(
         PaymentMethod,
         "Payment method must be one of 'Cash' or 'Mobile_Banking'"
       )
       .optional(),
-    paid_date: z.coerce.date().optional(),
-    invoice_id: z.uuid({ version: 'v4' }).optional(),
+    paidDate: z.coerce.date().optional(),
+    invoiceId: z.uuid({ version: 'v4' }).optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',

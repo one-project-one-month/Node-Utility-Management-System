@@ -101,18 +101,18 @@ async function createRoomsBatch(totalFloors: number, roomsPerFloor: number) {
       else status = 'Available';
 
       roomData.push({
-        room_no: roomNo,
+        roomNo: roomNo,
         floor: floor,
         dimension: `${dimension} ft`,
-        no_of_bed_room: faker.number.int({ min: 1, max: 3 }),
+        noOfBedRoom: faker.number.int({ min: 1, max: 3 }),
         status: status,
-        selling_price:
+        sellingPrice:
           status === 'Purchased'
             ? new Prisma.Decimal(
                 faker.number.int({ min: 250000, max: 1500000 })
               )
             : null,
-        max_no_of_people: faker.number.int({ min: 2, max: 6 }),
+        maxNoOfPeople: faker.number.int({ min: 2, max: 6 }),
         description: faker.helpers.arrayElement([
           'Spacious room with natural lighting',
           'Modern design with built-in furniture',
@@ -143,35 +143,35 @@ async function createTenantsAndUsersBatch(
     const name = faker.person.fullName();
     const email = `${name.toLowerCase().replace(/\s+/g, '.')}${faker.number.int({ min: 1, max: 99 })}@gmail.com`;
     const nrc = `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`;
-    const phone_no = `+959${faker.string.numeric(9)}`;
-    const emergency_no = `+959${faker.string.numeric(9)}`;
+    const phoneNo = `+959${faker.string.numeric(9)}`;
+    const emergencyNo = `+959${faker.string.numeric(9)}`;
 
     tenantData.push({
       name,
       email,
       nrc,
-      phone_no,
-      emergency_no,
-      room_id: room.id,
+      phoneNo,
+      emergencyNo,
+      roomId: room.id,
     });
   }
 
   // Batch create tenants
   await prisma.tenant.createMany({ data: tenantData });
   const tenants = await prisma.tenant.findMany({
-    where: { room_id: { in: occupiedRooms.map((r) => r.id) } },
+    where: { roomId: { in: occupiedRooms.map((r) => r.id) } },
   });
 
   // Prepare user data
   for (const tenant of tenants) {
     userData.push({
-      user_name:
+      userName:
         tenant.name.split(' ')[0].toLowerCase() +
         faker.number.int({ min: 1, max: 99 }),
       email: tenant.email,
       password: tenantPassword,
       role: 'Tenant' as UserRole,
-      tenant_id: tenant.id,
+      tenantId: tenant.id,
     });
   }
 
@@ -183,19 +183,19 @@ async function createTenantsAndUsersBatch(
 
   userData.push(
     {
-      user_name: 'admin',
+      userName: 'admin',
       email: 'admin@gmail.com',
       password: adminPassword,
       role: 'Admin' as UserRole,
     },
     {
-      user_name: 'staff.john',
+      userName: 'staff.john',
       email: 'john.staff@gmail.com',
       password: staffPassword,
       role: 'Staff' as UserRole,
     },
     {
-      user_name: 'staff.sarah',
+      userName: 'staff.sarah',
       email: 'sarah.staff@gmail.com',
       password: staffPassword,
       role: 'Staff' as UserRole,
@@ -228,8 +228,8 @@ async function createOccupantsBatch(
           Math.random() < 0.8
             ? `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`
             : null,
-        relationship_to_tenant: relationship,
-        tenant_id: tenant.id,
+        relationshipToTenant: relationship,
+        tenantId: tenant.id,
       });
     });
   }
@@ -250,7 +250,7 @@ async function createContractsBatch(
   const contractData: Prisma.ContractCreateManyInput[] = [];
   const rentedRooms = occupiedRooms.filter((r) => r.status === 'Rented');
   const rentedTenants = tenants.filter((t) =>
-    rentedRooms.some((r) => r.id === t.room_id)
+    rentedRooms.some((r) => r.id === t.roomId)
   );
 
   for (const tenant of rentedTenants) {
@@ -260,12 +260,12 @@ async function createContractsBatch(
     contractExpiry.setMonth(contractExpiry.getMonth() + contractType.duration);
 
     contractData.push({
-      contract_type_id: contractType.id,
-      created_date: contractStart,
-      updated_date: randomDaysAfter(contractStart, 1, 7),
-      expiry_date: contractExpiry,
-      room_id: tenant.room_id,
-      tenant_id: tenant.id,
+      contractTypeId: contractType.id,
+      createdDate: contractStart,
+      updatedDate: randomDaysAfter(contractStart, 1, 7),
+      expiryDate: contractExpiry,
+      roomId: tenant.roomId,
+      tenantId: tenant.id,
     });
   }
 
@@ -288,7 +288,7 @@ async function createBillsAndInvoicesBatch(
   const currentDate = new Date();
 
   for (const tenant of tenants) {
-    const room = occupiedRooms.find((r) => r.id === tenant.room_id)!;
+    const room = occupiedRooms.find((r) => r.id === tenant.roomId)!;
     const contractType = faker.helpers.arrayElement(allContractTypes);
     const contractStart = randomPastDate({ monthsAgoMin: 3, monthsAgoMax: 18 });
 
@@ -325,29 +325,27 @@ async function createBillsAndInvoicesBatch(
 
       billData.push({
         id: billId,
-        rental_fee: new Prisma.Decimal(baseRental),
-        electricity_fee: new Prisma.Decimal(electricityFee),
-        water_fee: new Prisma.Decimal(waterFee),
-        fine_fee: hasFine ? new Prisma.Decimal(hasFine) : null,
-        service_fee: new Prisma.Decimal(5000),
-        ground_fee: new Prisma.Decimal(5000),
-        car_parking_fee: hasCarParking
-          ? new Prisma.Decimal(hasCarParking)
-          : null,
-        wifi_fee: new Prisma.Decimal(10000),
-        total_amount: new Prisma.Decimal(totalAmount),
-        due_date: dueDate,
-        created_at: billDate,
-        updated_at: randomDaysAfter(billDate, 0, 2),
-        room_id: tenant.room_id,
+        rentalFee: new Prisma.Decimal(baseRental),
+        electricityFee: new Prisma.Decimal(electricityFee),
+        waterFee: new Prisma.Decimal(waterFee),
+        fineFee: hasFine ? new Prisma.Decimal(hasFine) : null,
+        serviceFee: new Prisma.Decimal(5000),
+        groundFee: new Prisma.Decimal(5000),
+        carParkingFee: hasCarParking ? new Prisma.Decimal(hasCarParking) : null,
+        wifiFee: new Prisma.Decimal(10000),
+        totalAmount: new Prisma.Decimal(totalAmount),
+        dueDate: dueDate,
+        createdAt: billDate,
+        updatedAt: randomDaysAfter(billDate, 0, 2),
+        roomId: tenant.roomId,
       });
 
       totalUnitsData.push({
-        electricity_units: new Prisma.Decimal(utilities.electricity),
-        water_units: new Prisma.Decimal(utilities.water),
-        created_at: billDate,
-        updated_at: randomDaysAfter(billDate, 0, 2),
-        bill_id: billId,
+        electricityUnits: new Prisma.Decimal(utilities.electricity),
+        waterUnits: new Prisma.Decimal(utilities.water),
+        createdAt: billDate,
+        updatedAt: randomDaysAfter(billDate, 0, 2),
+        billId: billId,
       });
 
       const invoiceDate = randomDaysAfter(billDate, 0, 3);
@@ -373,23 +371,23 @@ async function createBillsAndInvoicesBatch(
       invoiceData.push({
         id: invoiceId,
         status: invoiceStatus,
-        bill_id: billId,
-        invoice_no: `INV-${faker.string.alphanumeric(8).toUpperCase()}`,
-        created_at: invoiceDate,
-        updated_at: randomDaysAfter(invoiceDate, 0, 5),
+        billId: billId,
+        invoiceNo: `INV-${faker.string.alphanumeric(8).toUpperCase()}`,
+        createdAt: invoiceDate,
+        updatedAt: randomDaysAfter(invoiceDate, 0, 5),
       });
 
       if (invoiceStatus === 'Paid') {
         const paidDate = randomDaysAfter(invoiceDate, 1, 10);
         receiptData.push({
-          payment_method: faker.helpers.weightedArrayElement([
+          paymentMethod: faker.helpers.weightedArrayElement([
             { weight: 6, value: 'Cash' as PaymentMethod },
             { weight: 4, value: 'Mobile_Banking' as PaymentMethod },
           ]),
-          paid_date: paidDate,
-          invoice_id: invoiceId,
-          created_at: paidDate,
-          updated_at: randomDaysAfter(paidDate, 0, 1),
+          paidDate: paidDate,
+          invoiceId: invoiceId,
+          createdAt: paidDate,
+          updatedAt: randomDaysAfter(paidDate, 0, 1),
         });
       }
     }
@@ -447,7 +445,7 @@ async function createCustomerServicesBatch(
   ];
 
   for (const tenant of tenants) {
-    const room = occupiedRooms.find((r) => r.id === tenant.room_id)!;
+    const room = occupiedRooms.find((r) => r.id === tenant.roomId)!;
     const contractStart = randomPastDate({ monthsAgoMin: 3, monthsAgoMax: 18 });
     const serviceCount = faker.number.int({ min: 0, max: 5 });
 
@@ -489,11 +487,11 @@ async function createCustomerServicesBatch(
         description: faker.lorem.sentence(),
         category: selectedService.category,
         status: status,
-        priority_level: priority,
-        issued_date: issuedDate,
-        created_at: issuedDate,
-        updated_at: randomDaysAfter(issuedDate, 1, 7),
-        room_id: room.id,
+        priorityLevel: priority,
+        issuedDate: issuedDate,
+        createdAt: issuedDate,
+        updatedAt: randomDaysAfter(issuedDate, 1, 7),
+        roomId: room.id,
       });
     }
   }

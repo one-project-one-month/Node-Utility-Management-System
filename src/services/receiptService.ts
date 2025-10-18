@@ -16,9 +16,9 @@ export async function getAllReceiptsService(
 ) {
   const whereClause: Prisma.ReceiptWhereInput = {};
 
-  // Add payment_method filter
-  if (query.payment_method) {
-    whereClause.payment_method = query.payment_method;
+  // Add paymentMethod filter
+  if (query.paymentMethod) {
+    whereClause.paymentMethod = query.paymentMethod;
   }
 
   // Calculate pagination
@@ -31,7 +31,7 @@ export async function getAllReceiptsService(
       where: whereClause,
       skip,
       take: limit,
-      orderBy: { created_at: 'desc' },
+      orderBy: { createdAt: 'desc' },
     }),
     prisma.receipt.count({ where: whereClause }),
   ]);
@@ -40,7 +40,7 @@ export async function getAllReceiptsService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    receipts,
+    data: receipts,
     ...paginationData,
   };
 }
@@ -51,10 +51,10 @@ export async function getReceiptByIdService(receiptId: string) {
     where: { id: receiptId },
     select: {
       id: true,
-      payment_method: true,
-      paid_date: true,
-      created_at: true,
-      updated_at: true,
+      paymentMethod: true,
+      paidDate: true,
+      createdAt: true,
+      updatedAt: true,
       invoice: true,
     },
   });
@@ -63,13 +63,13 @@ export async function getReceiptByIdService(receiptId: string) {
 // Get by invoice id
 export async function getReceiptByInvoiceIdService(invoiceId: string) {
   return await prisma.receipt.findUnique({
-    where: { invoice_id: invoiceId },
+    where: { invoiceId: invoiceId },
     select: {
       id: true,
-      payment_method: true,
-      paid_date: true,
-      created_at: true,
-      updated_at: true,
+      paymentMethod: true,
+      paidDate: true,
+      createdAt: true,
+      updatedAt: true,
       invoice: true,
     },
   });
@@ -78,14 +78,14 @@ export async function getReceiptByInvoiceIdService(invoiceId: string) {
 export async function createReceiptService(data: CreateReceiptType) {
   // Check if invoice exists
   const existingInvoice = await prisma.invoice.findUnique({
-    where: { id: data.invoice_id },
+    where: { id: data.invoiceId },
     select: { id: true },
   });
   if (!existingInvoice) throw new NotFoundError('Invoice not found');
 
   // Check if receipt already exists for this invoice
   const existingReceipt = await prisma.receipt.findUnique({
-    where: { invoice_id: data.invoice_id },
+    where: { invoiceId: data.invoiceId },
     select: { id: true },
   });
   if (existingReceipt)
@@ -96,23 +96,23 @@ export async function createReceiptService(data: CreateReceiptType) {
     // Create receipt
     const receipt = await tx.receipt.create({
       data: {
-        invoice_id: data.invoice_id,
-        payment_method: data.payment_method,
-        paid_date: data.paid_date,
+        invoiceId: data.invoiceId,
+        paymentMethod: data.paymentMethod,
+        paidDate: data.paidDate,
       },
       select: {
         id: true,
-        payment_method: true,
-        paid_date: true,
-        created_at: true,
-        updated_at: true,
+        paymentMethod: true,
+        paidDate: true,
+        createdAt: true,
+        updatedAt: true,
         invoice: true,
       },
     });
 
     // Update invoice's status
     await tx.invoice.update({
-      where: { id: data.invoice_id },
+      where: { id: data.invoiceId },
       data: { status: 'Paid' },
     });
 
@@ -129,14 +129,14 @@ export async function updateReceiptService(
     where: { id: receiptId },
     select: {
       id: true,
-      invoice_id: true,
+      invoiceId: true,
     },
   });
   if (!existingReceipt) throw new NotFoundError('Receipt not found');
 
   // Find if invoice exists
   const existingInvoice = await prisma.invoice.findUnique({
-    where: { id: existingReceipt.invoice_id },
+    where: { id: existingReceipt.invoiceId },
   });
   if (!existingInvoice)
     throw new NotFoundError('Invoice with this receipt not found');
@@ -147,24 +147,24 @@ export async function updateReceiptService(
     const updatedReceipt = await tx.receipt.update({
       where: { id: receiptId },
       data: {
-        payment_method: data.payment_method,
-        paid_date: data.paid_date,
+        paymentMethod: data.paymentMethod,
+        paidDate: data.paidDate,
       },
       select: {
         id: true,
-        invoice_id: true,
-        payment_method: true,
-        paid_date: true,
-        created_at: true,
-        updated_at: true,
+        invoiceId: true,
+        paymentMethod: true,
+        paidDate: true,
+        createdAt: true,
+        updatedAt: true,
         invoice: true,
       },
     });
 
     // Update invoice status
-    const newInvoiceStatus = data.paid_date ? 'Paid' : 'Pending';
+    const newInvoiceStatus = data.paidDate ? 'Paid' : 'Pending';
     await tx.invoice.update({
-      where: { id: existingReceipt.invoice_id },
+      where: { id: existingReceipt.invoiceId },
       data: { status: newInvoiceStatus },
     });
 
@@ -196,7 +196,7 @@ export async function getLatestReceiptByTenantIdService(tenantId: string) {
         },
       },
     },
-    orderBy: { created_at: 'desc' },
+    orderBy: { createdAt: 'desc' },
   });
 }
 
@@ -239,7 +239,7 @@ export async function getReceiptHistoriesByTenantIdService(
       where: whereClause,
       skip,
       take: limit,
-      orderBy: { created_at: 'desc' },
+      orderBy: { createdAt: 'desc' },
     }),
     prisma.receipt.count({ where: whereClause }),
   ]);
@@ -248,7 +248,7 @@ export async function getReceiptHistoriesByTenantIdService(
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
   return {
-    receiptHistories,
+    data: receiptHistories,
     ...paginationData,
   };
 }

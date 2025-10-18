@@ -17,7 +17,7 @@ export async function getAllUsersController(
   try {
     const result = await getAllUsersService(req.validatedQuery, req);
 
-    if (!result || !result.users.length) {
+    if (!result || !result.data.length) {
       return next(new NotFoundError('No users found'));
     }
     successResponse(res, 'Users fetched successfully', result);

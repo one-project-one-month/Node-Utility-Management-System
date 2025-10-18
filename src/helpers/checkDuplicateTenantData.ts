@@ -14,9 +14,9 @@ export const checkDuplicateTenantData = async (
   const uniqueNRCs = new Set<string>();
   const duplicateNRCs = new Set<string>();
 
-  for (const value of validNRCs) {
-    if (uniqueNRCs.has(value)) duplicateNRCs.add(value);
-    else uniqueNRCs.add(value);
+  for (const nrc of validNRCs) {
+    if (uniqueNRCs.has(nrc)) duplicateNRCs.add(nrc);
+    else uniqueNRCs.add(nrc);
   }
   const duplicateNrcsInRequest = [...duplicateNRCs];
 
