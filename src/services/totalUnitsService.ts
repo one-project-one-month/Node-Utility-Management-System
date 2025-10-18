@@ -30,8 +30,10 @@ export async function getAllTotalUnitsService(
         updatedAt: true,
         bill: {
           select: {
+            id: true,
             room: {
               select: {
+                id: true,
                 roomNo: true,
                 floor: true,
                 status: true,

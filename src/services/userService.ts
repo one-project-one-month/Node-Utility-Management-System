@@ -44,6 +44,13 @@ export async function getAllUsersService(
         updatedAt: true,
         createdAt: true,
         // Exclude password field from the result
+        tenant: {
+          select: {
+            id: true,
+            name: true,
+            roomId: true,
+          },
+        },
       },
       skip,
       take: limit,
