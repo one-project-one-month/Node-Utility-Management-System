@@ -9,11 +9,11 @@ export const OccupantBaseSchema = z
       .min(5, 'NRC must be at least 5 characters')
       .nullable()
       .optional(),
-    relationship_to_tenant: z.enum(
+    relationshipToTenant: z.enum(
       RelationshipToTenant,
       "Relationship must be one of 'SPOUSE','PARENT','CHILD','SIBLING','RELATIVE','FRIEND','OTHER'"
     ),
-    tenant_id: z.uuid({ version: 'v4' }),
+    tenantId: z.uuid({ version: 'v4' }),
   })
   .strict();
 
@@ -22,8 +22,8 @@ export const CreateOccupantSchema = z
   .min(1, 'At least one occupant is required')
   .refine(
     (arr) => {
-      const firstTenantId = arr[0]?.tenant_id;
-      return arr.every((item) => item.tenant_id === firstTenantId);
+      const firstTenantId = arr[0]?.tenantId;
+      return arr.every((item) => item.tenantId === firstTenantId);
     },
     {
       message: 'All occupants must have the same tenant_id',
@@ -38,19 +38,19 @@ export const UpdateOccupantSchema = z
       .min(5, 'NRC must be at least 5 characters')
       .nullable()
       .optional(),
-    relationship_to_tenant: z
+    relationshipToTenant: z
       .enum(
         RelationshipToTenant,
         "Relationship must be one of 'SPOUSE','PARENT','CHILD','SIBLING','RELATIVE','FRIEND','OTHER'"
       )
       .optional(),
-    tenant_id: z.uuid({ version: 'v4' }),
+    tenantId: z.uuid({ version: 'v4' }),
   })
   .refine(
     (data) =>
       data.name !== undefined ||
       data.nrc !== undefined ||
-      data.relationship_to_tenant !== undefined,
+      data.relationshipToTenant !== undefined,
     {
       message:
         'At least one of name, nrc or relationship_to_tenant must be provided',
@@ -64,7 +64,7 @@ export const GetOccupantParamSchema = z.object({
 
 export const DeleteOccupantSchema = z
   .object({
-    tenant_id: z.uuid({ message: 'Invalid tenantId' }),
+    tenantId: z.uuid({ message: 'Invalid tenantId' }),
   })
   .strict();
 
