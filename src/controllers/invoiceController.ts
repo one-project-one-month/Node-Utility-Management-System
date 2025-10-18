@@ -74,8 +74,8 @@ export async function getInvoiceController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const invoice_id = req.validatedParams;
-    const fetchedInvoice = await getInvoiceService(invoice_id);
+    const invoiceId = req.validatedParams;
+    const fetchedInvoice = await getInvoiceService(invoiceId);
     if (fetchedInvoice === null) {
       return next(new NotFoundError('No found invoice.'));
     }

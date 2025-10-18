@@ -8,13 +8,13 @@ export const RoomIdSchema = z.object({
 });
 
 export const CreateRoomSchema = z.object({
-  room_no: z
+  roomNo: z
     .number()
     .int()
     .min(1, 'Room number is required and choose a positive number in the list'),
   floor: z.number().int(),
   dimension: z.string(),
-  no_of_bed_room: z
+  noOfBedRoom: z
     .number()
     .int()
     .min(1, 'Number of bedrooms is required and must be at least 1'),
@@ -22,28 +22,28 @@ export const CreateRoomSchema = z.object({
     RoomStatus,
     'Status must be one of Available, Rented, Purchased, InMaintenance'
   ),
-  selling_price: z.number().optional(), // Prisma Decimal maps to number in TS
-  max_no_of_people: z
+  sellingPrice: z.number().optional(), // Prisma Decimal maps to number in TS
+  maxNoOfPeople: z
     .number()
     .int()
     .min(1, 'Maximum number of people is required and must be at least 1'),
   description: z.string().optional().nullable(),
 
   //Relations
-  tenant_id: z.uuid({ version: 'v4' }).optional().nullable(),
-  bill_id: z.uuid({ version: 'v4' }).optional().nullable(),
-  customer_service_id: z.uuid({ version: 'v4' }).optional().nullable(),
+  tenantId: z.uuid({ version: 'v4' }).optional().nullable(),
+  billId: z.uuid({ version: 'v4' }).optional().nullable(),
+  customerServiceId: z.uuid({ version: 'v4' }).optional().nullable(),
 });
 
 export const UpdateRoomSchema = z
   .object({
-    room_no: z.number().int().optional(),
+    roomNo: z.number().int().optional(),
     floor: z.number().int().optional(),
     dimension: z.string().optional(),
-    no_of_bed_room: z.number().int().optional(),
+    noOfBedRoom: z.number().int().optional(),
     status: z.enum(RoomStatus).optional(),
-    selling_price: z.number().optional(), // Prisma Decimal maps to number in TS
-    max_no_of_people: z.number().int().optional(),
+    sellingPrice: z.number().optional(), // Prisma Decimal maps to number in TS
+    maxNoOfPeople: z.number().int().optional(),
     description: z.string().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
@@ -52,7 +52,7 @@ export const UpdateRoomSchema = z
 
 //Add Query Schema (for filtering and pagination)
 export const GetAllRoomsQuerySchema = PaginationQuerySchema.extend({
-  room_no: z.string().optional(),
+  roomNo: z.string().optional(),
   floor: z.number().int().optional(),
   status: z
     .enum(

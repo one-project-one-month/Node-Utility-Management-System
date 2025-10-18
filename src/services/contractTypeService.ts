@@ -21,7 +21,7 @@ export const createContractTypeService = async (
 // @desc get all contract types
 export const getAllContractTypeService = async () => {
   const contractTypes = await prisma.contractType.findMany({
-    orderBy: { created_at: 'desc' },
+    orderBy: { createdAt: 'desc' },
   });
 
   if (Array.isArray(contractTypes) && !contractTypes.length)

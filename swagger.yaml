@@ -49,7 +49,7 @@ components:
         id:
           type: string
           example: 974cbaf3-78b9-41f0-b6e9-8a9ddf9682d3
-        user_name:
+        userName:
           type: string
           example: admin
         email:
@@ -58,17 +58,17 @@ components:
         role:
           type: string
           example: Admin
-        tenant_id:
+        tenantId:
           type: string
           nullable: true
           example:
-        is_active:
+        isActive:
           type: boolean
           example: true
-        created_at:
+        createdAt:
           type: string
           example: 2025-09-30T18:05:15.112Z
-        updated_at:
+        updatedAt:
           type: string
           example: 2025-10-01T03:25:04.296Z
     TenantUser:
@@ -77,7 +77,7 @@ components:
         id:
           type: string
           example: 974cbaf3-78b9-41f0-b6e9-8a9ddf9682d3
-        user_name:
+        userName:
           type: string
           example: tenant1
         email:
@@ -86,17 +86,17 @@ components:
         role:
           type: string
           example: Tenant
-        tenant_id:
+        tenantId:
           type: string
           nullable: true
           example: 8a9ddf9682d3-974cbaf3-78b9-41f0-b6e9
-        is_active:
+        isActive:
           type: boolean
           example: true
-        created_at:
+        createdAt:
           type: string
           example: 2025-09-30T18:05:15.112Z
-        updated_at:
+        updatedAt:
           type: string
           example: 2025-10-01T03:25:04.296Z
     UserRole:
@@ -121,20 +121,20 @@ components:
         status:
           type: string
           enum: [Pending, Ongoing, Resolved]
-        priority_level:
+        priorityLevel:
           type: string
           enum: [Low, Medium, High]
-        room_id:
+        roomId:
           type: string
           format: uuid
           example: 'b7a2cc9b-9f7b-46cf-b3f9-19cb94d68c73'
-        issued_date:
+        issuedDate:
           type: string
           example: '2025-10-05T07:15:00.000Z'
-        created_at:
+        createdAt:
           type: string
           example: '2025-10-05T07:15:00.000Z'
-        updated_at:
+        updatedAt:
           type: string
           example: '2025-10-05T09:30:00.000Z'
 
@@ -156,21 +156,21 @@ components:
           type: string
           format: email
           example: john.doe@gmail.com
-        phone_no:
+        phoneNo:
           type: string
           example: '+959452897714'
-        emergency_no:
+        emergencyNo:
           type: string
           example: '+959202435118'
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
-        room_id:
+        roomId:
           type: string
           format: uuid
           example: d44605d3-4f8e-4057-b778-201111db860d
@@ -190,19 +190,19 @@ components:
           type: string
           nullable: true
           example: '12/EFGH(N)123456'
-        relationship_to_tenant:
+        relationshipToTenant:
           type: string
           enum: [SPOUSE, PARENT, CHILD, SIBLING, RELATIVE, FRIEND, OTHER]
           example: SPOUSE
-        tenant_id:
+        tenantId:
           type: string
           format: uuid
           example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
@@ -221,7 +221,7 @@ components:
           type: string
           format: uuid
           example: d44605d3-4f8e-4057-b778-201111db860d
-        room_no:
+        roomNo:
           type: integer
           example: 414
         floor:
@@ -230,27 +230,27 @@ components:
         dimension:
           type: string
           example: 14x20 ft
-        no_of_bed_room:
+        noOfBedRoom:
           type: integer
           example: 2
         status:
           type: string
           enum: [Available, Rented, Maintenance]
           example: Rented
-        selling_price:
+        sellingPrice:
           type: string
           example: '1352275'
-        max_no_of_people:
+        maxNoOfPeople:
           type: integer
           example: 2
         description:
           type: string
           example: City view with balcony
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.158Z
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.158Z
@@ -263,19 +263,19 @@ components:
           type: string
           format: uuid
           example: 7fc98505-605f-49d2-a3b8-3c6f6eac0ad2
-        payment_method:
+        paymentMethod:
           type: string
           enum: [Cash, Mobile Banking]
           example: Cash
-        paid_date:
+        paidDate:
           type: string
           format: date-time
           example: 2025-10-14T04:07:20.031Z
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: 2025-10-14T04:07:20.031Z
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: 2025-10-15T10:59:20.031Z
@@ -294,15 +294,15 @@ components:
           type: string
           enum: ['Paid', 'Pending', 'Overdue']
           example: Paid
-        bill_id:
+        billId:
           type: string
           format: uuid
           example: 201111db86-4f8e-4057-b778-0dd44605d3
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: 2025-10-14T04:07:20.031Z
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: 2025-10-15T10:59:20.031Z
@@ -315,23 +315,23 @@ components:
           type: string
           format: uuid
           example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-        electricity_units:
+        electricityUnits:
           type: number
           description: Electricity consumption in units
           example: 125.5
-        water_units:
+        waterUnits:
           type: number
           description: Water consumption in units
           example: 45.2
-        bill_id:
+        billId:
           type: string
           format: uuid
           example: b2c3d4e5-f6g7-8901-bcde-f23456789012
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
@@ -344,35 +344,35 @@ components:
           type: string
           format: uuid
           example: 456e7890-f12a-34b5-c678-426614174000
-        room_id:
+        roomId:
           type: string
           format: uuid
           example: d44605d3-4f8e-4057-b778-201111db860d
-        contract_type_id:
+        contractTypeId:
           type: string
           format: uuid
           example: 123e4567-e89b-12d3-a456-426614174000
-        tenant_id:
+        tenantId:
           type: string
           format: uuid
           example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
-        created_date:
+        createdDate:
           type: string
           format: date-time
           example: 2025-10-01T00:00:00.000Z
-        expiry_date:
+        expiryDate:
           type: string
           format: date-time
           example: 2026-09-30T00:00:00.000Z
-        updated_date:
+        updatedDate:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: 2025-10-05T19:17:18.241Z
@@ -380,7 +380,7 @@ components:
           $ref: '#/components/schemas/Tenant'
         room:
           $ref: '#/components/schemas/Room'
-        contract_type:
+        contractType:
           $ref: '#/components/schemas/ContractType'
 
     # Contract Type
@@ -405,11 +405,11 @@ components:
           items:
             type: string
           example: ['WiFi', 'Parking', 'Maintenance']
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: 2025-10-01T00:00:00.000Z
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: 2025-10-01T00:00:00.000Z
@@ -573,7 +573,7 @@ components:
         $ref: '#/components/schemas/UserRole'
 
     ActiveFilterParam:
-      name: is_active
+      name: isActive
       in: query
       description: Filter by active status
       required: false
@@ -582,7 +582,7 @@ components:
         example: true
 
     PaymentMethodFilterParam:
-      name: payment_method
+      name: paymentMethod
       in: query
       description: Filter by payment method
       required: false
@@ -664,7 +664,7 @@ components:
           schema:
             type: object
             properties:
-              user_name:
+              userName:
                 type: string
                 example: tenant1
               email:
@@ -677,7 +677,7 @@ components:
                 type: string
                 enum: [Tenant, Admin, Staff]
                 example: Tenant
-              tenant_id:
+              tenantId:
                 type: string
                 nullable: true
                 example:
@@ -689,7 +689,7 @@ components:
           schema:
             type: object
             properties:
-              user_name:
+              userName:
                 type: string
                 example: tenant1
               email:
@@ -698,7 +698,7 @@ components:
               role:
                 type: string
                 example: Tenant
-              tenant_id:
+              tenantId:
                 type: string
                 nullable: true
                 example: null
@@ -709,7 +709,7 @@ components:
         application/json:
           schema:
             type: object
-            required: [description, category, status, priority_level, room_id]
+            required: [description, category, status, priorityLevel, roomId]
             properties:
               description:
                 type: string
@@ -723,11 +723,11 @@ components:
                 type: string
                 enum: [Pending, Ongoing, Resolved]
                 example: 'Pending'
-              priority_level:
+              priorityLevel:
                 type: string
                 enum: [Low, Medium, High]
                 example: 'High'
-              room_id:
+              roomId:
                 type: string
                 format: uuid
                 example: 'b7a2cc9b-9f7b-46cf-b3f9-19cb94d68c73'
@@ -738,7 +738,7 @@ components:
         application/json:
           schema:
             type: object
-            description: At least `status` and `priority_level` must both be provided.
+            description: At least `status` and `priorityLevel` must both be provided.
             properties:
               description:
                 type: string
@@ -752,11 +752,11 @@ components:
                 type: string
                 enum: [Pending, Ongoing, Resolved]
                 example: 'Resolved'
-              priority_level:
+              priorityLevel:
                 type: string
                 enum: [Low, Medium, High]
                 example: 'High'
-              room_id:
+              roomId:
                 type: string
                 format: uuid
                 example: 'b7a2cc9b-9f7b-46cf-b3f9-19cb94d68c73'
@@ -767,7 +767,7 @@ components:
         application/json:
           schema:
             type: object
-            required: [name, nrc, email, phone_no, emergency_no, room_id]
+            required: [name, nrc, email, phoneNo, emergencyNo, roomId]
             properties:
               name:
                 type: string
@@ -781,15 +781,15 @@ components:
                 type: string
                 format: email
                 example: john.doe@gmail.com
-              phone_no:
+              phoneNo:
                 type: string
                 pattern: '^[0-9]{6,15}$'
                 example: '959452897714'
-              emergency_no:
+              emergencyNo:
                 type: string
                 pattern: '^[0-9]{6,15}$'
                 example: '959202435118'
-              room_id:
+              roomId:
                 type: string
                 format: uuid
                 example: d44605d3-4f8e-4057-b778-201111db860d
@@ -807,7 +807,7 @@ components:
                       minLength: 5
                       nullable: true
                       example: '12/EFGH(N)123456'
-                    relationship_to_tenant:
+                    relationshipToTenant:
                       type: string
                       enum:
                         [
@@ -840,19 +840,19 @@ components:
                 type: string
                 format: email
                 example: john.updated@gmail.com
-              phone_no:
+              phoneNo:
                 type: string
                 pattern: '^[0-9]{6,15}$'
                 example: '959452897715'
-              emergency_no:
+              emergencyNo:
                 type: string
                 pattern: '^[0-9]{6,15}$'
                 example: '959202435119'
-              room_id:
+              roomId:
                 type: string
                 format: uuid
                 example: d44605d3-4f8e-4057-b778-201111db860d
-              occupant_id:
+              occupantId:
                 type: string
                 format: uuid
                 example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
@@ -866,7 +866,7 @@ components:
             minItems: 1
             items:
               type: object
-              required: [name, relationship_to_tenant, tenant_id]
+              required: [name, relationshipToTenant, tenantId]
               properties:
                 name:
                   type: string
@@ -877,12 +877,12 @@ components:
                   minLength: 5
                   nullable: true
                   example: '12/EFGH(N)123456'
-                relationship_to_tenant:
+                relationshipToTenant:
                   type: string
                   enum:
                     [SPOUSE, PARENT, CHILD, SIBLING, RELATIVE, FRIEND, OTHER]
                   example: SPOUSE
-                tenant_id:
+                tenantId:
                   type: string
                   format: uuid
                   example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
@@ -903,11 +903,11 @@ components:
                 minLength: 5
                 nullable: true
                 example: '12/EFGH(N)123457'
-              relationship_to_tenant:
+              relationshipToTenant:
                 type: string
                 enum: [SPOUSE, PARENT, CHILD, SIBLING, RELATIVE, FRIEND, OTHER]
                 example: SPOUSE
-              tenant_id:
+              tenantId:
                 type: string
                 format: uuid
                 example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
@@ -918,9 +918,9 @@ components:
         application/json:
           schema:
             type: object
-            required: [tenant_id]
+            required: [tenantId]
             properties:
-              tenant_id:
+              tenantId:
                 type: string
                 format: uuid
                 example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
@@ -931,17 +931,17 @@ components:
         application/json:
           schema:
             type: object
-            required: [payment_method, paid_date, invoice_id]
+            required: [paymentMethod, paidDate, invoiceId]
             properties:
-              payment_method:
+              paymentMethod:
                 type: string
                 enum: [Cash, Mobile Banking]
                 example: Cash
-              paid_date:
+              paidDate:
                 type: string
                 format: date-time
                 example: 2025-10-14T04:07:20.031Z
-              invoice_id:
+              invoiceId:
                 type: string
                 format: uuid
                 example: d1ea2e8f-c047-48e0-bd90-d26356674d47
@@ -953,11 +953,11 @@ components:
           schema:
             type: object
             properties:
-              payment_method:
+              paymentMethod:
                 type: string
                 enum: [Cash, Mobile Banking]
                 example: Mobile Banking
-              paid_date:
+              paidDate:
                 type: string
                 format: date-time
                 example: 2025-10-14T04:07:20.031Z
@@ -968,19 +968,19 @@ components:
         application/json:
           schema:
             type: object
-            required: [electricity_units, water_units, bill_id]
+            required: [electricityUnits, waterUnits, billId]
             properties:
-              electricity_units:
+              electricityUnits:
                 type: number
                 minimum: 0.1
                 description: Electricity consumption in units (must be positive)
                 example: 125.5
-              water_units:
+              waterUnits:
                 type: number
                 minimum: 0.1
                 description: Water consumption in units (must be positive)
                 example: 45.2
-              bill_id:
+              billId:
                 type: string
                 format: uuid
                 description: Associated bill ID
@@ -993,17 +993,17 @@ components:
           schema:
             type: object
             properties:
-              electricity_units:
+              electricityUnits:
                 type: number
                 minimum: 0.1
                 description: Electricity consumption in units (must be positive)
                 example: 130.8
-              water_units:
+              waterUnits:
                 type: number
                 minimum: 0.1
                 description: Water consumption in units (must be positive)
                 example: 48.5
-              bill_id:
+              billId:
                 type: string
                 format: uuid
                 description: Associated bill ID
@@ -1017,35 +1017,35 @@ components:
             type: object
             required:
               [
-                room_id,
-                contract_type_id,
-                tenant_id,
-                created_date,
-                expiry_date,
-                updated_date,
+                roomId,
+                contractTypeId,
+                tenantId,
+                createdDate,
+                expiryDate,
+                updatedDate,
               ]
             properties:
-              room_id:
+              roomId:
                 type: string
                 format: uuid
                 example: d44605d3-4f8e-4057-b778-201111db860d
-              contract_type_id:
+              contractTypeId:
                 type: string
                 format: uuid
                 example: b2c3d4e5-f6g7-8901-bcde-f23456789012
-              tenant_id:
+              tenantId:
                 type: string
                 format: uuid
                 example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
-              created_date:
+              createdDate:
                 type: string
                 format: date-time
                 example: 2025-10-01T00:00:00.000Z
-              expiry_date:
+              expiryDate:
                 type: string
                 format: date-time
                 example: 2026-10-01T00:00:00.000Z
-              updated_date:
+              updatedDate:
                 type: string
                 format: date-time
                 example: 2025-10-01T00:00:00.000Z
@@ -1057,27 +1057,27 @@ components:
           schema:
             type: object
             properties:
-              room_id:
+              roomId:
                 type: string
                 format: uuid
                 example: d44605d3-4f8e-4057-b778-201111db860d
-              contract_type_id:
+              contractTypeId:
                 type: string
                 format: uuid
                 example: b2c3d4e5-f6g7-8901-bcde-f23456789012
-              tenant_id:
+              tenantId:
                 type: string
                 format: uuid
                 example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
-              created_date:
+              createdDate:
                 type: string
                 format: date-time
                 example: 2025-10-01T00:00:00.000Z
-              expiry_date:
+              expiryDate:
                 type: string
                 format: date-time
                 example: 2026-10-01T00:00:00.000Z
-              updated_date:
+              updatedDate:
                 type: string
                 format: date-time
                 example: 2025-10-01T00:00:00.000Z
@@ -1143,14 +1143,14 @@ components:
           schema:
             type: object
             required:
-              - room_no
+              - roomNo
               - floor
               - dimension
-              - no_of_bed_room
+              - noOfBedRoom
               - status
-              - max_no_of_people
+              - maxNoOfPeople
             properties:
-              room_no:
+              roomNo:
                 type: integer
                 minimum: 1
                 example: 414
@@ -1160,7 +1160,7 @@ components:
               dimension:
                 type: string
                 example: 14x20 ft
-              no_of_bed_room:
+              noOfBedRoom:
                 type: integer
                 minimum: 1
                 example: 2
@@ -1168,25 +1168,25 @@ components:
                 type: string
                 enum: [Available, Rented, Maintenance]
                 example: Available
-              selling_price:
+              sellingPrice:
                 type: number
                 example: 1352275
-              max_no_of_people:
+              maxNoOfPeople:
                 type: integer
                 minimum: 1
                 example: 2
               description:
                 type: string
                 example: City view with balcony
-              tenant_id:
+              tenantId:
                 type: string
                 format: uuid
                 nullable: true
-              bill_id:
+              billId:
                 type: string
                 format: uuid
                 nullable: true
-              customer_service_id:
+              customerServiceId:
                 type: string
                 format: uuid
                 nullable: true
@@ -1198,7 +1198,7 @@ components:
           schema:
             type: object
             properties:
-              room_no:
+              roomNo:
                 type: integer
                 minimum: 1
                 example: 415
@@ -1208,7 +1208,7 @@ components:
               dimension:
                 type: string
                 example: 15x20 ft
-              no_of_bed_room:
+              noOfBedRoom:
                 type: integer
                 minimum: 1
                 example: 3
@@ -1216,10 +1216,10 @@ components:
                 type: string
                 enum: [Available, Rented, Maintenance]
                 example: Rented
-              selling_price:
+              sellingPrice:
                 type: number
                 example: 1400000
-              max_no_of_people:
+              maxNoOfPeople:
                 type: integer
                 minimum: 1
                 example: 3
@@ -1394,7 +1394,7 @@ components:
                             - $ref: '#/components/schemas/Tenant'
                             - type: object
                               properties:
-                                room: 
+                                room:
                                   type: object
                                   $ref: '#/components/schemas/Room'
                                 occupants:
@@ -1949,7 +1949,7 @@ paths:
                           service:
                             $ref: '#/components/schemas/CustomerService'
         400:
-          description: Validation error (both status and priority_level required)
+          description: Validation error (both status and priorityLevel required)
           content:
             application/json:
               schema:
@@ -1958,7 +1958,7 @@ paths:
                   - type: object
                     properties:
                       message:
-                        example: Both status AND priority_level must be provided for update
+                        example: Both status AND priorityLevel must be provided for update
                       status:
                         example: 400
         401:
@@ -2017,7 +2017,7 @@ paths:
                               - $ref: '#/components/schemas/Tenant'
                               - type: object
                                 properties:
-                                  room: 
+                                  room:
                                     type: object
                                     $ref: '#/components/schemas/Room'
                                   occupants:
@@ -2085,7 +2085,7 @@ paths:
                               - $ref: '#/components/schemas/Tenant'
                               - type: object
                                 properties:
-                                  room: 
+                                  room:
                                     type: object
                                     $ref: '#/components/schemas/Room'
                                   occupants:
@@ -2130,7 +2130,7 @@ paths:
                               - $ref: '#/components/schemas/Tenant'
                               - type: object
                                 properties:
-                                  room: 
+                                  room:
                                     type: object
                                     $ref: '#/components/schemas/Room'
                                   occupants:
@@ -2322,7 +2322,7 @@ paths:
       tags:
         - Occupants
       summary: Delete occupant by ID (Admin & Staff only)
-      description: Delete an occupant. Requires tenant_id in request body for verification.
+      description: Delete an occupant. Requires tenantId in request body for verification.
       security:
         - bearerAuth: []
       parameters:
@@ -3274,7 +3274,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/PageParam'
         - $ref: '#/components/parameters/LimitParam'
-        - name: room_no
+        - name: roomNo
           in: query
           description: Filter by room number
           required: false

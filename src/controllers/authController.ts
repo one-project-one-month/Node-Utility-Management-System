@@ -88,7 +88,7 @@ export async function logoutController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = req.user?.user_id;
+    const userId = req.user?.userId;
 
     if (!userId) {
       return next(new UnauthorizedError('User not authenticated'));

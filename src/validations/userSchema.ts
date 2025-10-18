@@ -10,28 +10,28 @@ export const GetAllUsersQuerySchema = PaginationQuerySchema.extend({
   role: z
     .enum(UserRole, "Role must be one of 'Admin', 'Staff', or 'Tenant")
     .optional(),
-  is_active: z
+  isActive: z
     .string()
     .refine((val) => val === 'true' || val === 'false', {
-      message: 'is_active must be either "true" or "false"',
+      message: 'isActive must be either "true" or "false"',
     })
     .transform((val) => val === 'true')
     .optional(),
 }).strict();
 
 export const CreateUserSchema = z.object({
-  user_name: z.string().min(1, 'Username is required'),
+  userName: z.string().min(1, 'Username is required'),
   email: z.email(),
   password: z.string().min(8, 'Password must be at least 8 characters long'),
   role: z
     .enum(UserRole, "Role must be one of 'Admin', 'Staff', or 'Tenant'")
     .default(UserRole.Tenant),
-  tenant_id: z.uuid({ version: 'v4' }).optional().nullable(),
+  tenantId: z.uuid({ version: 'v4' }).optional().nullable(),
 });
 
 export const UpdateUserSchema = z
   .object({
-    user_name: z.string().optional(),
+    userName: z.string().optional(),
     email: z.email().optional(),
     password: z
       .string()
@@ -40,8 +40,8 @@ export const UpdateUserSchema = z
     role: z
       .enum(UserRole, "Role must be one of 'Admin', 'Staff', or 'Tenant'")
       .optional(),
-    tenant_id: z.uuid({ version: 'v4' }).optional().nullable(),
-    is_active: z.boolean().optional(),
+    tenantId: z.uuid({ version: 'v4' }).optional().nullable(),
+    isActive: z.boolean().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
