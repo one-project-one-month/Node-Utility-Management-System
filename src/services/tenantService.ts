@@ -62,6 +62,11 @@ export async function createTenantService(data: CreateTenantType) {
     include: {
       occupants: true,
       room: true,
+      contract: {
+        include: {
+          contractType: true,
+        },
+      },
     },
   });
 }
@@ -154,6 +159,11 @@ export async function getAllTenantService(
       include: {
         room: true,
         occupants: true,
+        contract: {
+        include: {
+          contractType: true,
+        },
+      },
       },
     }),
     prisma.tenant.count(),
