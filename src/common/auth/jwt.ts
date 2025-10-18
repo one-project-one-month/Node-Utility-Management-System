@@ -7,8 +7,8 @@ const ACCESS_TOKEN_EXPIRY = '1d';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
 export interface TokenPayload {
-  tenant_id: string | null;
-  user_id: string;
+  tenantId: string | null;
+  userId: string;
   email: string;
   role: UserRole;
 }

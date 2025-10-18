@@ -9,16 +9,16 @@ export const GetTotalUnitsByBillParamSchema = z.object({
 });
 
 export const CreateTotalUnitsSchema = z.object({
-  electricity_units: z.number().positive(),
-  water_units: z.number().positive(),
-  bill_id: z.uuid({ version: 'v4' }),
+  electricityUnits: z.number().positive(),
+  waterUnits: z.number().positive(),
+  billId: z.uuid({ version: 'v4' }),
 });
 
 export const UpdateTotalUnitsSchema = z
   .object({
-    electricity_units: z.number().positive().optional(),
-    water_units: z.number().positive().optional(),
-    bill_id: z.uuid({ version: 'v4' }),
+    electricityUnits: z.number().positive().optional(),
+    waterUnits: z.number().positive().optional(),
+    billId: z.uuid({ version: 'v4' }),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',

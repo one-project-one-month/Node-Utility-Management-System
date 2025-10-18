@@ -27,8 +27,8 @@ export async function loginService(data: LogInType) {
 
   // Generate tokens
   const tokenPayload: TokenPayload = {
-    tenant_id: user.tenant_id,
-    user_id: user.id,
+    tenantId: user.tenantId,
+    userId: user.id,
     email: user.email,
     role: user.role,
   };
@@ -36,19 +36,19 @@ export async function loginService(data: LogInType) {
   const accessToken = generateAccessToken(tokenPayload);
   const refreshToken = generateRefreshToken(tokenPayload);
 
-  // Store refresh token in database and return user data without password and refresh_token
+  // Store refresh token in database and return user data without password and refreshToken
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
-    data: { refresh_token: refreshToken },
+    data: { refreshToken },
     select: {
       email: true,
       id: true,
-      user_name: true,
+      userName: true,
       role: true,
-      tenant_id: true,
-      is_active: true,
-      created_at: true,
-      updated_at: true,
+      tenantId: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
 
@@ -70,24 +70,24 @@ export async function refreshTokenService(refreshToken: string) {
 
   // Find user and verify refresh token matches
   const user = await prisma.user.findUnique({
-    where: { id: payload.user_id },
+    where: { id: payload.userId },
     select: {
       id: true,
       email: true,
       role: true,
-      tenant_id: true,
-      refresh_token: true,
+      tenantId: true,
+      refreshToken: true,
     },
   });
 
-  if (!user || user.refresh_token !== refreshToken) {
+  if (!user || user.refreshToken !== refreshToken) {
     throw new UnauthorizedError('Invalid refresh token');
   }
 
   // Generate new tokens
   const tokenPayload: TokenPayload = {
-    tenant_id: user.tenant_id,
-    user_id: user.id,
+    tenantId: user.tenantId,
+    userId: user.id,
     email: user.email,
     role: user.role,
   };
@@ -98,7 +98,7 @@ export async function refreshTokenService(refreshToken: string) {
   // Update refresh token in database
   await prisma.user.update({
     where: { id: user.id },
-    data: { refresh_token: newRefreshToken },
+    data: { refreshToken: newRefreshToken },
   });
 
   return {
@@ -119,6 +119,6 @@ export async function logoutService(userId: string) {
 
   await prisma.user.update({
     where: { id: userId },
-    data: { refresh_token: null },
+    data: { refreshToken: null },
   });
 }

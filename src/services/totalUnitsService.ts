@@ -21,18 +21,18 @@ export async function getAllTotalUnitsService(
     prisma.totalUnits.findMany({
       skip,
       take: limit,
-      orderBy: { created_at: 'desc' },
+      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
-        electricity_units: true,
-        water_units: true,
-        created_at: true,
-        updated_at: true,
+        electricityUnits: true,
+        waterUnits: true,
+        createdAt: true,
+        updatedAt: true,
         bill: {
           select: {
             room: {
               select: {
-                room_no: true,
+                roomNo: true,
                 floor: true,
                 status: true,
                 tenant: {
@@ -72,25 +72,25 @@ export async function getTotalUnitsByIdService(totalUnitId: string) {
 // Get Single Total Units By Bill Id
 export async function getTotalUnitsByBillIdService(billId: string) {
   return await prisma.totalUnits.findUnique({
-    where: { bill_id: billId },
+    where: { billId: billId },
   });
 }
 
 export async function createTotalUnitService({
-  electricity_units,
-  water_units,
-  bill_id,
+  electricityUnits,
+  waterUnits,
+  billId,
 }: CreateTotalUnitsType) {
   // Check if bill exists
   const existingBill = await prisma.bill.findUnique({
-    where: { id: bill_id },
+    where: { id: billId },
     select: { id: true },
   });
   if (!existingBill) throw new NotFoundError('Bill not found');
 
   // Check if total-units already exists for this bill
   const existingTotalUnits = await prisma.totalUnits.findUnique({
-    where: { bill_id: bill_id },
+    where: { billId: billId },
     select: { id: true },
   });
 
@@ -100,38 +100,38 @@ export async function createTotalUnitService({
   // Create new total-units
   return await prisma.totalUnits.create({
     data: {
-      bill_id,
-      electricity_units,
-      water_units,
+      billId,
+      electricityUnits,
+      waterUnits,
     },
   });
 }
 
 export async function updateTotalUnitsService(
   totalUnitsId: string,
-  { electricity_units, water_units, bill_id }: UpdateTotalUnitsType
+  { electricityUnits, waterUnits, billId }: UpdateTotalUnitsType
 ) {
   // Find if total-units exists
   const existingTotalUnits = await prisma.totalUnits.findUnique({
     where: { id: totalUnitsId },
     select: {
       id: true,
-      electricity_units: true,
-      water_units: true,
-      bill_id: true,
+      electricityUnits: true,
+      waterUnits: true,
+      billId: true,
     },
   });
 
   if (!existingTotalUnits) throw new NotFoundError('Total-units not found');
 
-  if (existingTotalUnits.bill_id !== bill_id || !bill_id)
+  if (existingTotalUnits.billId !== billId || !billId)
     throw new BadRequestError('Bill id is not matched');
 
   return await prisma.totalUnits.update({
     where: { id: totalUnitsId },
     data: {
-      electricity_units,
-      water_units,
+      electricityUnits,
+      waterUnits,
     },
   });
 }

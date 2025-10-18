@@ -25,9 +25,9 @@ export async function getAllUsersService(
     whereClause.role = query.role;
   }
 
-  // Add is_active filter
-  if (typeof query.is_active !== 'undefined') {
-    whereClause.is_active = query.is_active;
+  // Add isActive filter
+  if (typeof query.isActive !== 'undefined') {
+    whereClause.isActive = query.isActive;
   }
 
   // Get users & totalCount with pagination
@@ -36,18 +36,18 @@ export async function getAllUsersService(
       where: whereClause,
       select: {
         id: true,
-        user_name: true,
+        userName: true,
         email: true,
         role: true,
-        tenant_id: true,
-        is_active: true,
-        updated_at: true,
-        created_at: true,
+        tenantId: true,
+        isActive: true,
+        updatedAt: true,
+        createdAt: true,
         // Exclude password field from the result
       },
       skip,
       take: limit,
-      orderBy: { created_at: 'desc' },
+      orderBy: { createdAt: 'desc' },
     }),
     prisma.user.count({ where: whereClause }),
   ]);
@@ -66,13 +66,13 @@ export async function getUserService(userId: string) {
     where: { id: userId },
     select: {
       id: true,
-      user_name: true,
+      userName: true,
       email: true,
       role: true,
-      tenant_id: true,
-      is_active: true,
-      created_at: true,
-      updated_at: true,
+      tenantId: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
       // Exclude password from results
     },
   });
@@ -95,25 +95,25 @@ export async function createUserService(data: CreateUserType) {
   // Create new user and Return user data without password and refreshToken
   return await prisma.user.create({
     data: {
-      user_name: data.user_name,
+      userName: data.userName,
       email: data.email,
       password: hashedPassword,
       role: data.role,
     },
     select: {
       id: true,
-      user_name: true,
+      userName: true,
       email: true,
       role: true,
-      tenant_id: true,
-      is_active: true,
-      created_at: true,
-      updated_at: true,
+      tenantId: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
 }
 
-// todo: tenant_id check
+// todo: tenantId check
 export async function updateUserService(userId: string, data: UpdateUserType) {
   // Find if user exists
   const existingUser = await prisma.user.findUnique({
@@ -149,13 +149,13 @@ export async function updateUserService(userId: string, data: UpdateUserType) {
     data,
     select: {
       id: true,
-      user_name: true,
+      userName: true,
       email: true,
       role: true,
-      tenant_id: true,
-      is_active: true,
-      created_at: true,
-      updated_at: true,
+      tenantId: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
 }
@@ -174,13 +174,13 @@ export async function deleteUserService(userId: string) {
     where: { id: userId },
     select: {
       id: true,
-      user_name: true,
+      userName: true,
       email: true,
       role: true,
-      tenant_id: true,
-      is_active: true,
-      created_at: true,
-      updated_at: true,
+      tenantId: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
 }

@@ -14,11 +14,11 @@ export const CreateCustomerServiceSchema = z.object({
     ServiceStatus,
     "Status must be one of 'Pending', 'Ongoing', or 'Resolved'"
   ),
-  priority_level: z.enum(
+  priorityLevel: z.enum(
     PriorityLevel,
     "Priority Level must be one of 'Low', 'Medium', or 'High'"
   ),
-  room_id: z.uuid({ version: 'v4', error: 'Invalid UUID' }),
+  roomId: z.uuid({ version: 'v4', error: 'Invalid UUID' }),
 });
 
 export const UpdateCustomerServiceSchema = z
@@ -39,18 +39,18 @@ export const UpdateCustomerServiceSchema = z
         "Status must be one of 'Pending', 'Ongoing', or 'Resolved'"
       )
       .optional(),
-    priority_level: z
+    priorityLevel: z
       .enum(
         PriorityLevel,
         "Priority Level must be one of 'Low', 'Medium', or 'High'"
       )
       .optional(),
-    room_id: z.uuid({ version: 'v4', error: 'Invalid UUID' }).optional(),
+    roomId: z.uuid({ version: 'v4', error: 'Invalid UUID' }).optional(),
   })
   .refine(
-    (data) => data.status !== undefined && data.priority_level !== undefined,
+    (data) => data.status !== undefined && data.priorityLevel !== undefined,
     {
-      message: 'Both status AND priority_level must be provided for update',
+      message: 'Both status AND priorityLevel must be provided for update',
     }
   );
 
@@ -67,7 +67,7 @@ export const GetAllServiceQuerySchema = PaginationQuerySchema.extend({
       "Category must be one of 'Pending', 'Ongoing', or 'Resolved"
     )
     .optional(),
-  priority_level: z
+  priorityLevel: z
     .enum(PriorityLevel, "Category must be one of 'Low', 'Medium', or 'High")
     .optional(),
 }).strict();

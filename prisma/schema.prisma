@@ -139,7 +139,7 @@ model Contract {
   id          String   @id @default(uuid())
   expiryDate  DateTime
   createdDate DateTime
-  updatedDate DateTime
+  updatedDate DateTime?  
 
   // relations
   roomId         String       @unique
