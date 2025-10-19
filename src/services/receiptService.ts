@@ -317,7 +317,7 @@ export async function sendReceiptEmailService(data:SendReceiptEmailType): Promis
   // prepare mail data
   const [transporter, mailOptions] = await mailTransporter({
     name: tenantName,
-    to: "htunaungkyaw730@gmail.com",
+    to: tenantEmail,
     subject: 'Your Receipt from Utility Management System for this month',
     htmlContent: htmlContent,
   });
