@@ -52,7 +52,6 @@ export async function getAllInvoicesService(
   const whereClause: Prisma.InvoiceWhereInput = {
     status: query.status,
   };
-
   // Calculate pagination
   const { page, limit } = query;
   const skip = (page - 1) * limit;
@@ -62,7 +61,7 @@ export async function getAllInvoicesService(
     query.month || query.year
       ? {
           ...whereClause,
-          createdAt: { gte: startDate, lt: endDate },
+          createdAt: { gt: startDate, lte: endDate },
         }
       : whereClause;
 
@@ -73,6 +72,7 @@ export async function getAllInvoicesService(
       select: {
         id: true,
         status: true,
+        receiptSent: true,
         billId: true,
         invoiceNo: true,
         createdAt: true,
@@ -100,11 +100,11 @@ export async function updateInvoiceService(
   param: GetInvoiceParamType,
   body: UpdateInvoiceType
 ) {
-  const existingInvice = await prisma.invoice.findUnique({
+  const existingInvoice = await prisma.invoice.findUnique({
     where: { id: param.invoiceId },
   });
 
-  if (existingInvice?.billId !== body.billId) {
+  if (existingInvoice?.billId !== body.billId) {
     throw new NotFoundError(
       "Bill ID does not match with the existing invoice's bill ID."
     );
@@ -122,17 +122,18 @@ export async function updateInvoiceService(
       data: {
         status: body.status,
         billId: body.billId,
+        receiptSent: body.receiptSent,
       },
     });
   }
 }
 
 export async function getInvoiceService(param: GetInvoiceParamType) {
-  const existingInvice = await prisma.invoice.findUnique({
+  const existingInvoice = await prisma.invoice.findUnique({
     where: { id: param.invoiceId },
   });
 
-  if (!existingInvice) {
+  if (!existingInvoice) {
     throw new NotFoundError('Invoice ID does not exist.');
   }
   return await prisma.invoice.findFirst({
@@ -142,6 +143,7 @@ export async function getInvoiceService(param: GetInvoiceParamType) {
       status: true,
       billId: true,
       invoiceNo: true,
+      receiptSent: true,
       createdAt: true,
       updatedAt: true,
       receipt: {
@@ -203,7 +205,7 @@ export async function getTenantInvoiceHistoryService(
 
   const finalWhereClause: Prisma.InvoiceWhereInput =
     query.month || query.year
-      ? { ...whereClause, createdAt: { gte: startDate, lt: endDate } }
+      ? { ...whereClause, createdAt: { gt: startDate, lte: endDate } }
       : whereClause;
 
   // Get users and totalCount with pagination
