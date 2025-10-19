@@ -59,7 +59,7 @@ export async function getLatestReceiptByTenantIdController(
       return next(new NotFoundError('Latest receipt not found'));
 
     successResponse(res, 'Latest receipts by tenant id fetched successfully', {
-      latestReceipt,
+      data: latestReceipt,
     });
   } catch (error) {
     return next(error);
