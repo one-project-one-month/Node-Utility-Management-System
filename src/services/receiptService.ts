@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { mailTransporter } from '../common/utils/mail-service/mailTransporter';
 import { Prisma } from '../../generated/prisma';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import { generatePaginationData } from '../common/utils/paginationHelper';
@@ -7,6 +8,7 @@ import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateReceiptType,
   GetAllReceiptsQueryType,
+  SendReceiptEmailType,
   UpdateReceiptType,
 } from '../validations/receiptSchema';
 
@@ -251,4 +253,89 @@ export async function getReceiptHistoriesByTenantIdService(
     data: receiptHistories,
     ...paginationData,
   };
+}
+
+export async function sendReceiptEmailService(data:SendReceiptEmailType): Promise<object> {
+  const { invoiceId ,receiptId } = data;
+
+  // Fetch paid status of the invoice
+  const paidStatus = await prisma.invoice.findUnique({
+    where: { id: invoiceId },
+    select: { status: true },
+  });
+
+  // Check if invoice is paid
+  if (!paidStatus || paidStatus.status !== 'Paid') {
+    throw new BadRequestError('Not paid yet. Cannot send receipt email.');
+  }
+
+  // Get receipt details along with tenant info
+  const receipt = await prisma.receipt.findUnique({
+    where: { id: receiptId, paidDate: { not: null } },
+    include: {
+      invoice: {
+        include: {
+          bill: {
+            include: {
+              room: {
+                include: {
+                  tenant: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!receipt) {
+    throw new NotFoundError('Receipt not found');
+  }
+
+  // Get tenant details
+  const tenantName = receipt.invoice.bill.room.tenant?.name;
+  const tenantEmail = receipt.invoice.bill.room.tenant?.email;
+  if (!tenantEmail || !tenantName) {
+    throw new BadRequestError('Tenant name or email not found');
+  }
+
+  // Prepare mail body
+  const htmlContent = `<p>Dear ${tenantName},</p>
+    <p>We are pleased to inform you that your payment has been received. Here are the details of your receipt:</p>
+    <ul>
+      <li><strong>Receipt ID:</strong> ${receipt.id}</li>
+      <li><strong>Invoice ID:</strong> ${receipt.invoiceId}</li>
+      <li><strong>Invoice No:</strong> ${receipt.invoice.invoiceNo}</li>
+      <li><strong>Payment Method:</strong> ${receipt.paymentMethod}</li>
+      <li><strong>Paid Date:</strong> ${receipt.paidDate?.toDateString()}</li>
+    </ul>
+    <p>Thank you for your prompt payment. If you have any questions, feel free to contact us.</p>
+    <p>Best regards,<br/>Utility Management Team</p>
+  `;
+
+  // prepare mail data
+  const [transporter, mailOptions] = await mailTransporter({
+    name: tenantName,
+    to: tenantEmail,
+    subject: 'Your Receipt from Utility Management System for this month',
+    htmlContent: htmlContent,
+  });
+
+  // Send email
+  const info = await transporter.sendMail(mailOptions);
+
+  // Update invoice to mark receipt as sent
+  await prisma.invoice.update({
+    where: { id: invoiceId },
+    data: { receiptSent: true },
+  });
+
+  // Return payload for response
+  return {
+    messageId: info.messageId,
+    envelope: info.envelope,
+    messageTime: info.messageTime,
+    messageSize: info.messageSize,
+  }
 }

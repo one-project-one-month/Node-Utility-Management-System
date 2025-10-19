@@ -136,10 +136,10 @@ model Room {
 }
 
 model Contract {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   expiryDate  DateTime
   createdDate DateTime
-  updatedDate DateTime?  
+  updatedDate DateTime?
 
   // relations
   roomId         String       @unique
@@ -221,9 +221,10 @@ model TotalUnits {
 }
 
 model Invoice {
-  id        String        @id @default(uuid())
-  invoiceNo String        @unique
-  status    InvoiceStatus
+  id          String        @id @default(uuid())
+  invoiceNo   String        @unique
+  status      InvoiceStatus
+  receiptSent Boolean       @default(false)
 
   // relations
   bill      Bill     @relation(fields: [billId], references: [id])

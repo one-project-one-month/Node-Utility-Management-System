@@ -6,6 +6,7 @@ import {
   getReceiptByIdController,
   getReceiptByInvoiceIdController,
   getReceiptHistoriesByTenantIdController,
+  receiptMailSenderController,
   updateReceiptController,
 } from '../controllers/receiptController';
 import {
@@ -20,6 +21,7 @@ import {
   GetReceiptByTenantParamSchema,
   UpdateReceiptSchema,
   GetAllReceiptsQuerySchema,
+  SendReceiptEmailSchema,
 } from '../validations/receiptSchema';
 import { hasRole } from '../middlewares/authMiddleware';
 import { PaginationQuerySchema } from '../validations/paginationSchema';
@@ -79,6 +81,12 @@ router.put(
   validateRequestParams(GetReceiptParamSchema),
   validateRequestBody(UpdateReceiptSchema),
   updateReceiptController
+);
+
+// receipt mail send
+router.post('/receipts/send-mail', hasRole(['Admin', 'Staff']),
+  validateRequestBody(SendReceiptEmailSchema),
+  receiptMailSenderController
 );
 
 export default router;

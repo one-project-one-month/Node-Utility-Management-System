@@ -25,6 +25,7 @@ export const UpdateInvoiceSchema = z
   .object({
     status: z.enum(InvoiceStatus).default('Pending').optional(),
     invoiceNo: z.string().optional(),
+    receiptSent: z.boolean().optional(),
     billId: z.uuid({ version: 'v4' }),
   })
   .refine((data) => Object.keys(data).length > 0, {

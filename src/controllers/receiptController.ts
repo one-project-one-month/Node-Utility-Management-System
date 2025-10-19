@@ -8,6 +8,7 @@ import {
   getReceiptByIdService,
   getReceiptByInvoiceIdService,
   getReceiptHistoriesByTenantIdService,
+  sendReceiptEmailService,
   updateReceiptService,
 } from '../services/receiptService';
 
@@ -58,7 +59,7 @@ export async function getLatestReceiptByTenantIdController(
       return next(new NotFoundError('Latest receipt not found'));
 
     successResponse(res, 'Latest receipts by tenant id fetched successfully', {
-      latestReceipt,
+      data: latestReceipt,
     });
   } catch (error) {
     return next(error);
@@ -146,6 +147,21 @@ export async function updateReceiptController(
     successResponse(res, 'Receipt updated successfully', {
       receipt: updatedReceipt,
     });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function receiptMailSenderController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    // Call the service to send the receipt email
+    const info = await sendReceiptEmailService(req.validatedBody);
+
+    successResponse(res, 'Receipt email sent successfully', { data: info });
   } catch (error) {
     return next(error);
   }
