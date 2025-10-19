@@ -18,14 +18,23 @@ export const GetInvoiceQuerySchema = PaginationQuerySchema.extend({
 
 export const CreateInvoiceSchema = z.object({
   status: z.enum(InvoiceStatus).default('Pending'),
-  billId: z.uuid({ version: 'v4' }),
+  dueDate : z.coerce.date().optional(), //overdue checking
+  billId: z.uuid({ version: 'v4' }), 
+  
 });
 
 export const UpdateInvoiceSchema = z
   .object({
-    status: z.enum(InvoiceStatus).default('Pending').optional(),
+    status: z
+    .enum(InvoiceStatus)
+    .optional()
+    .refine(
+      (InvoiceStatus) => InvoiceStatus !== 'Paid',
+      'You cannot set status to PAID manually. It changes automatically when receipt.paidDate is set.'
+    ),
     invoiceNo: z.string().optional(),
-    billId: z.uuid({ version: 'v4' }),
+    dueDate: z.coerce.date().optional(),
+    billId: z.uuid({ version: 'v4' }).optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',

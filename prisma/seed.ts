@@ -340,6 +340,7 @@ async function createBillsAndInvoicesBatch(
         roomId: tenant.roomId,
       });
 
+     
       totalUnitsData.push({
         electricityUnits: new Prisma.Decimal(utilities.electricity),
         waterUnits: new Prisma.Decimal(utilities.water),
