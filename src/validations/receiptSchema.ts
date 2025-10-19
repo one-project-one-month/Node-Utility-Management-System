@@ -48,6 +48,11 @@ export const UpdateReceiptSchema = z
   })
   .strict();
 
+export const SendReceiptEmailSchema = z.object({
+  invoiceId: z.uuid({ version: 'v4' }),
+  receiptId: z.uuid({ version: 'v4' }),
+});
+
 export type GetReceiptParamType = z.infer<typeof GetReceiptParamSchema>;
 export type GetReceiptByInvoiceParamType = z.infer<
   typeof GetReceiptByInvoiceParamSchema
@@ -58,3 +63,4 @@ export type GetReceiptByTenantParamType = z.infer<
 export type GetAllReceiptsQueryType = z.infer<typeof GetAllReceiptsQuerySchema>;
 export type CreateReceiptType = z.infer<typeof CreateReceiptSchema>;
 export type UpdateReceiptType = z.infer<typeof UpdateReceiptSchema>;
+export type SendReceiptEmailType = z.infer<typeof SendReceiptEmailSchema>;
