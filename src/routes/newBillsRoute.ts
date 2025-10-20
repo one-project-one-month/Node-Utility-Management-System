@@ -12,6 +12,7 @@ import {
   UpdateBillSchema,
 } from '../validations/newBillsSchema';
 import {
+  billAutoGenerateController,
   createBillController,
   getAllBillsController,
   getBillByIdController,
@@ -22,6 +23,8 @@ import {
 import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
+
+router.get('/bills/auto-generate', hasRole(['Admin', 'Staff']), billAutoGenerateController);
 
 router.post(
   '/bills',

@@ -7,6 +7,8 @@ import {
   UpdateBillSchemaType,
 } from '../validations/newBillsSchema';
 import { PaginationQueryType } from '../validations/paginationSchema';
+import { mailOptionConfig, mailTransporter } from '../common/utils/mail-service/mailTransporter';
+import { Bill, Invoice, Room, TotalUnits } from '../../generated/prisma';
 
 // define rate constants (cost per unit)
 const ELECTRICITY_RATE = 500;
@@ -18,21 +20,82 @@ const randomNumber = (min: number, max: number) =>
 
 // Utility: generate random date within ±15 days
 const randomDate = () => {
-  // Get the current date and time
   const now = new Date();
-  
-  // FIX: Create a copy of 'now' to avoid modifying the original date object
   const futureDate = new Date(now.getTime()); 
-  
-  // Calculate a random number of days between -15 and +14 (total 30 possible values)
-  const randomDays = Math.floor(Math.random() * 30) - 15; 
 
-  // Modify the *copy's* date and return the resulting Date object
-  // Note: setDate() changes the date in place, but we're doing it on the copy
+  const randomDays = Math.floor(Math.random() * 30) - 15; 
   futureDate.setDate(futureDate.getDate() + randomDays);
   
   return futureDate;
 };
+
+const mailBodyGenerator = (name:string, room:Room, bill:Bill, invoice:Invoice, totalUnits:TotalUnits) => {
+  const htmlContent = `<p>Dear ${name},</p>
+      <p>Here is the bill for Room No: ${room.roomNo}:</p>
+      <ul>
+        <li><strong>Room Number:</strong> ${room.roomNo}</li>
+        <li><strong>Floor:</strong> ${room.floor}</li>
+        <li><strong>Invoice No:</strong> ${invoice.invoiceNo}</li>
+        <li><strong>Bill ID:</strong> ${bill.id}</li>
+        <li><strong>Due Date:</strong> ${bill.dueDate}</li>
+        <li><strong>Rental Fee:</strong> ${bill.rentalFee}</li>
+        <li><strong>Electricity Fee:</strong> ${bill.electricityFee}</li>
+        <li><strong>Electricity Unit:</strong> ${totalUnits.electricityUnits}</li>
+        <li><strong>Water Fee:</strong> ${bill.waterFee}</li>
+        <li><strong>Water Unit:</strong> ${totalUnits.waterUnits}</li>
+        <li><strong>Wifi Fee:</strong> ${bill.wifiFee}</li>
+        <li><strong>Fine Fee:</strong> ${bill.fineFee}</li>
+        <li><strong>Ground Fee:</strong> ${bill.groundFee}</li>
+        <li><strong>Car Parking Fee:</strong> ${bill.carParkingFee}</li>
+        <li><strong>Total Amount:</strong> ${bill.totalAmount}</li>
+      </ul>
+      <p>If you have any questions, feel free to contact us.</p>
+      <p>Best regards,<br/>Utility Management Team</p>
+    `;
+  return htmlContent;
+}
+
+export const autoGenerateBillsService = async () => {
+  // Fetch all rooms with status 'Rented'
+  const rooms = await prisma.room.findMany({
+      where: {
+          status: 'Rented',
+        },
+      include:{
+        tenant: true
+      }
+    },
+  );
+
+  // Generate bills for each room
+  for (const room of rooms) {
+    // Reuse createBillService with minimal data
+    const {bill, invoice, totalUnits} = await createBillService({
+      roomId: room.id,
+    });
+
+    // Email sending logic to notify tenants about their new bills
+    // Prepare mail body
+    const tenantName = room.tenant!.name;
+    const tenantEmail = room.tenant!.email;
+    const htmlContent = mailBodyGenerator(tenantName,room, bill, invoice, totalUnits);
+  
+    // prepare mail data
+    const mailOptions = await mailOptionConfig({
+      name: tenantName,
+      to: tenantEmail,
+      subject: 'Your Bill for this month',
+      htmlContent: htmlContent,
+    })
+    const transporter = await mailTransporter();
+  
+    // Send email
+    await transporter.sendMail(mailOptions);
+
+  }
+
+  return rooms.length;
+}
 
 export const createBillService = async (data: CreateBillSchemaType) => {
   const {
@@ -58,8 +121,6 @@ export const createBillService = async (data: CreateBillSchemaType) => {
       }
     }
   });
-
-  console.log('Room with contract type:', room);
 
   if (!room) throw new NotFoundError('Room not found');
 
@@ -102,7 +163,7 @@ export const createBillService = async (data: CreateBillSchemaType) => {
     },
   });
 
-  await prisma.totalUnits.create({
+  const totalUnits = await prisma.totalUnits.create({
     data: {
       bill: { connect: { id: bill.id } },
       electricityUnits: Number(electricityUnit),
@@ -110,7 +171,7 @@ export const createBillService = async (data: CreateBillSchemaType) => {
     },
   });
 
-  await prisma.invoice.create({
+  const invoice = await prisma.invoice.create({
     data: {
       bill: { connect: { id: bill.id } },
       status: 'Pending',
@@ -124,7 +185,7 @@ export const createBillService = async (data: CreateBillSchemaType) => {
     },
   });
 
-  return bill;
+  return {bill, invoice, totalUnits};
 };
 
 export const updateBillsService = async (
