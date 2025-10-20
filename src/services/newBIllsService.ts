@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { NotFoundError } from '../common/errors';
+import { BadRequestError, NotFoundError } from '../common/errors';
 import { generatePaginationData } from '../common/utils/paginationHelper';
 import prisma from '../lib/prismaClient';
 import {
@@ -18,9 +18,20 @@ const randomNumber = (min: number, max: number) =>
 
 // Utility: generate random date within ±15 days
 const randomDate = () => {
+  // Get the current date and time
   const now = new Date();
-  const randomDays = Math.floor(Math.random() * 30) - 15; // ±15 days
-  return new Date(now.setDate(now.getDate() + randomDays));
+  
+  // FIX: Create a copy of 'now' to avoid modifying the original date object
+  const futureDate = new Date(now.getTime()); 
+  
+  // Calculate a random number of days between -15 and +14 (total 30 possible values)
+  const randomDays = Math.floor(Math.random() * 30) - 15; 
+
+  // Modify the *copy's* date and return the resulting Date object
+  // Note: setDate() changes the date in place, but we're doing it on the copy
+  futureDate.setDate(futureDate.getDate() + randomDays);
+  
+  return futureDate;
 };
 
 export const createBillService = async (data: CreateBillSchemaType) => {
@@ -35,17 +46,25 @@ export const createBillService = async (data: CreateBillSchemaType) => {
     carParkingFee,
     wifiFee,
     dueDate,
-    createdAt,
   } = data;
 
   const room = await prisma.room.findUnique({
     where: { id: roomId },
-    select: { id: true },
+    include: {
+      contract : {
+        include: {
+          contractType: true,
+        },
+      }
+    }
   });
+
+  console.log('Room with contract type:', room);
+
   if (!room) throw new NotFoundError('Room not found');
 
   // Generate random data if missing
-  const randomRental = rentalFee ?? randomNumber(100000, 300000);
+  const rent = rentalFee ?? Number(room.contract[0].contractType.price);
   const randomElectricity = electricityFee ?? randomNumber(5000, 30000);
   const randomWater = waterFee ?? randomNumber(3000, 15000);
   const randomFine = fineFee ?? randomNumber(0, 2000);
@@ -55,14 +74,14 @@ export const createBillService = async (data: CreateBillSchemaType) => {
   const randomWifi = wifiFee ?? randomNumber(1000, 3000);
 
   const totalAmount =
-    (rentalFee || 0) +
-    (electricityFee || 0) +
-    (waterFee || 0) +
-    (fineFee || 0) +
-    (serviceFee || 0) +
-    (groundFee || 0) +
-    (carParkingFee || 0) +
-    (wifiFee || 0);
+    (rentalFee || rent) +
+    (electricityFee || randomElectricity) +
+    (waterFee || randomWater) +
+    (fineFee || randomFine) +
+    (serviceFee || randomService) +
+    (groundFee || randomGround) +
+    (carParkingFee || randomParking) +
+    (wifiFee || randomWifi);
 
   const electricityUnit = (randomElectricity / ELECTRICITY_RATE).toFixed(2);
   const waterUnit = (randomWater / WATER_RATE).toFixed(2);
@@ -70,17 +89,16 @@ export const createBillService = async (data: CreateBillSchemaType) => {
   const bill = await prisma.bill.create({
     data: {
       roomId,
-      rentalFee: randomRental,
-      electricityFee: randomElectricity,
-      waterFee: randomWater,
-      fineFee: randomFine,
-      serviceFee: randomService,
-      groundFee: randomGround,
-      carParkingFee: randomParking,
-      wifiFee: randomWifi,
+      rentalFee: rentalFee || rent,
+      electricityFee: electricityFee || randomElectricity,
+      waterFee: waterFee || randomWater,
+      fineFee: fineFee || randomFine,
+      serviceFee: serviceFee || randomService,
+      groundFee: groundFee || randomGround,
+      carParkingFee: carParkingFee || randomParking,
+      wifiFee: wifiFee || randomWifi,
       totalAmount,
       dueDate: new Date(dueDate ?? randomDate()),
-      createdAt: new Date(createdAt ?? randomDate()),
     },
   });
 
@@ -89,7 +107,6 @@ export const createBillService = async (data: CreateBillSchemaType) => {
       bill: { connect: { id: bill.id } },
       electricityUnits: Number(electricityUnit),
       waterUnits: Number(waterUnit),
-      createdAt: new Date(createdAt ?? randomDate()),
     },
   });
 
@@ -125,14 +142,18 @@ export const updateBillsService = async (
     carParkingFee,
     wifiFee,
     dueDate,
-    createdAt,
   } = data;
 
   // check if bill exists
   const existingBill = await prisma.bill.findUnique({
     where: { id: billId },
+    include: { room: true },
   });
   if (!existingBill) throw new NotFoundError('Bill not found');
+
+  if (roomId !== existingBill.room.id) {
+     throw new BadRequestError('Room ID mismatch with existing bill');
+  }
 
   const toNumber = (value: any) => (value ? Number(value) : 0);
 
@@ -183,7 +204,6 @@ export const updateBillsService = async (
     const bill = await tx.bill.update({
       where: { id: billId },
       data: {
-        roomId: roomId ?? existingBill.roomId,
         rentalFee: newRental,
         electricityFee: newElectric,
         waterFee: newWater,
@@ -194,17 +214,15 @@ export const updateBillsService = async (
         wifiFee: newWifi,
         totalAmount,
         dueDate: dueDate ? new Date(dueDate) : existingBill.dueDate,
-        createdAt: createdAt ? new Date(createdAt) : existingBill.createdAt,
       },
     });
 
     // update TotalUnits
-    await tx.totalUnits.updateMany({
+    await tx.totalUnits.update({
       where: { billId },
       data: {
         electricityUnits: electricityUnit,
         waterUnits: waterUnit,
-        createdAt: createdAt ? new Date(createdAt) : existingBill.createdAt,
       },
     });
 
@@ -247,7 +265,11 @@ export const getAllBillsService = async (
       take: limit,
       orderBy: { createdAt: 'desc' },
       include: {
-        room: true,
+        room: {
+          include: {
+            tenant: true,
+          },
+        },
         totalUnit: true,
         invoice: {
           include: {
@@ -280,6 +302,11 @@ export const getLatestBillByTenantIdService = async (tenantId: string) => {
     where: { roomId: tenant.roomId },
     orderBy: { createdAt: 'desc' },
     include: {
+      room: {
+          include: {
+            tenant: true,
+          },
+      },
       totalUnit: true,
       invoice: {
         include: {
@@ -315,6 +342,11 @@ export const getBillHistoryByTenantIdService = async (
       take: limit,
       orderBy: { createdAt: 'desc' },
       include: {
+        room: {
+          include: {
+            tenant: true,
+          },
+        },
         totalUnit: true,
         invoice: {
           include: {

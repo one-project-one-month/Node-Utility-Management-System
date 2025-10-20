@@ -16,7 +16,7 @@ export const createBillController = async (
 ) => {
   try {
     const bill = await createBillService(req.validatedBody);
-    successResponse(res, 'Bill created successfully', { bill }, 201);
+    successResponse(res, 'Bill created successfully', { data: bill }, 201);
   } catch (error) {
     return next(error);
   }
@@ -28,8 +28,8 @@ export const updateBillController = async (
   next: NextFunction
 ) => {
   try {
-    const bill = await updateBillsService(req.params.billId, req.validatedBody);
-    successResponse(res, 'Bill updated successfully', { bill }, 200);
+    const bill = await updateBillsService(req.validatedParams.billId, req.validatedBody);
+    successResponse(res, 'Bill updated successfully', { data: bill }, 200);
   } catch (error) {
     return next(error);
   }
@@ -41,7 +41,7 @@ export const getBillByIdController = async (
   next: NextFunction
 ) => {
   try {
-    const bill = await getBillsByIdService(req.params.billId);
+    const bill = await getBillsByIdService(req.validatedParams.billId);
     successResponse(res, 'Bill fetched successfully', { bill }, 200);
   } catch (error) {
     return next(error);
@@ -68,12 +68,12 @@ export const getLatestBillByTenantIdController = async (
 ) => {
   try {
     const latestBill = await getLatestBillByTenantIdService(
-      req.params.tenantId
+      req.validatedParams.tenantId
     );
     successResponse(
       res,
       'Latest Bill fetched successfully',
-      { latestBill },
+      { data: latestBill },
       200
     );
   } catch (error) {

@@ -21,8 +21,8 @@ export const createContractService = async (data: CreateContractSchemaType) => {
     where: { id: data.tenantId },
     select: { id: true, roomId: true },
   });
-  if (existingTenant?.roomId)
-    throw new BadRequestError('Room already has a tenant');
+  // if (existingTenant?.roomId)
+  //   throw new BadRequestError('Room already has a tenant');
   if (!existingTenant?.id) throw new NotFoundError('Tenant not found');
 
   // check contract type exists

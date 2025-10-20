@@ -1,4 +1,4 @@
-import z from 'zod';
+import * as z from 'zod';
 
 export const CreateBillSchema = z.object({
   roomId: z.uuid({ version: 'v4' }),
@@ -44,18 +44,6 @@ export const CreateBillSchema = z.object({
       message: 'Invalid due date',
     })
     .optional(),
-  createdAt: z.coerce
-    .date()
-    .refine((date) => !isNaN(date.getTime()), {
-      message: 'Invalid created date',
-    })
-    .optional(),
-  updatedAt: z.coerce
-    .date()
-    .refine((date) => !isNaN(date.getTime()), {
-      message: 'Invalid updated date',
-    })
-    .optional(),
 });
 
 export const UpdateBillSchema = z
@@ -71,8 +59,6 @@ export const UpdateBillSchema = z
     wifiFee: z.number().optional(),
     totalAmount: z.number().optional(),
     dueDate: z.coerce.date().optional(),
-    createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
