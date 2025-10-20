@@ -331,5 +331,5 @@ export const getBillHistoryByTenantIdService = async (
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
-  return { bills, ...paginationData };
+  return { data: bills, ...paginationData };
 };
