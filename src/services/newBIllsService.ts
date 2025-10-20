@@ -38,16 +38,16 @@ const mailBodyGenerator = (name:string, room:Room, bill:Bill, invoice:Invoice, t
         <li><strong>Invoice No:</strong> ${invoice.invoiceNo}</li>
         <li><strong>Bill ID:</strong> ${bill.id}</li>
         <li><strong>Due Date:</strong> ${bill.dueDate}</li>
-        <li><strong>Rental Fee:</strong> ${bill.rentalFee}</li>
-        <li><strong>Electricity Fee:</strong> ${bill.electricityFee}</li>
-        <li><strong>Electricity Unit:</strong> ${totalUnits.electricityUnits}</li>
-        <li><strong>Water Fee:</strong> ${bill.waterFee}</li>
-        <li><strong>Water Unit:</strong> ${totalUnits.waterUnits}</li>
-        <li><strong>Wifi Fee:</strong> ${bill.wifiFee}</li>
-        <li><strong>Fine Fee:</strong> ${bill.fineFee}</li>
-        <li><strong>Ground Fee:</strong> ${bill.groundFee}</li>
-        <li><strong>Car Parking Fee:</strong> ${bill.carParkingFee}</li>
-        <li><strong>Total Amount:</strong> ${bill.totalAmount}</li>
+        <li><strong>Rental Fee:</strong> ${bill.rentalFee} Kyats</li>
+        <li><strong>Electricity Fee:</strong> ${bill.electricityFee} Kyats</li>
+        <li><strong>Electricity Unit:</strong> ${totalUnits.electricityUnits} Units</li>
+        <li><strong>Water Fee:</strong> ${bill.waterFee} Kyats</li>
+        <li><strong>Water Unit:</strong> ${totalUnits.waterUnits} Units</li>
+        <li><strong>Wifi Fee:</strong> ${bill.wifiFee} Kyats</li>
+        <li><strong>Fine Fee:</strong> ${bill.fineFee} Kyats</li>
+        <li><strong>Ground Fee:</strong> ${bill.groundFee} Kyats</li>
+        <li><strong>Car Parking Fee:</strong> ${bill.carParkingFee} Kyats</li>
+        <li><strong>Total Amount:</strong> ${bill.totalAmount} Kyats</li>
       </ul>
       <p>If you have any questions, feel free to contact us.</p>
       <p>Best regards,<br/>Utility Management Team</p>
