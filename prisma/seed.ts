@@ -323,6 +323,8 @@ async function createBillsAndInvoicesBatch(
       const billId = faker.string.uuid();
       const dueDate = randomDaysAfter(billDate, 7, 14);
 
+      
+
       billData.push({
         id: billId,
         rentalFee: new Prisma.Decimal(baseRental),

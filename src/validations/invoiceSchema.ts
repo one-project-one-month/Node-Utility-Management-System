@@ -33,8 +33,13 @@ export const UpdateInvoiceSchema = z
       'You cannot set status to PAID manually. It changes automatically when receipt.paidDate is set.'
     ),
     invoiceNo: z.string().optional(),
+<<<<<<< HEAD
     dueDate: z.coerce.date().optional(),
     billId: z.uuid({ version: 'v4' }).optional(),
+=======
+    receiptSent: z.boolean().optional(),
+    billId: z.uuid({ version: 'v4' }),
+>>>>>>> 0c805e71634c95c6aea683e70be32a05427cb301
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',

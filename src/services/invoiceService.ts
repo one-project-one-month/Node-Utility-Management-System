@@ -60,7 +60,6 @@ export async function getAllInvoicesService(
   const whereClause: Prisma.InvoiceWhereInput = {
     status: query.status,
   };
-
   // Calculate pagination
   const { page, limit } = query;
   const skip = (page - 1) * limit;
@@ -70,7 +69,7 @@ export async function getAllInvoicesService(
     query.month || query.year
       ? {
           ...whereClause,
-          createdAt: { gte: startDate, lt: endDate },
+          createdAt: { gt: startDate, lte: endDate },
         }
       : whereClause;
 
@@ -81,6 +80,7 @@ export async function getAllInvoicesService(
       select: {
         id: true,
         status: true,
+        // receiptSent: true,
         billId: true,
         invoiceNo: true,
         createdAt: true,
@@ -113,6 +113,7 @@ export async function updateInvoiceService(
     include: { receipt: true, bill: true}, //include Bill for dueDate checking
   });
 
+  if (existingInvoice?.billId !== body.billId) {
   if (existingInvoice?.billId !== body.billId) {
     throw new NotFoundError(
       "Bill ID does not match with the existing invoice's bill ID."
@@ -165,6 +166,7 @@ export async function getInvoiceService(param: GetInvoiceParamType) {
       status: true,
       billId: true,
       invoiceNo: true,
+      // receiptSent: true,
       createdAt: true,
       updatedAt: true,
       receipt: {
@@ -207,7 +209,8 @@ export async function getTenantInvoiceHistoryService(
   param: GetTenantInvoiceParamType,
   query: GetInvoiceQueryType,
   req: Request
-) {
+) 
+{
   const { startDate, endDate } = getTimeLimitQuery(query);
   const whereClause: Prisma.InvoiceWhereInput = {
     bill: {
@@ -226,7 +229,7 @@ export async function getTenantInvoiceHistoryService(
 
   const finalWhereClause: Prisma.InvoiceWhereInput =
     query.month || query.year
-      ? { ...whereClause, createdAt: { gte: startDate, lt: endDate } }
+      ? { ...whereClause, createdAt: { gt: startDate, lte: endDate } }
       : whereClause;
 
   // Get users and totalCount with pagination
@@ -257,4 +260,5 @@ export async function getTenantInvoiceHistoryService(
     data: invoices,
     ...paginationData,
   };
+}
 }

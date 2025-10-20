@@ -64,6 +64,21 @@ make type-check       # TypeScript check
 make help
 ```
 
+# To get credential from Google for nodemailer auth
+🔐 1. Enable 2-Step Verification
+- Go to https://myaccount.google.com/security
+- Scroll to the "Signing in to Google" section.
+- Find 2-Step Verification.
+- Click it and set it up (if not already enabled).
+
+🔑 2. Generate an App Password
+- Scroll down to App passwords (under "Signing in to Google").
+- Click App passwords
+- Under "Select app", choose "Mail".
+- Under "Select device", choose "Other", and type something like DocumentStamp App.
+- Click Generate.
+- Copy the 16-character app password
+
 ### NPM Scripts
 ```markdown
 ## Available Scripts
@@ -103,6 +118,11 @@ DATABASE_URL="postgresql://username:password@localhost:5433/mydb?schema=public"
 NODE_ENV=development
 ACCESS_TOKEN_SECRET=your_access_token_secret
 REFRESH_TOKEN_SECRET=your_refresh_token_secret
+ACCESS_TOKEN_EXPIRY=15m
+REFRESH_TOKEN_EXPIRY=7d
+MAIL_HOST=YOUR_EMAIL
+EMAIL_USER=YOUR_EMAIL
+EMAIL_PASS=GOOGLE_APP_PASSWORD
 ```
 
 ### 4. Start PostgreSQL with Docker (Optional)
@@ -113,8 +133,7 @@ docker compose up -d
 
 ### 5. Setup database
 ```bash
-npm run db:generate
-npm run db:push
+npm run db:migrate
 npm run seed   # optional, seed sample data
 ```
 
@@ -266,9 +285,9 @@ DELETE /api/v1/invoices/:id
 - ✅ Rate limiting (login attempts)
 - ✅ CORS configuration
 - ✅ Custom logging middleware
-- ❌ Room management API
+- ✅ Room management API
 - ❌ Billing system API
-- ❌ Invoice management API
+- ✅ Invoice management API
 
 ## Contributing
 Please read [CONTRIBUTION_GUIDELINE.md](./CONTRIBUTION_GUIDELINE.md) for details on our code of conduct and the process for submitting pull requests.
