@@ -224,7 +224,6 @@ model Invoice {
   id        String        @id @default(uuid())
   invoiceNo String        @unique
   status    InvoiceStatus
-  dueDate   DateTime?
 
   // relations
   bill      Bill     @relation(fields: [billId], references: [id])

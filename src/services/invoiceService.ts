@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import crypto from 'crypto';
 import prisma from '../lib/prismaClient';
 import { Prisma } from '../../generated/prisma';
 import {
@@ -11,8 +12,10 @@ import {
 import { BadRequestError, NotFoundError } from '../common/errors';
 import getTimeLimitQuery from '../common/utils/timeLimitQuery';
 import { generatePaginationData } from '../common/utils/paginationHelper';
+import { PrismaClient, InvoiceStatus } from '../../generated/prisma';
 
 export async function createInvoiceService(body: CreateInvoiceType) {
+  //Check if Bill exists
   const existingBill = await prisma.bill.findUnique({
     where: { id: body.billId },
   });
@@ -21,6 +24,7 @@ export async function createInvoiceService(body: CreateInvoiceType) {
     throw new NotFoundError('Bill does not exist.');
   }
 
+  //Prevent duplicate invoice for the same bill
   const checkInvoice = await prisma.invoice.findFirst({
     where: { billId: body.billId },
   });
@@ -29,7 +33,8 @@ export async function createInvoiceService(body: CreateInvoiceType) {
     throw new NotFoundError('Invoice for this Bill already exists.');
   }
 
-  return await prisma.invoice.create({
+  //Create invoice and linked receipt
+  const invoice =  await prisma.invoice.create({
     data: {
       status: body.status,
       billId: body.billId,
@@ -41,7 +46,10 @@ export async function createInvoiceService(body: CreateInvoiceType) {
         },
       },
     },
+    include: { receipt: true },
   });
+
+  return invoice;
 }
 
 export async function getAllInvoicesService(
@@ -100,39 +108,54 @@ export async function updateInvoiceService(
   param: GetInvoiceParamType,
   body: UpdateInvoiceType
 ) {
-  const existingInvice = await prisma.invoice.findUnique({
+  const existingInvoice = await prisma.invoice.findUnique({
     where: { id: param.invoiceId },
+    include: { receipt: true, bill: true}, //include Bill for dueDate checking
   });
 
-  if (existingInvice?.billId !== body.billId) {
+  if (existingInvoice?.billId !== body.billId) {
     throw new NotFoundError(
       "Bill ID does not match with the existing invoice's bill ID."
     );
   }
 
+  if (!existingInvoice) {
+      throw new NotFoundError('Invoice not found.');
+  }
+
   if (body.status === 'Paid') {
     throw new BadRequestError(
-      'Cannot update invoice to Paid status; it is set automatically upon receipt payment.'
+      'Cannot manually set status to PAID; it updates automatically when receipt is paid.'
     );
   }
 
-  if (body.status === 'Overdue' || body.status === 'Pending') {
-    return await prisma.invoice.update({
-      where: { id: param.invoiceId },
-      data: {
-        status: body.status,
-        billId: body.billId,
-      },
-    });
+  let newStatus: InvoiceStatus = InvoiceStatus.Pending;
+  const now = new Date();
+
+  if (existingInvoice.receipt?.paidDate) {
+    newStatus = InvoiceStatus.Paid
+  } else if (existingInvoice.bill?.dueDate && now > existingInvoice.bill.dueDate) {
+    newStatus = InvoiceStatus.Overdue;
   }
+  
+  //Update invoice fields
+  const updatedInvoice = await prisma.invoice.update({
+    where: { id: param.invoiceId },
+    data: {
+      status: newStatus,
+    },
+    include: { receipt: true, bill: true },
+  });
+
+  return updatedInvoice;
 }
 
 export async function getInvoiceService(param: GetInvoiceParamType) {
-  const existingInvice = await prisma.invoice.findUnique({
+  const existingInvoice= await prisma.invoice.findUnique({
     where: { id: param.invoiceId },
   });
 
-  if (!existingInvice) {
+  if (!existingInvoice){
     throw new NotFoundError('Invoice ID does not exist.');
   }
   return await prisma.invoice.findFirst({

@@ -20,7 +20,7 @@ export const CreateInvoiceSchema = z.object({
   status: z.enum(InvoiceStatus).default('Pending'),
   dueDate : z.coerce.date().optional(), //overdue checking
   billId: z.uuid({ version: 'v4' }), 
-  
+  receiptId: z.uuid({ version: 'v4' }).optional().nullable(),
 });
 
 export const UpdateInvoiceSchema = z
