@@ -91,9 +91,7 @@ export const autoGenerateBillsService = async () => {
   
     // Send email
     await transporter.sendMail(mailOptions);
-
   }
-
   return rooms.length;
 }
 
