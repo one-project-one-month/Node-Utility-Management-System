@@ -12,6 +12,17 @@ import { PaginationQueryType } from '../validations/paginationSchema';
 const ELECTRICITY_RATE = 500;
 const WATER_RATE = 300;
 
+// Utility: generate random number within range
+const randomNumber = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
+
+// Utility: generate random date within ±15 days
+const randomDate = () => {
+  const now = new Date();
+  const randomDays = Math.floor(Math.random() * 30) - 15; // ±15 days
+  return new Date(now.setDate(now.getDate() + randomDays));
+};
+
 export const createBillService = async (data: CreateBillSchemaType) => {
   const {
     roomId,
@@ -33,61 +44,67 @@ export const createBillService = async (data: CreateBillSchemaType) => {
   });
   if (!room) throw new NotFoundError('Room not found');
 
+  // Generate random data if missing
+  const randomRental = rentalFee ?? randomNumber(100000, 300000);
+  const randomElectricity = electricityFee ?? randomNumber(5000, 30000);
+  const randomWater = waterFee ?? randomNumber(3000, 15000);
+  const randomFine = fineFee ?? randomNumber(0, 2000);
+  const randomService = serviceFee ?? randomNumber(1000, 5000);
+  const randomGround = groundFee ?? randomNumber(500, 1500);
+  const randomParking = carParkingFee ?? randomNumber(1000, 4000);
+  const randomWifi = wifiFee ?? randomNumber(1000, 3000);
+
   const totalAmount =
-    rentalFee +
-    electricityFee +
-    waterFee +
+    (rentalFee || 0) +
+    (electricityFee || 0) +
+    (waterFee || 0) +
     (fineFee || 0) +
     (serviceFee || 0) +
-    groundFee +
+    (groundFee || 0) +
     (carParkingFee || 0) +
     (wifiFee || 0);
 
-  const electricityUnit = electricityFee / ELECTRICITY_RATE;
-  const waterUnit = waterFee / WATER_RATE;
+  const electricityUnit = (randomElectricity / ELECTRICITY_RATE).toFixed(2);
+  const waterUnit = (randomWater / WATER_RATE).toFixed(2);
 
-  const bill = await prisma.$transaction(async (tx) => {
-    const bill = await tx.bill.create({
-      data: {
-        roomId,
-        rentalFee,
-        electricityFee,
-        waterFee,
-        fineFee,
-        serviceFee,
-        groundFee,
-        carParkingFee,
-        wifiFee,
-        totalAmount,
-        dueDate: new Date(dueDate),
-        createdAt: new Date(createdAt),
-      },
-    });
+  const bill = await prisma.bill.create({
+    data: {
+      roomId,
+      rentalFee: randomRental,
+      electricityFee: randomElectricity,
+      waterFee: randomWater,
+      fineFee: randomFine,
+      serviceFee: randomService,
+      groundFee: randomGround,
+      carParkingFee: randomParking,
+      wifiFee: randomWifi,
+      totalAmount,
+      dueDate: new Date(dueDate ?? randomDate()),
+      createdAt: new Date(createdAt ?? randomDate()),
+    },
+  });
 
-    await tx.totalUnits.create({
-      data: {
-        billId: bill.id,
-        electricityUnits: electricityUnit,
-        waterUnits: waterUnit,
-        createdAt: new Date(createdAt),
-      },
-    });
+  await prisma.totalUnits.create({
+    data: {
+      bill: { connect: { id: bill.id } },
+      electricityUnits: Number(electricityUnit),
+      waterUnits: Number(waterUnit),
+      createdAt: new Date(createdAt ?? randomDate()),
+    },
+  });
 
-    await tx.invoice.create({
-      data: {
-        billId: bill.id,
-        status: 'Pending',
-        invoiceNo: `INV-${crypto.randomUUID().split('-')[0].toUpperCase()}`,
-        receipt: {
-          create: {
-            paymentMethod: 'Cash',
-            paidDate: null,
-          },
+  await prisma.invoice.create({
+    data: {
+      bill: { connect: { id: bill.id } },
+      status: 'Pending',
+      invoiceNo: `INV-${crypto.randomUUID().split('-')[0].toUpperCase()}`,
+      receipt: {
+        create: {
+          paymentMethod: 'Cash',
+          paidDate: null,
         },
       },
-    });
-
-    return bill;
+    },
   });
 
   return bill;
@@ -119,20 +136,47 @@ export const updateBillsService = async (
 
   const toNumber = (value: any) => (value ? Number(value) : 0);
 
-  // recalculate total amount
-  const totalAmount =
-    toNumber(rentalFee ?? existingBill.rentalFee) +
-    toNumber(electricityFee ?? existingBill.electricityFee) +
-    toNumber(waterFee ?? existingBill.waterFee) +
-    toNumber(fineFee ?? existingBill.fineFee) +
-    toNumber(serviceFee ?? existingBill.serviceFee) +
-    toNumber(groundFee ?? existingBill.groundFee) +
-    toNumber(carParkingFee ?? existingBill.carParkingFee) +
-    toNumber(wifiFee ?? existingBill.wifiFee);
+  // Utility fallback to existing or new value
+  const valueOrExisting = (newVal: number | undefined, oldVal: number) =>
+    newVal !== undefined ? newVal : oldVal;
 
-  const electricityUnit =
-    toNumber(electricityFee ?? existingBill.electricityFee) / ELECTRICITY_RATE;
-  const waterUnit = toNumber(waterFee ?? existingBill.waterFee) / WATER_RATE;
+  // Recalculate all amounts safely
+  const newRental = valueOrExisting(
+    rentalFee,
+    toNumber(existingBill.rentalFee)
+  );
+  const newElectric = valueOrExisting(
+    electricityFee,
+    toNumber(existingBill.electricityFee)
+  );
+  const newWater = valueOrExisting(waterFee, toNumber(existingBill.waterFee));
+  const newFine = valueOrExisting(fineFee, toNumber(existingBill.fineFee));
+  const newService = valueOrExisting(
+    serviceFee,
+    toNumber(existingBill.serviceFee)
+  );
+  const newGround = valueOrExisting(
+    groundFee,
+    toNumber(existingBill.groundFee)
+  );
+  const newParking = valueOrExisting(
+    carParkingFee,
+    toNumber(existingBill.carParkingFee)
+  );
+  const newWifi = valueOrExisting(wifiFee, toNumber(existingBill.wifiFee));
+
+  const totalAmount =
+    newRental +
+    newElectric +
+    newWater +
+    newFine +
+    newService +
+    newGround +
+    newParking +
+    newWifi;
+
+  const electricityUnit = Number((newElectric / ELECTRICITY_RATE).toFixed(2));
+  const waterUnit = Number((newWater / WATER_RATE).toFixed(2));
 
   const updatedBill = await prisma.$transaction(async (tx) => {
     // update bill
@@ -140,15 +184,15 @@ export const updateBillsService = async (
       where: { id: billId },
       data: {
         roomId: roomId ?? existingBill.roomId,
-        rentalFee: rentalFee ?? existingBill.rentalFee,
-        electricityFee: electricityFee ?? existingBill.electricityFee,
-        waterFee: waterFee ?? existingBill.waterFee,
-        fineFee: fineFee ?? existingBill.fineFee,
-        serviceFee: serviceFee ?? existingBill.serviceFee,
-        groundFee: groundFee ?? existingBill.groundFee,
-        carParkingFee: carParkingFee ?? existingBill.carParkingFee,
-        wifiFee: wifiFee ?? existingBill.wifiFee,
-        totalAmount: totalAmount,
+        rentalFee: newRental,
+        electricityFee: newElectric,
+        waterFee: newWater,
+        fineFee: newFine,
+        serviceFee: newService,
+        groundFee: newGround,
+        carParkingFee: newParking,
+        wifiFee: newWifi,
+        totalAmount,
         dueDate: dueDate ? new Date(dueDate) : existingBill.dueDate,
         createdAt: createdAt ? new Date(createdAt) : existingBill.createdAt,
       },
@@ -221,7 +265,7 @@ export const getAllBillsService = async (
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
-  return { bills, ...paginationData };
+  return { data: bills, ...paginationData };
 };
 
 export const getLatestBillByTenantIdService = async (tenantId: string) => {

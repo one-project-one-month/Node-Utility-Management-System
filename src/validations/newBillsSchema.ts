@@ -4,13 +4,16 @@ export const CreateBillSchema = z.object({
   roomId: z.uuid({ version: 'v4' }),
   rentalFee: z
     .number()
-    .positive({ message: 'Rental fee must be a positive number' }),
+    .positive({ message: 'Rental fee must be a positive number' })
+    .optional(),
   electricityFee: z
     .number()
-    .positive({ message: 'Electricity fee must be a positive number' }),
+    .positive({ message: 'Electricity fee must be a positive number' })
+    .optional(),
   waterFee: z
     .number()
-    .positive({ message: 'Water fee must be a positive number' }),
+    .positive({ message: 'Water fee must be a positive number' })
+    .optional(),
   fineFee: z
     .number()
     .positive({ message: 'Fine fee must be a positive number' })
@@ -21,7 +24,8 @@ export const CreateBillSchema = z.object({
     .optional(),
   groundFee: z
     .number()
-    .positive({ message: 'Ground fee must be a positive number' }),
+    .positive({ message: 'Ground fee must be a positive number' })
+    .optional(),
   carParkingFee: z
     .number()
     .positive({ message: 'Card Parking fee must be a positive number' })
@@ -34,12 +38,18 @@ export const CreateBillSchema = z.object({
     .number()
     .positive({ message: 'Total amount must be a positive number' })
     .optional(),
-  dueDate: z.coerce.date().refine((date) => !isNaN(date.getTime()), {
-    message: 'Invalid due date',
-  }),
-  createdAt: z.coerce.date().refine((date) => !isNaN(date.getTime()), {
-    message: 'Invalid created date',
-  }),
+  dueDate: z.coerce
+    .date()
+    .refine((date) => !isNaN(date.getTime()), {
+      message: 'Invalid due date',
+    })
+    .optional(),
+  createdAt: z.coerce
+    .date()
+    .refine((date) => !isNaN(date.getTime()), {
+      message: 'Invalid created date',
+    })
+    .optional(),
   updatedAt: z.coerce
     .date()
     .refine((date) => !isNaN(date.getTime()), {
