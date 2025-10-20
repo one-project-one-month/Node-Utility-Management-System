@@ -255,8 +255,10 @@ export async function getReceiptHistoriesByTenantIdService(
   };
 }
 
-export async function sendReceiptEmailService(data:SendReceiptEmailType): Promise<object> {
-  const { invoiceId ,receiptId } = data;
+export async function sendReceiptEmailService(
+  data: SendReceiptEmailType
+): Promise<object> {
+  const { invoiceId, receiptId } = data;
 
   // Fetch paid status of the invoice
   const paidStatus = await prisma.invoice.findUnique({
@@ -337,5 +339,5 @@ export async function sendReceiptEmailService(data:SendReceiptEmailType): Promis
     envelope: info.envelope,
     messageTime: info.messageTime,
     messageSize: info.messageSize,
-  }
+  };
 }
