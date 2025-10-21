@@ -7,7 +7,7 @@ import {
   getBillsByIdService,
   getLatestBillByTenantIdService,
   updateBillsService,
-} from '../services/newBillsService';
+} from '../services/newBIllsService';
 import { successResponse } from '../common/apiResponse';
 
 export const billAutoGenerateController = async (
