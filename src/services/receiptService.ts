@@ -12,10 +12,8 @@ import {
   UpdateReceiptType,
 } from '../validations/receiptSchema';
 
-export async function getAllReceiptsService(
-  query: GetAllReceiptsQueryType,
-  req: Request
-) {
+export async function getAllReceiptsService(req: Request) {
+  const query = req.validatedQuery as GetAllReceiptsQueryType;
   const whereClause: Prisma.ReceiptWhereInput = {};
 
   // Add paymentMethod filter
@@ -203,11 +201,10 @@ export async function getLatestReceiptByTenantIdService(tenantId: string) {
 }
 
 // Get receipt history by tenant id (all receipts)
-export async function getReceiptHistoriesByTenantIdService(
-  tenantId: string,
-  query: PaginationQueryType,
-  req: Request
-) {
+export async function getReceiptHistoriesByTenantIdService(req: Request) {
+  const query = req.validatedQuery as PaginationQueryType;
+  const tenantId = req.validatedParams.tenantId as string;
+
   if (!tenantId) throw new NotFoundError('Tenant id not found');
 
   // Check if tenant exists

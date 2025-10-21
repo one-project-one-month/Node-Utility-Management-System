@@ -28,7 +28,10 @@ export const updateBillController = async (
   next: NextFunction
 ) => {
   try {
-    const bill = await updateBillsService(req.validatedParams.billId, req.validatedBody);
+    const bill = await updateBillsService(
+      req.validatedParams.billId,
+      req.validatedBody
+    );
     successResponse(res, 'Bill updated successfully', { data: bill }, 200);
   } catch (error) {
     return next(error);
@@ -54,7 +57,7 @@ export const getAllBillsController = async (
   next: NextFunction
 ) => {
   try {
-    const bills = await getAllBillsService(req.validatedQuery, req);
+    const bills = await getAllBillsService(req);
     successResponse(res, 'All Bills fetched successfully', bills, 200);
   } catch (error) {
     return next(error);
@@ -87,11 +90,7 @@ export const getBillHistoryByTenantIdController = async (
   next: NextFunction
 ) => {
   try {
-    const billHistory = await getBillHistoryByTenantIdService(
-      req.validatedParams.tenantId,
-      req.validatedQuery,
-      req
-    );
+    const billHistory = await getBillHistoryByTenantIdService(req);
     successResponse(res, 'Bill History fetched successfully', billHistory, 200);
   } catch (error) {
     return next(error);

@@ -20,17 +20,17 @@ const randomNumber = (min: number, max: number) =>
 const randomDate = () => {
   // Get the current date and time
   const now = new Date();
-  
+
   // FIX: Create a copy of 'now' to avoid modifying the original date object
-  const futureDate = new Date(now.getTime()); 
-  
+  const futureDate = new Date(now.getTime());
+
   // Calculate a random number of days between -15 and +14 (total 30 possible values)
-  const randomDays = Math.floor(Math.random() * 30) - 15; 
+  const randomDays = Math.floor(Math.random() * 30) - 15;
 
   // Modify the *copy's* date and return the resulting Date object
   // Note: setDate() changes the date in place, but we're doing it on the copy
   futureDate.setDate(futureDate.getDate() + randomDays);
-  
+
   return futureDate;
 };
 
@@ -51,12 +51,12 @@ export const createBillService = async (data: CreateBillSchemaType) => {
   const room = await prisma.room.findUnique({
     where: { id: roomId },
     include: {
-      contract : {
+      contract: {
         include: {
           contractType: true,
         },
-      }
-    }
+      },
+    },
   });
 
   console.log('Room with contract type:', room);
@@ -152,7 +152,7 @@ export const updateBillsService = async (
   if (!existingBill) throw new NotFoundError('Bill not found');
 
   if (roomId !== existingBill.room.id) {
-     throw new BadRequestError('Room ID mismatch with existing bill');
+    throw new BadRequestError('Room ID mismatch with existing bill');
   }
 
   const toNumber = (value: any) => (value ? Number(value) : 0);
@@ -250,12 +250,9 @@ export const getBillsByIdService = async (billId: string) => {
   return bill;
 };
 
-export const getAllBillsService = async (
-  query: PaginationQueryType,
-  req: Request
-) => {
+export const getAllBillsService = async (req: Request) => {
   // Calculate pagination
-  const { page, limit } = query;
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
   const skip = (page - 1) * limit;
 
   // get all bills and total count
@@ -303,9 +300,9 @@ export const getLatestBillByTenantIdService = async (tenantId: string) => {
     orderBy: { createdAt: 'desc' },
     include: {
       room: {
-          include: {
-            tenant: true,
-          },
+        include: {
+          tenant: true,
+        },
       },
       totalUnit: true,
       invoice: {
@@ -320,17 +317,13 @@ export const getLatestBillByTenantIdService = async (tenantId: string) => {
   return latestBill;
 };
 
-export const getBillHistoryByTenantIdService = async (
-  tenantId: string,
-  query: PaginationQueryType,
-  req: Request
-) => {
+export const getBillHistoryByTenantIdService = async (req: Request) => {
   // Calculate pagination
-  const { page, limit } = query;
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
   const skip = (page - 1) * limit;
 
   const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
+    where: { id: req.validatedParams.tenantId as string },
     select: { roomId: true },
   });
   if (!tenant) throw new NotFoundError('Tenant not found');

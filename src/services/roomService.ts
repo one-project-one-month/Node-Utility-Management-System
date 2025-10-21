@@ -9,10 +9,9 @@ import { Prisma } from '../../generated/prisma';
 import { Request } from 'express';
 import { generatePaginationData } from '../common/utils/paginationHelper';
 
-export async function getAllRoomsService(
-  query: GetAllRoomsQueryType,
-  req: Request
-) {
+export async function getAllRoomsService(req: Request) {
+  const query = req.validatedQuery as GetAllRoomsQueryType;
+
   // Calculate pagination
   const { page, limit } = query;
   const skip = (page - 1) * limit;

@@ -10,10 +10,9 @@ import { Prisma } from '../../generated/prisma';
 import { generatePaginationData } from '../common/utils/paginationHelper';
 import { Request } from 'express';
 
-export async function getAllUsersService(
-  query: GetAllUsersQueryType,
-  req: Request
-) {
+export async function getAllUsersService(req: Request) {
+  const query = req.validatedQuery as GetAllUsersQueryType;
+
   const whereClause: Prisma.UserWhereInput = {};
 
   // Calculate pagination

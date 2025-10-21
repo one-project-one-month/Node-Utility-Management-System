@@ -15,7 +15,7 @@ export async function getAllTotalUnitsController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result = await getAllTotalUnitsService(req.validatedQuery, req);
+    const result = await getAllTotalUnitsService(req);
     if (!result || !result.data.length)
       return next(new NotFoundError('No receipts found'));
 

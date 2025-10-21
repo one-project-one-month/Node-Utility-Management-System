@@ -123,11 +123,8 @@ export const updateCustomerService = async (
 };
 
 //get all cutomer service
-export const getAllCustomerService = async (
-  query: PaginationQueryType,
-  req: Request
-) => {
-  const { page, limit } = query;
+export const getAllCustomerService = async (req: Request) => {
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
   const skip = (page - 1) * limit;
 
   //Get sevices and totalCount
