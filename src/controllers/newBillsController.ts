@@ -18,11 +18,18 @@ export const billAutoGenerateController = async (
   try {
     // Call the service to auto-generate bills
     const numberOfRooms = await autoGenerateBillsService();
-    successResponse(res, 'Bills auto-generated successfully', {data: `Bill generated for ${numberOfRooms} rooms and sent invoices via mail`}, 200);
+    successResponse(
+      res,
+      'Bills auto-generated successfully',
+      {
+        data: `Bill generated for ${numberOfRooms} rooms and sent invoices via mail`,
+      },
+      200
+    );
   } catch (error) {
     return next(error);
   }
-}
+};
 
 export const createBillController = async (
   req: Request,
@@ -30,7 +37,7 @@ export const createBillController = async (
   next: NextFunction
 ) => {
   try {
-    const {bill} = await createBillService(req.validatedBody);
+    const { bill } = await createBillService(req.validatedBody);
     successResponse(res, 'Bill created successfully', { data: bill }, 201);
   } catch (error) {
     return next(error);
