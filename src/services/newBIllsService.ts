@@ -36,7 +36,6 @@ const mailBodyGenerator = (name:string, room:Room, bill:Bill, invoice:Invoice, t
         <li><strong>Room Number:</strong> ${room.roomNo}</li>
         <li><strong>Floor:</strong> ${room.floor}</li>
         <li><strong>Invoice No:</strong> ${invoice.invoiceNo}</li>
-        <li><strong>Bill ID:</strong> ${bill.id}</li>
         <li><strong>Due Date:</strong> ${bill.dueDate}</li>
         <li><strong>Rental Fee:</strong> ${bill.rentalFee} Kyats</li>
         <li><strong>Electricity Fee:</strong> ${bill.electricityFee} Kyats</li>
@@ -67,6 +66,9 @@ export const autoGenerateBillsService = async () => {
     },
   );
 
+  // Create Mail Transporter
+  const transporter = await mailTransporter();
+
   // Generate bills for each room
   for (const room of rooms) {
     // Reuse createBillService with minimal data
@@ -87,7 +89,6 @@ export const autoGenerateBillsService = async () => {
       subject: 'Your Bill for this month',
       htmlContent: htmlContent,
     })
-    const transporter = await mailTransporter();
   
     // Send email
     await transporter.sendMail(mailOptions);
