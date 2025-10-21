@@ -70,8 +70,10 @@ We follow the **conventional commit** style for consistency:
 // src/index.ts
 
 import userRoute from './routes/userRoute';
+import roomRoute from './routes/roomRoute';
 
 app.use('/api/v1/users', userRoute);
+app.use('/api/v1/rooms', roomRoute);
 ```
 
 ---
@@ -321,6 +323,65 @@ export type UpdateUserType = z.infer<typeof UpdateUserSchema>;
 
 ---
 
+```ts
+// src/routes/roomRoute.ts
+import { Router } from 'express';
+import {
+  getAllRoomsController,
+  getRoomController,
+  createRoomController,
+  updateRoomController,
+} from '../controllers/roomController';
+import {
+  validateRequestBody,
+  validateRequestParams,
+  validateRequestQuery,
+} from '../middlewares/validationMiddlware';
+
+import {
+  CreateRoomSchema,
+  UpdateRoomSchema,
+  RoomIdSchema,
+  GetAllRoomsQuerySchema,
+} from '../validations/roomSchema';
+import { hasRole } from '../middlewares/authMiddleware';
+
+const router = Router();
+
+router.post(
+  '/',
+  hasRole(['Admin', 'Staff']),
+  validateRequestBody(CreateRoomSchema),
+  createRoomController
+);
+
+router.get(
+  '/',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(GetAllRoomsQuerySchema),
+  getAllRoomsController
+);
+
+router.get(
+  '/:roomId', //matches controller param
+  hasRole(['Admin', 'Staff']),
+  validateRequestParams(RoomIdSchema),
+  getRoomController
+);
+
+router.put(
+  '/:roomId',
+  hasRole(['Admin', 'Staff']),
+  validateRequestParams(RoomIdSchema),
+  validateRequestBody(UpdateRoomSchema),
+  updateRoomController
+);
+
+export default router;
+```
+
+---
+
 ## 📊 Database Guidelines
 
 ### Prisma Schema Conventions
@@ -343,7 +404,7 @@ make db-reset         # Reset database completely
 # Using NPM directly
 npm run db:migrate
 npm run db:push
-npm run db:generate
+npm run db-generate
 ```
 
 ---

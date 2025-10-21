@@ -217,11 +217,23 @@ POST   /api/v1/users
 PUT    /api/v1/users/:userId
 DELETE /api/v1/users/:userId
 
+# Rooms (Admin/Staff only)
+GET    /api/v1/rooms
+GET    /api/v1/rooms/:roomId
+POST   /api/v1/rooms
+PUT    /api/v1/rooms/:roomId
+
 # Tenants (Admin/Staff only)
 GET    /api/v1/tenants
 GET    /api/v1/tenants/:tenantId
 POST   /api/v1/tenants
 PUT    /api/v1/tenants/:tenantId
+
+# Occupants (Admin/Staff only)
+GET    /api/v1/occupants
+GET    /api/v1/occupants/:occupantId
+POST   /api/v1/occupants
+PUT    /api/v1/occupants/:occupantId
 
 # Contract Types (Admin/Staff only)
 GET    /api/v1/contract-types
@@ -242,6 +254,20 @@ GET    /api/v1/total-units/:id
 POST   /api/v1/total-units
 PUT    /api/v1/total-units/:id
 DELETE /api/v1/total-units/:id
+
+# Bills (Admin/Staff only)
+GET    /api/v1/bills
+GET    /api/v1/bills/:billId
+POST   /api/v1/bills
+PUT    /api/v1/bills/:billId
+
+# Invoices
+POST   /api/v1/invoices (Admin/Staff)
+GET    /api/v1/invoices (Admin/Staff)
+GET    /api/v1/invoices/:invoiceId (Admin/Staff)
+PUT    /api/v1/invoices/:invoiceId (Admin/Staff)
+GET    /api/v1/tenants/:tenantId/invoices/latest (All roles)
+GET    /api/v1/tenants/:tenantId/invoices/history (All roles)
 
 # Customer Service
 POST /api/v1/tenants/:id/customer-services/create
