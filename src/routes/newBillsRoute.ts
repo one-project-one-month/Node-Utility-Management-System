@@ -24,7 +24,11 @@ import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
 
-router.get('/bills/auto-generate', hasRole(['Admin', 'Staff']), billAutoGenerateController);
+router.get(
+  '/bills/auto-generate',
+  hasRole(['Admin', 'Staff']),
+  billAutoGenerateController
+);
 
 router.post(
   '/bills',

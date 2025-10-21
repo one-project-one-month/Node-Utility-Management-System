@@ -35,8 +35,7 @@ export async function getAllInvoicesController(
   next: NextFunction
 ) {
   try {
-    const query = req.validatedQuery;
-    const result = await getAllInvoicesService(query, req);
+    const result = await getAllInvoicesService(req);
     if (!result.data.length) {
       return next(new NotFoundError('No found invoice.'));
     }
@@ -119,9 +118,7 @@ export async function getTenantInvoiceHistoryController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const tenantId = req.validatedParams;
-    const query = req.validatedQuery;
-    const result = await getTenantInvoiceHistoryService(tenantId, query, req);
+    const result = await getTenantInvoiceHistoryService(req);
 
     successResponse(res, 'Invoice fetched successfully.', result, 200);
   } catch (error) {

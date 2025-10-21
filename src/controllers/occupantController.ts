@@ -45,7 +45,7 @@ export async function getAllOccupantController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result = await getAllOccupantService(req.validatedQuery, req);
+    const result = await getAllOccupantService(req);
     successResponse(res, 'All occupants get successfully', result, 200);
   } catch (error) {
     return next(error);

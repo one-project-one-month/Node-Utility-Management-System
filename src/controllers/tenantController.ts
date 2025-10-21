@@ -26,7 +26,7 @@ export async function getAllTenantController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result = await getAllTenantService(req.validatedQuery, req);
+    const result = await getAllTenantService(req);
     successResponse(res, 'All tenants get successfully', result, 200);
   } catch (error) {
     return next(error);

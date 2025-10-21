@@ -109,11 +109,8 @@ export const getContractByIdService = async (contractId: string) => {
   return contract;
 };
 
-export const getAllContractService = async (
-  query: PaginationQueryType,
-  req: Request
-) => {
-  const { page, limit } = query;
+export const getAllContractService = async (req: Request) => {
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
   const skip = (page - 1) * limit;
 
   // Get contracts & totalCount

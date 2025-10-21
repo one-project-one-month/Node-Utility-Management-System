@@ -143,11 +143,8 @@ export async function getByTenantIdOccupantService(tenantId: string) {
   return occupants;
 }
 
-export async function getAllOccupantService(
-  query: PaginationQueryType,
-  req: Request
-) {
-  const { page, limit } = query;
+export async function getAllOccupantService(req: Request) {
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
   const skip = (page - 1) * limit;
 
   const [occupants, totalCount] = await Promise.all([

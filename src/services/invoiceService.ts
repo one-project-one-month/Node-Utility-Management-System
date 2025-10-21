@@ -44,10 +44,8 @@ export async function createInvoiceService(body: CreateInvoiceType) {
   });
 }
 
-export async function getAllInvoicesService(
-  query: GetInvoiceQueryType,
-  req: Request
-) {
+export async function getAllInvoicesService(req: Request) {
+  const query = req.validatedQuery as GetInvoiceQueryType;
   const { startDate, endDate } = getTimeLimitQuery(query);
   const whereClause: Prisma.InvoiceWhereInput = {
     status: query.status,
@@ -182,11 +180,10 @@ export async function getTenantInvoiceLatestService(
   });
 }
 
-export async function getTenantInvoiceHistoryService(
-  param: GetTenantInvoiceParamType,
-  query: GetInvoiceQueryType,
-  req: Request
-) {
+export async function getTenantInvoiceHistoryService(req: Request) {
+  const param = req.params as GetTenantInvoiceParamType;
+  const query = req.validatedQuery as GetInvoiceQueryType;
+
   const { startDate, endDate } = getTimeLimitQuery(query);
   const whereClause: Prisma.InvoiceWhereInput = {
     bill: {

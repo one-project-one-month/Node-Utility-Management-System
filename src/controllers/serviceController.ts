@@ -78,7 +78,7 @@ export const getAllServiceController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await getAllCustomerService(req.validatedQuery, req);
+    const result = await getAllCustomerService(req);
     successResponse(res, 'Fetch customer services successfully', result, 200);
   } catch (error) {
     next(error);

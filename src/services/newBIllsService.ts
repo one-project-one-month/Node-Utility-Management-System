@@ -7,7 +7,10 @@ import {
   UpdateBillSchemaType,
 } from '../validations/newBillsSchema';
 import { PaginationQueryType } from '../validations/paginationSchema';
-import { mailOptionConfig, mailTransporter } from '../common/utils/mail-service/mailTransporter';
+import {
+  mailOptionConfig,
+  mailTransporter,
+} from '../common/utils/mail-service/mailTransporter';
 import { Bill, Invoice, Room, TotalUnits } from '../../generated/prisma';
 
 // define rate constants (cost per unit)
@@ -21,15 +24,21 @@ const randomNumber = (min: number, max: number) =>
 // Utility: generate random date within ±15 days
 const randomDate = () => {
   const now = new Date();
-  const futureDate = new Date(now.getTime()); 
+  const futureDate = new Date(now.getTime());
 
-  const randomDays = Math.floor(Math.random() * 30) - 15; 
+  const randomDays = Math.floor(Math.random() * 30) - 15;
   futureDate.setDate(futureDate.getDate() + randomDays);
-  
+
   return futureDate;
 };
 
-const mailBodyGenerator = (name:string, room:Room, bill:Bill, invoice:Invoice, totalUnits:TotalUnits) => {
+const mailBodyGenerator = (
+  name: string,
+  room: Room,
+  bill: Bill,
+  invoice: Invoice,
+  totalUnits: TotalUnits
+) => {
   const htmlContent = `<p>Dear ${name},</p>
       <p>Here is the bill for Room No: ${room.roomNo}:</p>
       <ul>
@@ -52,19 +61,18 @@ const mailBodyGenerator = (name:string, room:Room, bill:Bill, invoice:Invoice, t
       <p>Best regards,<br/>Utility Management Team</p>
     `;
   return htmlContent;
-}
+};
 
 export const autoGenerateBillsService = async () => {
   // Fetch all rooms with status 'Rented'
   const rooms = await prisma.room.findMany({
-      where: {
-          status: 'Rented',
-        },
-      include:{
-        tenant: true
-      }
+    where: {
+      status: 'Rented',
     },
-  );
+    include: {
+      tenant: true,
+    },
+  });
 
   // Create Mail Transporter
   const transporter = await mailTransporter();
@@ -72,7 +80,7 @@ export const autoGenerateBillsService = async () => {
   // Generate bills for each room
   for (const room of rooms) {
     // Reuse createBillService with minimal data
-    const {bill, invoice, totalUnits} = await createBillService({
+    const { bill, invoice, totalUnits } = await createBillService({
       roomId: room.id,
     });
 
@@ -80,21 +88,27 @@ export const autoGenerateBillsService = async () => {
     // Prepare mail body
     const tenantName = room.tenant!.name;
     const tenantEmail = room.tenant!.email;
-    const htmlContent = mailBodyGenerator(tenantName,room, bill, invoice, totalUnits);
-  
+    const htmlContent = mailBodyGenerator(
+      tenantName,
+      room,
+      bill,
+      invoice,
+      totalUnits
+    );
+
     // prepare mail data
     const mailOptions = await mailOptionConfig({
       name: tenantName,
       to: tenantEmail,
       subject: 'Your Bill for this month',
       htmlContent: htmlContent,
-    })
-  
+    });
+
     // Send email
     await transporter.sendMail(mailOptions);
   }
   return rooms.length;
-}
+};
 
 export const createBillService = async (data: CreateBillSchemaType) => {
   const {
@@ -113,12 +127,12 @@ export const createBillService = async (data: CreateBillSchemaType) => {
   const room = await prisma.room.findUnique({
     where: { id: roomId },
     include: {
-      contract : {
+      contract: {
         include: {
           contractType: true,
         },
-      }
-    }
+      },
+    },
   });
 
   if (!room) throw new NotFoundError('Room not found');
@@ -184,7 +198,7 @@ export const createBillService = async (data: CreateBillSchemaType) => {
     },
   });
 
-  return {bill, invoice, totalUnits};
+  return { bill, invoice, totalUnits };
 };
 
 export const updateBillsService = async (
@@ -212,7 +226,7 @@ export const updateBillsService = async (
   if (!existingBill) throw new NotFoundError('Bill not found');
 
   if (roomId !== existingBill.room.id) {
-     throw new BadRequestError('Room ID mismatch with existing bill');
+    throw new BadRequestError('Room ID mismatch with existing bill');
   }
 
   const toNumber = (value: any) => (value ? Number(value) : 0);
@@ -310,12 +324,9 @@ export const getBillsByIdService = async (billId: string) => {
   return bill;
 };
 
-export const getAllBillsService = async (
-  query: PaginationQueryType,
-  req: Request
-) => {
+export const getAllBillsService = async (req: Request) => {
   // Calculate pagination
-  const { page, limit } = query;
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
   const skip = (page - 1) * limit;
 
   // get all bills and total count
@@ -363,9 +374,9 @@ export const getLatestBillByTenantIdService = async (tenantId: string) => {
     orderBy: { createdAt: 'desc' },
     include: {
       room: {
-          include: {
-            tenant: true,
-          },
+        include: {
+          tenant: true,
+        },
       },
       totalUnit: true,
       invoice: {
@@ -380,17 +391,13 @@ export const getLatestBillByTenantIdService = async (tenantId: string) => {
   return latestBill;
 };
 
-export const getBillHistoryByTenantIdService = async (
-  tenantId: string,
-  query: PaginationQueryType,
-  req: Request
-) => {
+export const getBillHistoryByTenantIdService = async (req: Request) => {
   // Calculate pagination
-  const { page, limit } = query;
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
   const skip = (page - 1) * limit;
 
   const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
+    where: { id: req.validatedParams.tenantId as string },
     select: { roomId: true },
   });
   if (!tenant) throw new NotFoundError('Tenant not found');

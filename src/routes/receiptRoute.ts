@@ -84,7 +84,9 @@ router.put(
 );
 
 // receipt mail send
-router.post('/receipts/send-mail', hasRole(['Admin', 'Staff']),
+router.post(
+  '/receipts/send-mail',
+  hasRole(['Admin', 'Staff']),
   validateRequestBody(SendReceiptEmailSchema),
   receiptMailSenderController
 );

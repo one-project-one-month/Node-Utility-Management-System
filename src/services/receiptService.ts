@@ -1,5 +1,8 @@
 import { Request } from 'express';
-import { mailOptionConfig, mailTransporter } from '../common/utils/mail-service/mailTransporter';
+import {
+  mailOptionConfig,
+  mailTransporter,
+} from '../common/utils/mail-service/mailTransporter';
 import { Prisma } from '../../generated/prisma';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import { generatePaginationData } from '../common/utils/paginationHelper';
@@ -12,10 +15,8 @@ import {
   UpdateReceiptType,
 } from '../validations/receiptSchema';
 
-export async function getAllReceiptsService(
-  query: GetAllReceiptsQueryType,
-  req: Request
-) {
+export async function getAllReceiptsService(req: Request) {
+  const query = req.validatedQuery as GetAllReceiptsQueryType;
   const whereClause: Prisma.ReceiptWhereInput = {};
 
   // Add paymentMethod filter
@@ -203,11 +204,10 @@ export async function getLatestReceiptByTenantIdService(tenantId: string) {
 }
 
 // Get receipt history by tenant id (all receipts)
-export async function getReceiptHistoriesByTenantIdService(
-  tenantId: string,
-  query: PaginationQueryType,
-  req: Request
-) {
+export async function getReceiptHistoriesByTenantIdService(req: Request) {
+  const query = req.validatedQuery as PaginationQueryType;
+  const tenantId = req.validatedParams.tenantId as string;
+
   if (!tenantId) throw new NotFoundError('Tenant id not found');
 
   // Check if tenant exists
@@ -322,7 +322,7 @@ export async function sendReceiptEmailService(
     to: tenantEmail,
     subject: 'Your Receipt from Utility Management System for this month',
     htmlContent: htmlContent,
-  })
+  });
   const transporter = await mailTransporter();
 
   // Send email
