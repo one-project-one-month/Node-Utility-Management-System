@@ -404,7 +404,7 @@ make db-reset         # Reset database completely
 # Using NPM directly
 npm run db:migrate
 npm run db:push
-npm run db-generate
+npm run db:generate
 ```
 
 ---
