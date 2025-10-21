@@ -8,11 +8,21 @@ export interface MailData {
   subject: string;
 }
 
-export async function mailTransporter(
+export async function mailOptionConfig(
   mailData: MailData
-): Promise<[nodemailer.Transporter, nodemailer.SendMailOptions]> {
+): Promise<nodemailer.SendMailOptions> {
   const { name, to, message, subject, htmlContent } = mailData;
+  const mailOptions = {
+    from: process.env.MAIL_HOST,
+    to: to,
+    subject: subject,
+    text: `Dear ${name},\n\n${message}\n\nBest regards,\nUtility Management Team`,
+    html: htmlContent,
+  };
+  return mailOptions;
+}
 
+export async function mailTransporter(): Promise<nodemailer.Transporter> {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -21,13 +31,5 @@ export async function mailTransporter(
     },
   });
 
-  const mailOptions = {
-    from: process.env.MAIL_HOST,
-    to: to,
-    subject: subject,
-    text: `Dear ${name},\n\n${message}\n\nBest regards,\nUtility Management Team`,
-    html: htmlContent,
-  };
-
-  return [transporter, mailOptions];
+  return transporter;
 }

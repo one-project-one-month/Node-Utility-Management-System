@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { mailTransporter } from '../common/utils/mail-service/mailTransporter';
+import { mailOptionConfig, mailTransporter } from '../common/utils/mail-service/mailTransporter';
 import { Prisma } from '../../generated/prisma';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import { generatePaginationData } from '../common/utils/paginationHelper';
@@ -314,12 +314,13 @@ export async function sendReceiptEmailService(
   `;
 
   // prepare mail data
-  const [transporter, mailOptions] = await mailTransporter({
+  const mailOptions = await mailOptionConfig({
     name: tenantName,
     to: tenantEmail,
     subject: 'Your Receipt from Utility Management System for this month',
     htmlContent: htmlContent,
-  });
+  })
+  const transporter = await mailTransporter();
 
   // Send email
   const info = await transporter.sendMail(mailOptions);
