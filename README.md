@@ -2,6 +2,18 @@
 
 A comprehensive utility management system built with Node.js, TypeScript, and PostgreSQL for managing rental properties, tenants, billing, and customer services.
 
+## Server Deployment Info
+
+This project is deployed on render. Here you can access the server:
+1. https://node-utility-management-system.onrender.com/
+2. https://node-utility-management-system-fye1.onrender.com/
+
+### Swagger Docs for endpoints
+```
+1. https://node-utility-management-system.onrender.com/docs/
+2. https://node-utility-management-system-fye1.onrender.com/docs/
+```
+
 ## Features
 - **Multi-role User Management** - Admin, Staff, and Tenant roles
 - **Property Management** - Room tracking with status and pricing
@@ -64,7 +76,22 @@ make type-check       # TypeScript check
 make help
 ```
 
-# To get credential from Google for nodemailer auth
+### NPM Scripts
+```markdown
+## Available Scripts
+- `npm run dev` – start in development with hot reload
+- `npm start` – build & run in production
+- `npm run build` – compile TypeScript to JavaScript
+- `npm run db:generate` – regenerate Prisma client
+- `npm run db:push` – push schema changes to DB
+- `npm run db:migrate` – create new migration
+- `npm run db:studio` – open Prisma Studio
+- `npm run seed` – seed initial data
+- `npm run lint` – eslint check
+- `npm run lint:fix` – eslint auto fix
+```
+
+## To get credential from Google for nodemailer auth
 🔐 1. Enable 2-Step Verification
 - Go to https://myaccount.google.com/security
 - Scroll to the "Signing in to Google" section.
@@ -78,19 +105,6 @@ make help
 - Under "Select device", choose "Other", and type something like DocumentStamp App.
 - Click Generate.
 - Copy the 16-character app password
-
-### NPM Scripts
-```markdown
-## Available Scripts
-- `npm run dev` – start in development with hot reload
-- `npm start` – build & run in production
-- `npm run build` – compile TypeScript to JavaScript
-- `npm run db:generate` – regenerate Prisma client
-- `npm run db:push` – push schema changes to DB
-- `npm run db:migrate` – create new migration
-- `npm run db:studio` – open Prisma Studio
-- `npm run seed` – seed initial data
-```
 
 ## Getting Started
 
@@ -242,30 +256,6 @@ POST /api/v1/receipts
 PUT  /api/v1/receipts/:id
 ```
 
-### ❌ **Planned Endpoints**
-```
-# Rooms
-GET    /api/v1/rooms
-GET    /api/v1/rooms/:id
-POST   /api/v1/rooms
-PUT    /api/v1/rooms/:id
-DELETE /api/v1/rooms/:id
-
-# Bills
-GET    /api/v1/bills
-GET    /api/v1/bills/:id
-POST   /api/v1/bills
-PUT    /api/v1/bills/:id
-DELETE /api/v1/bills/:id
-
-# Invoices
-GET    /api/v1/invoices
-GET    /api/v1/invoices/:id
-POST   /api/v1/invoices
-PUT    /api/v1/invoices/:id
-DELETE /api/v1/invoices/:id
-```
-
 ## Development Status
 - ✅ Project setup and configuration
 - ✅ Database schema design
@@ -286,8 +276,9 @@ DELETE /api/v1/invoices/:id
 - ✅ CORS configuration
 - ✅ Custom logging middleware
 - ✅ Room management API
-- ❌ Billing system API
+- ✅ Billing system API
 - ✅ Invoice management API
+- ✅ Mail Feature Added
 
 ## Contributing
 Please read [CONTRIBUTION_GUIDELINE.md](./CONTRIBUTION_GUIDELINE.md) for details on our code of conduct and the process for submitting pull requests.
