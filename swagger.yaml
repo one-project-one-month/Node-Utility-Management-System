@@ -417,6 +417,104 @@ components:
           format: date-time
           example: 2025-10-01T00:00:00.000Z
 
+    # Bill Schema
+    Bill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+        roomId:
+          type: string
+          format: uuid
+          example: d44605d3-4f8e-4057-b778-201111db860d
+        rentalFee:
+          type: number
+          example: 1200000
+        electricityFee:
+          type: number
+          example: 15000
+        waterFee:
+          type: number
+          example: 8000
+        fineFee:
+          type: number
+          example: 0
+        serviceFee:
+          type: number
+          example: 3000
+        groundFee:
+          type: number
+          example: 1000
+        carParkingFee:
+          type: number
+          example: 2000
+        wifiFee:
+          type: number
+          example: 1500
+        totalAmount:
+          type: number
+          example: 1229500
+        dueDate:
+          type: string
+          format: date-time
+          example: 2025-11-15T00:00:00.000Z
+        status:
+          type: string
+          enum: [Pending, Paid, Overdue]
+          example: Pending
+        createdAt:
+          type: string
+          format: date-time
+          example: 2025-10-15T08:00:00.000Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2025-10-15T08:00:00.000Z
+        room:
+          $ref: '#/components/schemas/Room'
+        totalUnit:
+          $ref: '#/components/schemas/TotalUnits'
+        invoice:
+          $ref: '#/components/schemas/Invoice'
+
+    # Bill with full details
+    BillWithDetails:
+      allOf:
+        - $ref: '#/components/schemas/Bill'
+        - type: object
+          properties:
+            room:
+              type: object
+              properties:
+                contract:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      contractType:
+                        $ref: '#/components/schemas/ContractType'
+            totalUnit:
+              $ref: '#/components/schemas/TotalUnits'
+            invoice:
+              type: object
+              properties:
+                receipt:
+                  $ref: '#/components/schemas/Receipt'
+
+    # Bill with tenant details
+    BillWithTenant:
+      allOf:
+        - $ref: '#/components/schemas/Bill'
+        - type: object
+          properties:
+            room:
+              type: object
+              properties:
+                tenant:
+                  $ref: '#/components/schemas/Tenant'
+
     # Pagination Schema
     PaginationMeta:
       type: object
@@ -566,6 +664,16 @@ components:
         type: string
         format: uuid
         example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+
+    BillTenantIdParam:
+      name: tenantId
+      in: path
+      description: Tenant ID (UUID) for bill operations
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
 
     RoleFilterParam:
       name: role
@@ -1230,6 +1338,110 @@ components:
                 type: string
                 example: City view with large balcony
 
+    CreateBillRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              roomId:
+                type: string
+                format: uuid
+                example: d44605d3-4f8e-4057-b778-201111db860d
+              rentalFee:
+                type: number
+                minimum: 0
+                example: 1200000
+              electricityFee:
+                type: number
+                minimum: 0
+                example: 15000
+              waterFee:
+                type: number
+                minimum: 0
+                example: 8000
+              fineFee:
+                type: number
+                minimum: 0
+                example: 0
+              serviceFee:
+                type: number
+                minimum: 0
+                example: 3000
+              groundFee:
+                type: number
+                minimum: 0
+                example: 1000
+              carParkingFee:
+                type: number
+                minimum: 0
+                example: 2000
+              wifiFee:
+                type: number
+                minimum: 0
+                example: 1500
+              totalAmount:
+                type: number
+                minimum: 0
+                example: 1229500
+              dueDate:
+                type: string
+                format: date-time
+                example: 2025-11-15T00:00:00.000Z
+
+    UpdateBillRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              roomId:
+                type: string
+                format: uuid
+                example: d44605d3-4f8e-4057-b778-201111db860d
+              rentalFee:
+                type: number
+                minimum: 0
+                example: 1250000
+              electricityFee:
+                type: number
+                minimum: 0
+                example: 16000
+              waterFee:
+                type: number
+                minimum: 0
+                example: 8500
+              fineFee:
+                type: number
+                minimum: 0
+                example: 500
+              serviceFee:
+                type: number
+                minimum: 0
+                example: 3500
+              groundFee:
+                type: number
+                minimum: 0
+                example: 1200
+              carParkingFee:
+                type: number
+                minimum: 0
+                example: 2500
+              wifiFee:
+                type: number
+                minimum: 0
+                example: 1800
+              totalAmount:
+                type: number
+                minimum: 0
+                example: 1285000
+              dueDate:
+                type: string
+                format: date-time
+                example: 2025-11-20T00:00:00.000Z
+
   # Reusable Responses
   responses:
     # Error Response
@@ -1553,6 +1765,134 @@ components:
                         type: array
                         items:
                           $ref: '#/components/schemas/Room'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    AutoGenerateBillsResponse:
+      description: Bills auto-generated successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bills auto-generated successfully
+                  content:
+                    type: object
+                    properties:
+                      data:
+                        type: string
+                        example: Bill generated for 15 rooms and sent invoices via mail
+
+    BillCreatedResponse:
+      description: Bill created successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bill created successfully
+                  content:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          bill:
+                            $ref: '#/components/schemas/Bill'
+                          invoice:
+                            $ref: '#/components/schemas/Invoice'
+                          totalUnits:
+                            $ref: '#/components/schemas/TotalUnits'
+
+    BillResponse:
+      description: Bill fetched successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bill fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/BillWithDetails'
+
+    LatestBillResponse:
+      description: Latest bill fetched successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Latest Bill fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/BillWithTenant'
+
+    PaginatedBillsResponse:
+      description: Bills fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: All Bills fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BillWithDetails'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    PaginatedBillHistoryResponse:
+      description: Bill history fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bill History fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BillWithTenant'
                       meta:
                         $ref: '#/components/schemas/PaginationMeta'
                       links:
@@ -3407,5 +3747,173 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         403:
           $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+   # Bill Auto-generation Endpoint
+  /api/v1/bills/auto-generate:
+    get:
+      tags:
+        - Bills
+      summary: Auto-generate bills for all rented rooms (Admin & Staff only)
+      description: Automatically generates bills for all rooms with status 'Rented' and sends email notifications to tenants.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          $ref: '#/components/responses/AutoGenerateBillsResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+
+  # Bill CRUD Endpoints
+  /api/v1/bills:
+    post:
+      tags:
+        - Bills
+      summary: Create a new bill (Admin & Staff only)
+      description: Create a new bill for a specific room. If fees are not provided, they will be auto-generated.
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/CreateBillRequest'
+      responses:
+        201:
+          $ref: '#/components/responses/BillCreatedResponse'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    get:
+      tags:
+        - Bills
+      summary: Get all bills (Admin & Staff only)
+      description: Retrieves a list of all bills with pagination support.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        200:
+          $ref: '#/components/responses/PaginatedBillsResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/bills/{billId}:
+    get:
+      tags:
+        - Bills
+      summary: Get bill by ID (Admin & Staff only)
+      description: Retrieve a specific bill by its ID with full details including room, contract, total units, and invoice.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BillIdParam'
+      responses:
+        200:
+          $ref: '#/components/responses/BillResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      tags:
+        - Bills
+      summary: Update bill by ID (Admin & Staff only)
+      description: Update bill information. At least one field must be provided. Total units are automatically recalculated.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BillIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateBillRequest'
+      responses:
+        200:
+          description: Bill updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Bill updated successfully
+                      content:
+                        type: object
+                        properties:
+                          data:
+                            $ref: '#/components/schemas/Bill'
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  # Tenant-specific Bill Endpoints
+  /api/v1/tenants/{tenantId}/bills/latest:
+    get:
+      tags:
+        - Bills
+      summary: Get latest bill by tenant ID (Admin, Staff & Tenant)
+      description: Retrieve the most recent bill for a specific tenant. Accessible by Admin, Staff, and the tenant themselves.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BillTenantIdParam'
+      responses:
+        200:
+          $ref: '#/components/responses/LatestBillResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/tenants/{tenantId}/bills/history:
+    get:
+      tags:
+        - Bills
+      summary: Get bill history by tenant ID (Admin, Staff & Tenant)
+      description: Retrieve all bill history for a specific tenant with pagination. Accessible by Admin, Staff, and the tenant themselves.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BillTenantIdParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        200:
+          $ref: '#/components/responses/PaginatedBillHistoryResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
         404:
           $ref: '#/components/responses/NotFoundError'
