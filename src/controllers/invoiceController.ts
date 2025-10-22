@@ -21,7 +21,7 @@ export async function createInvoiceController(
     successResponse(
       res,
       'Invoice created successfully',
-      { invoice: newInvoice },
+      { data: newInvoice },
       201
     );
   } catch (error) {
@@ -59,7 +59,7 @@ export async function updateInvoiceController(
     successResponse(
       res,
       'Bill updated successfully',
-      { invoice: updatedInvoice },
+      { data: updatedInvoice },
       200
     );
   } catch (error) {
@@ -82,7 +82,7 @@ export async function getInvoiceController(
       res,
       'Invoice fetched successfully.',
       {
-        invoice: fetchedInvoice,
+        data: fetchedInvoice,
       },
       200
     );
@@ -104,7 +104,7 @@ export async function getTenantInvoiceLatestController(
       res,
       'Invoice fetched successfully.',
       {
-        invoice: result,
+        data: result,
       },
       200
     );
@@ -112,6 +112,7 @@ export async function getTenantInvoiceLatestController(
     return next(error);
   }
 }
+
 export async function getTenantInvoiceHistoryController(
   req: Request,
   res: Response,

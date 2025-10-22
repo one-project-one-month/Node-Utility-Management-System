@@ -38,11 +38,10 @@ export const createCustomerService = async (
 };
 
 //get service history by tenantId
-export const cutomerServiceHistory = async (
-  { id, status }: TenantIdAndStatusType,
-  { page, limit }: PaginationQueryType,
-  req: Request
-) => {
+export const cutomerServiceHistory = async (req: Request) => {
+  const { id, status } = req.validatedParams as TenantIdAndStatusType;
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
+
   const skip = (page - 1) * limit;
 
   // Check if tenant exists
