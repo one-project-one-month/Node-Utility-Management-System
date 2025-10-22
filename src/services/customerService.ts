@@ -181,3 +181,16 @@ export const getCustomerServiceById = async (id: string) => {
 
   return data;
 };
+
+//delete customer service by id
+export const deleteCustomerServiceById = async (id: string) => {
+  const existingService = await prisma.customerService.findUnique({
+    where: { id },
+    select: { id: true }
+  })
+  if (!existingService) {
+    throw new NotFoundError("No customer service found.")
+  }
+
+  return await prisma.customerService.delete({ where: { id } })
+}
