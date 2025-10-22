@@ -310,7 +310,15 @@ export const getBillsByIdService = async (billId: string) => {
   const bill = await prisma.bill.findUnique({
     where: { id: billId },
     include: {
-      room: true,
+      room: {
+        include:{
+          contract:{
+            include: {
+              contractType: true
+          }
+        }
+      }
+    },
       totalUnit: true,
       invoice: {
         include: {
@@ -336,11 +344,15 @@ export const getAllBillsService = async (req: Request) => {
       take: limit,
       orderBy: { createdAt: 'desc' },
       include: {
-        room: {
-          include: {
-            tenant: true,
-          },
-        },
+      room: {
+        include:{
+          contract:{
+            include: {
+              contractType: true
+          }
+        }
+      }
+    },
         totalUnit: true,
         invoice: {
           include: {
