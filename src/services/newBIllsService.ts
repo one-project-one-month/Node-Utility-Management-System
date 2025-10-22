@@ -312,6 +312,7 @@ export const getBillsByIdService = async (billId: string) => {
     include: {
       room: {
         include: {
+          tenant: true,
           contract: {
             include: {
               contractType: true,
@@ -346,6 +347,7 @@ export const getAllBillsService = async (req: Request) => {
       include: {
         room: {
           include: {
+            tenant: true,
             contract: {
               include: {
                 contractType: true,
