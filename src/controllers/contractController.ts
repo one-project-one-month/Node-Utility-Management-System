@@ -18,7 +18,12 @@ export const createContractController = async (
 ) => {
   try {
     const contract = await createContractService(req.validatedBody);
-    successResponse(res, 'Contract created successfully', { contract }, 201);
+    successResponse(
+      res,
+      'Contract created successfully',
+      { data: contract },
+      201
+    );
   } catch (error) {
     return next(error);
   }
@@ -37,7 +42,12 @@ export const updateContractController = async (
       req.params.contractId,
       req.validatedBody
     );
-    successResponse(res, 'Contract updated successfully', { contract }, 200);
+    successResponse(
+      res,
+      'Contract updated successfully',
+      { data: contract },
+      200
+    );
   } catch (error) {
     return next(error);
   }
@@ -53,7 +63,12 @@ export const getContractByIdController = async (
 ) => {
   try {
     const contract = await getContractByIdService(req.params.contractId);
-    successResponse(res, 'Contract fetched successfully', { contract }, 200);
+    successResponse(
+      res,
+      'Contract fetched successfully',
+      { data: contract },
+      200
+    );
   } catch (error) {
     return next(error);
   }
@@ -88,7 +103,7 @@ export const getContractByTenantIdController = async (
     successResponse(
       res,
       'All Contracts fetched By tenantId successfully',
-      { contract },
+      { data: contract },
       200
     );
   } catch (error) {

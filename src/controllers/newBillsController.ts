@@ -67,7 +67,7 @@ export const getBillByIdController = async (
 ) => {
   try {
     const bill = await getBillsByIdService(req.validatedParams.billId);
-    successResponse(res, 'Bill fetched successfully', { bill }, 200);
+    successResponse(res, 'Bill fetched successfully', { data: bill }, 200);
   } catch (error) {
     return next(error);
   }

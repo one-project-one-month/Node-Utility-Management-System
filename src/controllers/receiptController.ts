@@ -38,7 +38,7 @@ export async function getReceiptByIdController(
     const receipt = await getReceiptByIdService(req.validatedParams.id);
     if (!receipt) return next(new NotFoundError('Receipt not found'));
 
-    successResponse(res, 'Receipt fetched successfully', { receipt });
+    successResponse(res, 'Receipt fetched successfully', { data: receipt });
   } catch (error) {
     return next(error);
   }
@@ -103,7 +103,7 @@ export async function getReceiptByInvoiceIdController(
       return next(new NotFoundError('Receipt not found for this invoice'));
 
     successResponse(res, 'Receipt fetched successfully', {
-      receipt: receiptByInvoiceId,
+      data: receiptByInvoiceId,
     });
   } catch (error) {
     return next(error);
@@ -121,7 +121,7 @@ export async function createReceiptController(
     successResponse(
       res,
       'Receipt created successfully',
-      { receipt: newReceipt },
+      { data: newReceipt },
       201
     );
   } catch (error) {
@@ -141,7 +141,7 @@ export async function updateReceiptController(
     );
 
     successResponse(res, 'Receipt updated successfully', {
-      receipt: updatedReceipt,
+      data: updatedReceipt,
     });
   } catch (error) {
     return next(error);

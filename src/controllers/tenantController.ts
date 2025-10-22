@@ -14,7 +14,7 @@ export async function getByIdTenantController(
 ): Promise<void> {
   try {
     const tenant = await getByIdTenantService(req.validatedParams.tenantId);
-    successResponse(res, 'Tenant gets successfull.', { tenant }, 200);
+    successResponse(res, 'Tenant gets successfull.', { data: tenant }, 200);
   } catch (error) {
     return next(error);
   }
@@ -40,7 +40,7 @@ export async function createTenantController(
 ): Promise<void> {
   try {
     const tenant = await createTenantService(req.validatedBody);
-    successResponse(res, 'Tenant created successfully', { tenant }, 201);
+    successResponse(res, 'Tenant created successfully', { data: tenant }, 201);
   } catch (error) {
     return next(error);
   }
@@ -59,7 +59,7 @@ export async function updateTenantController(
     successResponse(
       res,
       'Tenants updated successfully',
-      { tenant: updatedTenants },
+      { data: updatedTenants },
       200
     ); // Not 201
   } catch (error) {
