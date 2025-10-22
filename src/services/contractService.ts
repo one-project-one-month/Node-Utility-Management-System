@@ -21,8 +21,8 @@ export const createContractService = async (data: CreateContractSchemaType) => {
     where: { id: data.tenantId },
     select: { id: true, roomId: true },
   });
-  if (existingTenant?.roomId)
-    throw new BadRequestError('Room already has a tenant');
+  // if (existingTenant?.roomId)
+  //   throw new BadRequestError('Room already has a tenant');
   if (!existingTenant?.id) throw new NotFoundError('Tenant not found');
 
   // check contract type exists
@@ -109,11 +109,8 @@ export const getContractByIdService = async (contractId: string) => {
   return contract;
 };
 
-export const getAllContractService = async (
-  query: PaginationQueryType,
-  req: Request
-) => {
-  const { page, limit } = query;
+export const getAllContractService = async (req: Request) => {
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
   const skip = (page - 1) * limit;
 
   // Get contracts & totalCount

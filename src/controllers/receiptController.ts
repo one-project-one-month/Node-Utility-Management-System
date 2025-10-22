@@ -8,6 +8,7 @@ import {
   getReceiptByIdService,
   getReceiptByInvoiceIdService,
   getReceiptHistoriesByTenantIdService,
+  sendReceiptEmailService,
   updateReceiptService,
 } from '../services/receiptService';
 
@@ -17,7 +18,7 @@ export async function getAllReceiptsController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result = await getAllReceiptsService(req.validatedQuery, req);
+    const result = await getAllReceiptsService(req);
     if (!result || !result.data || !result.data.length)
       return next(new NotFoundError('No receipts found'));
 
@@ -37,7 +38,7 @@ export async function getReceiptByIdController(
     const receipt = await getReceiptByIdService(req.validatedParams.id);
     if (!receipt) return next(new NotFoundError('Receipt not found'));
 
-    successResponse(res, 'Receipt fetched successfully', { receipt });
+    successResponse(res, 'Receipt fetched successfully', { data: receipt });
   } catch (error) {
     return next(error);
   }
@@ -58,7 +59,7 @@ export async function getLatestReceiptByTenantIdController(
       return next(new NotFoundError('Latest receipt not found'));
 
     successResponse(res, 'Latest receipts by tenant id fetched successfully', {
-      latestReceipt,
+      data: latestReceipt,
     });
   } catch (error) {
     return next(error);
@@ -72,11 +73,7 @@ export async function getReceiptHistoriesByTenantIdController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result = await getReceiptHistoriesByTenantIdService(
-      req.validatedParams.tenantId,
-      req.validatedQuery,
-      req
-    );
+    const result = await getReceiptHistoriesByTenantIdService(req);
 
     if (!result.data || !result.data.length)
       return next(new NotFoundError('Receipt histories are not found'));
@@ -106,7 +103,7 @@ export async function getReceiptByInvoiceIdController(
       return next(new NotFoundError('Receipt not found for this invoice'));
 
     successResponse(res, 'Receipt fetched successfully', {
-      receipt: receiptByInvoiceId,
+      data: receiptByInvoiceId,
     });
   } catch (error) {
     return next(error);
@@ -124,7 +121,7 @@ export async function createReceiptController(
     successResponse(
       res,
       'Receipt created successfully',
-      { receipt: newReceipt },
+      { data: newReceipt },
       201
     );
   } catch (error) {
@@ -144,8 +141,23 @@ export async function updateReceiptController(
     );
 
     successResponse(res, 'Receipt updated successfully', {
-      receipt: updatedReceipt,
+      data: updatedReceipt,
     });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function receiptMailSenderController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    // Call the service to send the receipt email
+    const info = await sendReceiptEmailService(req.validatedBody);
+
+    successResponse(res, 'Receipt email sent successfully', { data: info });
   } catch (error) {
     return next(error);
   }

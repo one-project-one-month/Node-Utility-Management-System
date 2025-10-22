@@ -18,7 +18,7 @@ export async function getByIdOccupantController(
     const occupant = await getByIdOccupantService(
       req.validatedParams.occupantId
     );
-    successResponse(res, 'Occupant gets successfull.', { occupant }, 200);
+    successResponse(res, 'Occupant gets successfull.', { data: occupant }, 200);
   } catch (error) {
     return next(error);
   }
@@ -33,7 +33,12 @@ export async function getByTenantIdOccupantController(
     const occupants = await getByTenantIdOccupantService(
       req.validatedParams.tenantId
     );
-    successResponse(res, 'Occupants gets successfully.', { occupants }, 200);
+    successResponse(
+      res,
+      'Occupants gets successfully.',
+      { data: occupants },
+      200
+    );
   } catch (error) {
     return next(error);
   }
@@ -45,7 +50,7 @@ export async function getAllOccupantController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result = await getAllOccupantService(req.validatedQuery, req);
+    const result = await getAllOccupantService(req);
     successResponse(res, 'All occupants get successfully', result, 200);
   } catch (error) {
     return next(error);
@@ -59,7 +64,12 @@ export async function createOccupantController(
 ): Promise<void> {
   try {
     const occupant = await createOccupantService(req.validatedBody);
-    successResponse(res, 'Occupant created successfully', { occupant }, 201);
+    successResponse(
+      res,
+      'Occupant created successfully',
+      { data: occupant },
+      201
+    );
   } catch (error) {
     return next(error);
   }
@@ -78,7 +88,7 @@ export async function updateOccupantController(
     successResponse(
       res,
       'Occupant updated successfully',
-      { occupant: updatedOccupant },
+      { data: updatedOccupant },
       200
     ); // Not 201
   } catch (error) {
@@ -97,7 +107,7 @@ export async function deleteOccupantController(
       req.validatedBody
     );
     successResponse(res, 'Occupant deleted successfully', {
-      occupant: deletedOccupant,
+      data: deletedOccupant,
     });
   } catch (error) {
     return next(error);

@@ -23,7 +23,7 @@ export const createServiceController = async (
       res,
       'Customer service created successfully',
       {
-        service,
+        data: service,
       },
       201
     );
@@ -38,11 +38,7 @@ export const serviceHistoryController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await cutomerServiceHistory(
-      req.validatedParams,
-      req.validatedQuery,
-      req
-    );
+    const result = await cutomerServiceHistory(req);
     successResponse(res, 'Fetch service history successfullly', result, 200);
   } catch (error) {
     next(error);
@@ -63,7 +59,7 @@ export const updateServiceController = async (
     successResponse(
       res,
       'Customer service updated successfully',
-      { service },
+      { data: service },
       200
     );
   } catch (error) {
@@ -78,7 +74,7 @@ export const getAllServiceController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await getAllCustomerService(req.validatedQuery, req);
+    const result = await getAllCustomerService(req);
     successResponse(res, 'Fetch customer services successfully', result, 200);
   } catch (error) {
     next(error);
@@ -96,7 +92,7 @@ export const getServiceById = async (
     successResponse(
       res,
       'Fetch customer service by ID successfully',
-      { service },
+      { data: service },
       200
     );
   } catch (error) {

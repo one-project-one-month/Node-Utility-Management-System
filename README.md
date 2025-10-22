@@ -2,6 +2,18 @@
 
 A comprehensive utility management system built with Node.js, TypeScript, and PostgreSQL for managing rental properties, tenants, billing, and customer services.
 
+## Server Deployment Info
+
+This project is deployed on render. Here you can access the server:
+1. https://node-utility-management-system.onrender.com/
+2. https://node-utility-management-system-fye1.onrender.com/
+
+### Swagger Docs for endpoints
+```
+1. https://node-utility-management-system.onrender.com/docs/
+2. https://node-utility-management-system-fye1.onrender.com/docs/
+```
+
 ## Features
 - **Multi-role User Management** - Admin, Staff, and Tenant roles
 - **Property Management** - Room tracking with status and pricing
@@ -75,7 +87,24 @@ make help
 - `npm run db:migrate` – create new migration
 - `npm run db:studio` – open Prisma Studio
 - `npm run seed` – seed initial data
+- `npm run lint` – eslint check
+- `npm run lint:fix` – eslint auto fix
 ```
+
+## To get credential from Google for nodemailer auth
+🔐 1. Enable 2-Step Verification
+- Go to https://myaccount.google.com/security
+- Scroll to the "Signing in to Google" section.
+- Find 2-Step Verification.
+- Click it and set it up (if not already enabled).
+
+🔑 2. Generate an App Password
+- Scroll down to App passwords (under "Signing in to Google").
+- Click App passwords
+- Under "Select app", choose "Mail".
+- Under "Select device", choose "Other", and type something like DocumentStamp App.
+- Click Generate.
+- Copy the 16-character app password
 
 ## Getting Started
 
@@ -103,6 +132,11 @@ DATABASE_URL="postgresql://username:password@localhost:5433/mydb?schema=public"
 NODE_ENV=development
 ACCESS_TOKEN_SECRET=your_access_token_secret
 REFRESH_TOKEN_SECRET=your_refresh_token_secret
+ACCESS_TOKEN_EXPIRY=15m
+REFRESH_TOKEN_EXPIRY=7d
+MAIL_HOST=YOUR_EMAIL
+EMAIL_USER=YOUR_EMAIL
+EMAIL_PASS=GOOGLE_APP_PASSWORD
 ```
 
 ### 4. Start PostgreSQL with Docker (Optional)
@@ -113,8 +147,7 @@ docker compose up -d
 
 ### 5. Setup database
 ```bash
-npm run db:generate
-npm run db:push
+npm run db:migrate
 npm run seed   # optional, seed sample data
 ```
 
@@ -223,30 +256,6 @@ POST /api/v1/receipts
 PUT  /api/v1/receipts/:id
 ```
 
-### ❌ **Planned Endpoints**
-```
-# Rooms
-GET    /api/v1/rooms
-GET    /api/v1/rooms/:id
-POST   /api/v1/rooms
-PUT    /api/v1/rooms/:id
-DELETE /api/v1/rooms/:id
-
-# Bills
-GET    /api/v1/bills
-GET    /api/v1/bills/:id
-POST   /api/v1/bills
-PUT    /api/v1/bills/:id
-DELETE /api/v1/bills/:id
-
-# Invoices
-GET    /api/v1/invoices
-GET    /api/v1/invoices/:id
-POST   /api/v1/invoices
-PUT    /api/v1/invoices/:id
-DELETE /api/v1/invoices/:id
-```
-
 ## Development Status
 - ✅ Project setup and configuration
 - ✅ Database schema design
@@ -266,9 +275,10 @@ DELETE /api/v1/invoices/:id
 - ✅ Rate limiting (login attempts)
 - ✅ CORS configuration
 - ✅ Custom logging middleware
-- ❌ Room management API
-- ❌ Billing system API
-- ❌ Invoice management API
+- ✅ Room management API
+- ✅ Billing system API
+- ✅ Invoice management API
+- ✅ Mail Feature Added
 
 ## Contributing
 Please read [CONTRIBUTION_GUIDELINE.md](./CONTRIBUTION_GUIDELINE.md) for details on our code of conduct and the process for submitting pull requests.

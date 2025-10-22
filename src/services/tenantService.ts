@@ -144,11 +144,8 @@ export async function getByIdTenantService(tenantId: string) {
   return tenant;
 }
 
-export async function getAllTenantService(
-  query: PaginationQueryType,
-  req: Request
-) {
-  const { page, limit } = query;
+export async function getAllTenantService(req: Request) {
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
   const skip = (page - 1) * limit;
 
   const [tenants, totalCount] = await Promise.all([
@@ -160,10 +157,10 @@ export async function getAllTenantService(
         room: true,
         occupants: true,
         contract: {
-        include: {
-          contractType: true,
+          include: {
+            contractType: true,
+          },
         },
-      },
       },
     }),
     prisma.tenant.count(),

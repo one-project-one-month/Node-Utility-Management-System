@@ -20,7 +20,7 @@ export const createContractTypeController = async (
     successResponse(
       res,
       'Contract type created successfully',
-      { contractType },
+      { data: contractType },
       201
     );
   } catch (error) {
@@ -41,7 +41,7 @@ export const getAllContractTypeController = async (
     successResponse(
       res,
       'All Contract types fetched successfully',
-      { contractTypes },
+      { data: contractTypes },
       200
     );
   } catch (error) {
@@ -65,7 +65,7 @@ export const getByIdContractTypeController = async (
     successResponse(
       res,
       'Contract type retrieved successfully',
-      { contractType },
+      { data: contractType },
       200
     );
   } catch (error) {
@@ -89,7 +89,7 @@ export const updateContractTypeController = async (
     successResponse(
       res,
       'Contract type updated successfully',
-      { contractType: updatedContractType },
+      { data: updatedContractType },
       200
     );
   } catch (error) {

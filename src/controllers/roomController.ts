@@ -16,7 +16,7 @@ export async function getAllRoomsController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result = await getAllRoomsService(req.validatedQuery, req);
+    const result = await getAllRoomsService(req);
     successResponse(res, 'Rooms fetched successfully', result);
   } catch (error) {
     next(error);
@@ -34,7 +34,7 @@ export async function getRoomController(
     if (!roomId) return next(new BadRequestError(' Room ID is required'));
 
     const room = await getRoomService(roomId);
-    successResponse(res, 'Room fetched successfully', room);
+    successResponse(res, 'Room fetched successfully', { data: room });
   } catch (error) {
     return next(error);
   }
@@ -48,7 +48,7 @@ export async function createRoomController(
 ): Promise<void> {
   try {
     const room = await createRoomService(req.validatedBody);
-    successResponse(res, 'Room created successfully', room);
+    successResponse(res, 'Room created successfully', { data: room });
   } catch (error) {
     return next(error);
   }
@@ -65,7 +65,7 @@ export async function updateRoomController(
     if (!roomId) return next(new BadRequestError(' Room ID is required'));
 
     const updatedRoom = await updateRoomService(roomId, req.validatedBody);
-    successResponse(res, 'Room updated successfully', updatedRoom);
+    successResponse(res, 'Room updated successfully', { data: updatedRoom });
   } catch (error) {
     return next(error);
   }

@@ -38,11 +38,10 @@ export const createCustomerService = async (
 };
 
 //get service history by tenantId
-export const cutomerServiceHistory = async (
-  { id, status }: TenantIdAndStatusType,
-  { page, limit }: PaginationQueryType,
-  req: Request
-) => {
+export const cutomerServiceHistory = async (req: Request) => {
+  const { id, status } = req.validatedParams as TenantIdAndStatusType;
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
+
   const skip = (page - 1) * limit;
 
   // Check if tenant exists
@@ -56,12 +55,20 @@ export const cutomerServiceHistory = async (
   }
 
   //Get customer service history and total count
-  const [history, totalCount] = await Promise.all([
+  const [historyServices, totalCount] = await Promise.all([
     prisma.customerService.findMany({
       where: {
         roomId: tenant.roomId,
         status,
       },
+      include: {
+        room: {
+          select: {
+            roomNo: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
       skip,
       take: limit,
     }),
@@ -73,16 +80,24 @@ export const cutomerServiceHistory = async (
     }),
   ]);
 
-  //Check history exits
-  if (!history || history.length === 0) {
+  //Check historyServices exits
+  if (!historyServices || historyServices.length === 0) {
     throw new NotFoundError('No customer service history found.');
   }
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
+  const data = historyServices.map((service) => {
+    const { room, ...serviceWithoutRoom } = service;
+    return {
+      ...serviceWithoutRoom,
+      roomNo: room.roomNo,
+    };
+  });
+
   return {
-    data: history,
+    data,
     ...paginationData,
   };
 };
@@ -107,16 +122,20 @@ export const updateCustomerService = async (
 };
 
 //get all cutomer service
-export const getAllCustomerService = async (
-  query: PaginationQueryType,
-  req: Request
-) => {
-  const { page, limit } = query;
+export const getAllCustomerService = async (req: Request) => {
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
   const skip = (page - 1) * limit;
 
   //Get sevices and totalCount
   const [services, totalCount] = await Promise.all([
     prisma.customerService.findMany({
+      include: {
+        room: {
+          select: {
+            roomNo: true,
+          },
+        },
+      },
       skip,
       take: limit,
     }),
@@ -130,17 +149,35 @@ export const getAllCustomerService = async (
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
 
+  const data = services.map((service) => {
+    const { room, ...serviceWithoutRoom } = service;
+    return {
+      ...serviceWithoutRoom,
+      roomNo: room.roomNo,
+    };
+  });
+
   return {
-    data: services,
+    data,
     ...paginationData,
   };
 };
 
 //get customer service by id
 export const getCustomerServiceById = async (id: string) => {
-  const service = await prisma.customerService.findUnique({ where: { id } });
+  const service = await prisma.customerService.findUnique({
+    where: { id },
+    include: { room: { select: { roomNo: true } } },
+  });
   if (!service) {
     throw new NotFoundError(`No customer service found for Id-${id}`);
   }
-  return service;
+
+  const { room, ...serviceWithoutRoom } = service;
+  const data = {
+    ...serviceWithoutRoom,
+    roomNo: room.roomNo,
+  };
+
+  return data;
 };

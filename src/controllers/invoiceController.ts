@@ -21,7 +21,7 @@ export async function createInvoiceController(
     successResponse(
       res,
       'Invoice created successfully',
-      { invoice: newInvoice },
+      { data: newInvoice },
       201
     );
   } catch (error) {
@@ -35,8 +35,7 @@ export async function getAllInvoicesController(
   next: NextFunction
 ) {
   try {
-    const query = req.validatedQuery;
-    const result = await getAllInvoicesService(query, req);
+    const result = await getAllInvoicesService(req);
     if (!result.data.length) {
       return next(new NotFoundError('No found invoice.'));
     }
@@ -60,7 +59,7 @@ export async function updateInvoiceController(
     successResponse(
       res,
       'Bill updated successfully',
-      { invoice: updatedInvoice },
+      { data: updatedInvoice },
       200
     );
   } catch (error) {
@@ -83,7 +82,7 @@ export async function getInvoiceController(
       res,
       'Invoice fetched successfully.',
       {
-        invoice: fetchedInvoice,
+        data: fetchedInvoice,
       },
       200
     );
@@ -105,7 +104,7 @@ export async function getTenantInvoiceLatestController(
       res,
       'Invoice fetched successfully.',
       {
-        invoice: result,
+        data: result,
       },
       200
     );
@@ -113,15 +112,14 @@ export async function getTenantInvoiceLatestController(
     return next(error);
   }
 }
+
 export async function getTenantInvoiceHistoryController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const tenantId = req.validatedParams;
-    const query = req.validatedQuery;
-    const result = await getTenantInvoiceHistoryService(tenantId, query, req);
+    const result = await getTenantInvoiceHistoryService(req);
 
     successResponse(res, 'Invoice fetched successfully.', result, 200);
   } catch (error) {
