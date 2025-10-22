@@ -4,6 +4,7 @@ import prisma from '../lib/prismaClient';
 import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateServiceType,
+  GetAllServiceQueryType,
   TenantIdAndStatusType,
   UpdateServiceType,
 } from '../validations/serviceSchema';
@@ -123,12 +124,41 @@ export const updateCustomerService = async (
 
 //get all cutomer service
 export const getAllCustomerService = async (req: Request) => {
-  const { page, limit } = req.validatedQuery as PaginationQueryType;
+  const {
+    page,
+    limit,
+    status,
+    priorityLevel,
+    category,
+    search } = req.validatedQuery as GetAllServiceQueryType;
+
+  // skip amount per page
   const skip = (page - 1) * limit;
+
+  //prisma where clause
+  const where: any = {}
+
+  //Status filter
+  if (status) where.status = status;
+  //Category filter
+  if (category) where.category = category;
+  //Priority filter
+  if (priorityLevel) where.priorityLevel = priorityLevel;
+
+  //Serach filter
+  if (search) {
+    where.description = {
+      contains: search,
+      mode: 'insensitive',
+    }
+  }
+
+
 
   //Get sevices and totalCount
   const [services, totalCount] = await Promise.all([
     prisma.customerService.findMany({
+      where,
       include: {
         room: {
           select: {

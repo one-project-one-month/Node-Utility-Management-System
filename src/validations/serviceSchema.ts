@@ -70,6 +70,7 @@ export const GetAllServiceQuerySchema = PaginationQuerySchema.extend({
   priorityLevel: z
     .enum(PriorityLevel, "Category must be one of 'Low', 'Medium', or 'High")
     .optional(),
+  search: z.string().optional(),
 }).strict();
 
 export const IdSchema = z.object({
