@@ -262,6 +262,8 @@ GET    /api/v1/bills
 GET    /api/v1/bills/:billId
 POST   /api/v1/bills
 PUT    /api/v1/bills/:billId
+GET    /api/v1/tenants/:tenantId/bills/latest (All roles)
+GET    /api/v1/tenants/:tenantId/bills/history (All roles)
 
 # Invoices
 POST   /api/v1/invoices (Admin/Staff)
@@ -273,9 +275,11 @@ GET    /api/v1/tenants/:tenantId/invoices/history (All roles)
 
 # Customer Service
 POST /api/v1/tenants/:id/customer-services/create
+GET  /api/v1/tenants/:id/customer-services/history/:status (All roles)
 GET  /api/v1/customer-services/
 GET  /api/v1/customer-services/:id
 PUT  /api/v1/customer-services/:id
+DELETE /api/v1/customer-services/:id (Admin/Staff)
 
 # Receipts
 GET  /api/v1/receipts
