@@ -222,12 +222,14 @@ GET    /api/v1/rooms
 GET    /api/v1/rooms/:roomId
 POST   /api/v1/rooms
 PUT    /api/v1/rooms/:roomId
+DELETE /api/v1/rooms/:roomId
 
 # Tenants (Admin/Staff only)
 GET    /api/v1/tenants
 GET    /api/v1/tenants/:tenantId
 POST   /api/v1/tenants
 PUT    /api/v1/tenants/:tenantId
+GET /api/v1/tenants/:tenantId/receipts (All roles)
 
 # Occupants (Admin/Staff only)
 GET    /api/v1/occupants
@@ -280,6 +282,7 @@ GET  /api/v1/receipts
 GET  /api/v1/receipts/:id
 POST /api/v1/receipts
 PUT  /api/v1/receipts/:id
+POST /api/v1/receipts/send-mail (Admin/Staff)
 ```
 
 ## Development Status
