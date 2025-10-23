@@ -9,6 +9,8 @@ import {
   UpdateServiceType,
 } from '../validations/serviceSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
+import { Prisma } from '../../generated/prisma'
+
 
 //create customer service
 export const createCustomerService = async (
@@ -136,7 +138,7 @@ export const getAllCustomerService = async (req: Request) => {
   const skip = (page - 1) * limit;
 
   //prisma where clause
-  const where: any = {}
+  const where: Prisma.CustomerServiceWhereInput = {}
 
   //Status filter
   if (status) where.status = status;
@@ -153,8 +155,6 @@ export const getAllCustomerService = async (req: Request) => {
     }
   }
 
-
-
   //Get sevices and totalCount
   const [services, totalCount] = await Promise.all([
     prisma.customerService.findMany({
@@ -169,7 +169,7 @@ export const getAllCustomerService = async (req: Request) => {
       skip,
       take: limit,
     }),
-    prisma.customerService.count(),
+    prisma.customerService.count({ where }),
   ]);
 
   if (Array.isArray(services) && services.length === 0) {

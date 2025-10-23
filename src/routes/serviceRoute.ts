@@ -60,6 +60,7 @@ router.put(
 ); // update customer service from dashboard
 router.delete(
   '/customer-services/:id',
+  hasRole(['Admin', 'Staff']),
   validateRequestParams(IdSchema),
   deleteServiceController
 );
