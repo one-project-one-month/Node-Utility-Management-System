@@ -311,14 +311,15 @@ export const getBillsByIdService = async (billId: string) => {
     where: { id: billId },
     include: {
       room: {
-        include:{
-          contract:{
+        include: {
+          tenant: true,
+          contract: {
             include: {
-              contractType: true
-          }
-        }
-      }
-    },
+              contractType: true,
+            },
+          },
+        },
+      },
       totalUnit: true,
       invoice: {
         include: {
@@ -344,15 +345,16 @@ export const getAllBillsService = async (req: Request) => {
       take: limit,
       orderBy: { createdAt: 'desc' },
       include: {
-      room: {
-        include:{
-          contract:{
-            include: {
-              contractType: true
-          }
-        }
-      }
-    },
+        room: {
+          include: {
+            tenant: true,
+            contract: {
+              include: {
+                contractType: true,
+              },
+            },
+          },
+        },
         totalUnit: true,
         invoice: {
           include: {

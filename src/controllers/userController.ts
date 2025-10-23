@@ -38,7 +38,7 @@ export async function getUserController(
       return next(new NotFoundError('No users found'));
     }
 
-    successResponse(res, 'User fetched successfully', { user });
+    successResponse(res, 'User fetched successfully', { data: user });
   } catch (error) {
     return next(error);
   }
@@ -52,7 +52,7 @@ export async function createUserController(
   try {
     const newUser = await createUserService(req.validatedBody);
 
-    successResponse(res, 'User created successfully', { user: newUser }, 201);
+    successResponse(res, 'User created successfully', { data: newUser }, 201);
   } catch (error) {
     return next(error);
   }
@@ -70,7 +70,7 @@ export async function updateUserController(
       req.validatedBody
     );
 
-    successResponse(res, 'User updated successfully', { user: updatedUser });
+    successResponse(res, 'User updated successfully', { data: updatedUser });
   } catch (error) {
     return next(error);
   }
@@ -85,7 +85,7 @@ export async function deleteUserController(
     // Implementation for deleting a user
     const deletedUser = await deleteUserService(req.validatedParams.userId);
 
-    successResponse(res, 'User deleted successfully', { user: deletedUser });
+    successResponse(res, 'User deleted successfully', { data: deletedUser });
   } catch (error) {
     return next(error);
   }

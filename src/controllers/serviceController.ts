@@ -3,6 +3,7 @@ import { successResponse } from '../common/apiResponse';
 import {
   createCustomerService,
   cutomerServiceHistory,
+  deleteCustomerServiceById,
   getAllCustomerService,
   getCustomerServiceById,
   updateCustomerService,
@@ -23,7 +24,7 @@ export const createServiceController = async (
       res,
       'Customer service created successfully',
       {
-        service,
+        data: service,
       },
       201
     );
@@ -38,11 +39,7 @@ export const serviceHistoryController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await cutomerServiceHistory(
-      req.validatedParams,
-      req.validatedQuery,
-      req
-    );
+    const result = await cutomerServiceHistory(req);
     successResponse(res, 'Fetch service history successfullly', result, 200);
   } catch (error) {
     next(error);
@@ -63,7 +60,7 @@ export const updateServiceController = async (
     successResponse(
       res,
       'Customer service updated successfully',
-      { service },
+      { data: service },
       200
     );
   } catch (error) {
@@ -96,10 +93,29 @@ export const getServiceById = async (
     successResponse(
       res,
       'Fetch customer service by ID successfully',
-      { service },
+      { data: service },
       200
     );
   } catch (error) {
     next(error);
   }
 };
+
+//delete customer service by id
+export const deleteServiceController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const service = await deleteCustomerServiceById(req.validatedParams.id)
+    successResponse(
+      res,
+      'Delete customer service by ID successfully',
+      { data: service },
+      200
+    );
+  } catch (error) {
+    next(error)
+  }
+}

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   createServiceController,
+  deleteServiceController,
   getAllServiceController,
   getServiceById,
   serviceHistoryController,
@@ -57,5 +58,10 @@ router.put(
   validateRequestBody(UpdateCustomerServiceSchema),
   updateServiceController
 ); // update customer service from dashboard
-
+router.delete(
+  '/customer-services/:id',
+  hasRole(['Admin', 'Staff']),
+  validateRequestParams(IdSchema),
+  deleteServiceController
+);
 export default router;
