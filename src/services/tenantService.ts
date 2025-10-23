@@ -136,6 +136,11 @@ export async function getByIdTenantService(tenantId: string) {
     include: {
       room: true,
       occupants: true,
+      contract: {
+        include: {
+          contractType: true
+        }
+      }
     },
   });
   if (!tenant) {
