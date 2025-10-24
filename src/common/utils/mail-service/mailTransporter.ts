@@ -24,12 +24,25 @@ export async function mailOptionConfig(
 
 export async function mailTransporter(): Promise<nodemailer.Transporter> {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587, // Change from 465 to 587
+    secure: false, // Must be false for port 587
     auth: {
+      type: "OAuth2",
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
     },
   });
 
+  try {
+    await transporter.verify();
+    console.log('mail server connection successful');
+  } catch (error) {
+    console.error('mail verification failed:', error);
+    throw error;
+  }
+  
   return transporter;
 }
