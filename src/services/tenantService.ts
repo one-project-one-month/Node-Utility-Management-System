@@ -138,9 +138,9 @@ export async function getByIdTenantService(tenantId: string) {
       occupants: true,
       contract: {
         include: {
-          contractType: true
-        }
-      }
+          contractType: true,
+        },
+      },
     },
   });
   if (!tenant) {

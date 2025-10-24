@@ -28,7 +28,7 @@ export async function mailTransporter(): Promise<nodemailer.Transporter> {
     port: 587, // Change from 465 to 587
     secure: false, // Must be false for port 587
     auth: {
-      type: "OAuth2",
+      type: 'OAuth2',
       user: process.env.EMAIL_USER,
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -43,6 +43,6 @@ export async function mailTransporter(): Promise<nodemailer.Transporter> {
     console.error('mail verification failed:', error);
     throw error;
   }
-  
+
   return transporter;
 }
