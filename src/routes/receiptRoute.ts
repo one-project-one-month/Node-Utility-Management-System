@@ -124,7 +124,7 @@ router.get(
  *       - $ref: '#/components/parameters/InvoiceIdParam'
  *     responses:
  *       200:
- *         $ref: '#/components/responses/GetReceiptSuccess'
+ *         $ref: '#/components/responses/GetReceiptByInvoiceIdSuccess'
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *       403:

@@ -18,7 +18,12 @@
  *                     type: object
  *                     properties:
  *                       receipt:
- *                         $ref: '#/components/schemas/Receipt'
+ *                         allOf:
+ *                           - $ref: '#/components/schemas/Receipt'
+ *                           - type: object
+ *                             properties:
+ *                               invoice:
+ *                                  $ref: '#/components/schemas/Invoice'
  *                   status:
  *                     type: number
  *                     example: 201
@@ -44,7 +49,40 @@
  *                     type: object
  *                     properties:
  *                       receipt:
- *                         $ref: '#/components/schemas/Receipt'
+ *                         allOf:
+ *                           - $ref: '#/components/schemas/Receipt'
+ *                           - type: object
+ *                             properties:
+ *                               invoice:
+ *                                 $ref: '#/components/schemas/Invoice'
+ */
+
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     GetReceiptByInvoiceIdSuccess:
+ *       description: Receipt By Invoice Id fetched successfully
+ *       content:
+ *         application/json:
+ *           schema:
+ *             allOf:
+ *               - $ref: '#/components/schemas/ApiSuccessResponse'
+ *               - type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: Receipt fetched successfully
+ *                   content:
+ *                     type: object
+ *                     properties:
+ *                       receipt:
+ *                          allOf:
+ *                            - $ref: '#/components/schemas/Receipt'
+ *                            - type: object
+ *                              properties:
+ *                                invoice:
+ *                                  $ref: '#/components/schemas/Invoice'
  */
 
 /**
@@ -67,7 +105,21 @@
  *                     type: object
  *                     properties:
  *                       receipt:
- *                         $ref: '#/components/schemas/Receipt'
+ *                         allOf:
+ *                           - $ref: '#/components/schemas/Receipt'
+ *                           - type: object
+ *                             properties:
+ *                               invoice:
+ *                                 allOf:
+ *                                   - $ref: '#/components/schemas/Invoice'
+ *                                   - type: object
+ *                                     properties:
+ *                                       receiptSent:
+ *                                         type: boolean
+ *                                         example: false
+ *                                       invoiceNo:
+ *                                         type: string
+ *                                         example: INV-D96A5423
  */
 
 /**
@@ -90,7 +142,13 @@
  *                     type: object
  *                     properties:
  *                       data:
- *                         $ref: '#/components/schemas/Receipt'
+ *                         allOf:
+ *                             - $ref: '#/components/schemas/Receipt'
+ *                             - type: object
+ *                               properties:
+ *                                 invoiceId:
+ *                                   type: string
+ *                                   format: uuid
  */
 
 /**
@@ -115,7 +173,13 @@
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/Receipt'
+ *                           allOf:
+ *                             - $ref: '#/components/schemas/Receipt'
+ *                             - type: object
+ *                               properties:
+ *                                 invoiceId:
+ *                                   type: string
+ *                                   format: uuid
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:

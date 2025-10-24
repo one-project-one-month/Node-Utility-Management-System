@@ -193,7 +193,13 @@
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/Receipt'
+ *                           allOf:
+ *                             - $ref: '#/components/schemas/Receipt'
+ *                             - type: object
+ *                               properties:
+ *                                 invoiceId:
+ *                                   type: string
+ *                                   format: uuid
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:
@@ -217,7 +223,27 @@
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/TotalUnits'
+ *                           allOf:
+ *                             - $ref: '#/components/schemas/TotalUnits'
+ *                             - type: object
+ *                               properties:
+ *                                 roomId:
+ *                                   type: string
+ *                                   format: uuid
+ *                                   example: 2083c553-c2a6-4e44-9583-f5b2693e9360
+ *                                 roomNo:
+ *                                   type: integer
+ *                                   example: 416
+ *                                 floor:
+ *                                   type: integer
+ *                                   example: 4
+ *                                 roomStatus:
+ *                                   type: string
+ *                                   enum: [Available, Rented, Purchased, InMaintenance]
+ *                                   example: Rented
+ *                                 tenantName:
+ *                                   type: string
+ *                                   example: Roosevelt Gislason
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:
