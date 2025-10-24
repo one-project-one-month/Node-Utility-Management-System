@@ -7,10 +7,11 @@ import {
   UpdateBillSchemaType,
 } from '../validations/newBillsSchema';
 import { PaginationQueryType } from '../validations/paginationSchema';
-import {
-  mailOptionConfig,
-  mailTransporter,
-} from '../common/utils/mail-service/mailTransporter';
+// import {
+//   mailOptionConfig,
+//   mailTransporter,
+// } from '../common/utils/mail-service/mailTransporter';
+import { sendEmail } from '../common/utils/mail-service/resendEmailService';
 import { Bill, Invoice, Room, TotalUnits } from '../../generated/prisma';
 
 // define rate constants (cost per unit)
@@ -74,39 +75,39 @@ export const autoGenerateBillsService = async () => {
     },
   });
 
-  // Create Mail Transporter
-  const transporter = await mailTransporter();
-
   // Generate bills for each room
-  for (const room of rooms) {
-    // Reuse createBillService with minimal data
-    const { bill, invoice, totalUnits } = await createBillService({
-      roomId: room.id,
-    });
+  // for (const room of rooms) {
+  //   // Reuse createBillService with minimal data
+  //   const { bill, invoice, totalUnits } = await createBillService({
+  //     roomId: room.id,
+  //   });
 
-    // Email sending logic to notify tenants about their new bills
-    // Prepare mail body
-    const tenantName = room.tenant!.name;
-    const tenantEmail = room.tenant!.email;
-    const htmlContent = mailBodyGenerator(
-      tenantName,
-      room,
-      bill,
-      invoice,
-      totalUnits
-    );
+  //   // Email sending logic to notify tenants about their new bills
+  //   // Prepare mail body
+  //   const tenantName = room.tenant!.name;
+  //   const tenantEmail = room.tenant!.email;
 
-    // prepare mail data
-    const mailOptions = await mailOptionConfig({
-      name: tenantName,
-      to: process.env.MAIL_HOST || tenantEmail,
-      subject: 'Your Bill for this month',
-      htmlContent: htmlContent,
-    });
+  //   const htmlContent = mailBodyGenerator(
+  //     tenantName,
+  //     room,
+  //     bill,
+  //     invoice,
+  //     totalUnits
+  //   );
 
-    // Send email
-    await transporter.sendMail(mailOptions);
-  }
+  //   await sendEmail({
+  //     name: tenantName,
+  //     to: tenantEmail,
+  //     subject: 'Your Bill for this month',
+  //     htmlContent,
+  //   });
+  // }
+
+  await sendEmail({
+    name: 'Zaw Hlaing Phyo',
+    to: 'tro2233zhp@gmail.com',
+    subject: 'Your Bill for this month',
+  });
   return rooms.length;
 };
 
