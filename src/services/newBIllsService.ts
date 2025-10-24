@@ -99,7 +99,7 @@ export const autoGenerateBillsService = async () => {
     // prepare mail data
     const mailOptions = await mailOptionConfig({
       name: tenantName,
-      to: tenantEmail,
+      to: process.env.MAIL_HOST || tenantEmail,
       subject: 'Your Bill for this month',
       htmlContent: htmlContent,
     });
