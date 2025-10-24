@@ -262,6 +262,7 @@ GET    /api/v1/bills
 GET    /api/v1/bills/:billId
 POST   /api/v1/bills
 PUT    /api/v1/bills/:billId
+GET    /api/v1/bills/auto-generate
 GET    /api/v1/tenants/:tenantId/bills/latest (All roles)
 GET    /api/v1/tenants/:tenantId/bills/history (All roles)
 
