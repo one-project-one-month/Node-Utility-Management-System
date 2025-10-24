@@ -13,7 +13,7 @@ export async function mailOptionConfig(
 ): Promise<nodemailer.SendMailOptions> {
   const { name, to, message, subject, htmlContent } = mailData;
   const mailOptions = {
-    from: process.env.MAIL_HOST,
+    from: process.env.EMAIL_USER,
     to: to,
     subject: subject,
     text: `Dear ${name},\n\n${message}\n\nBest regards,\nUtility Management Team`,
