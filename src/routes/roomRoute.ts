@@ -67,14 +67,12 @@ router.post(
  *         required: false
  *         schema:
  *           type: string
- *           example: '414'
  *       - name: floor
  *         in: query
  *         description: Filter by floor number
  *         required: false
  *         schema:
  *           type: integer
- *           example: 4
  *       - $ref: '#/components/parameters/RoomStatusFilterParam'
  *     responses:
  *       200:

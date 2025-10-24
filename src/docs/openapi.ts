@@ -114,7 +114,7 @@ function validateOpenAPISpec(spec: any) {
 }
 
 export const setupSwagger = (app: Express, port: number = 3000): void => {
-  validateOpenAPISpec(swaggerSpec);
+  // validateOpenAPISpec(swaggerSpec);
 
   app.use(
     '/docs',

@@ -33,7 +33,7 @@
  *                 example: tenant1@gmail.com
  *               password:
  *                 type: string
- *                 example: tenant1
+ *                 example: tenant123
  *               role:
  *                 type: string
  *                 enum: [Tenant, Admin, Staff]

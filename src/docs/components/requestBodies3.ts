@@ -94,18 +94,6 @@
  *               description:
  *                 type: string
  *                 example: City view with balcony
- *               tenantId:
- *                 type: string
- *                 format: uuid
- *                 nullable: true
- *               billId:
- *                 type: string
- *                 format: uuid
- *                 nullable: true
- *               customerServiceId:
- *                 type: string
- *                 format: uuid
- *                 nullable: true
  *
  *     UpdateRoomRequest:
  *       required: true
