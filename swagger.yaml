@@ -2862,6 +2862,33 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         404:
           $ref: '#/components/responses/NotFoundError'
+    delete:
+      tags:
+        - Customer Services
+      summary: Delete a customer service (Admin & Staff only)
+      description: Deletes an existing customer service record.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CustomerServiceIdParam'
+      responses:
+        200:
+          description: Customer service deleted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        example: Delete customer service by ID successfully
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
 
   # Tenant Endpoints
   /api/v1/tenants:
