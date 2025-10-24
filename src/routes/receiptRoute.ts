@@ -28,14 +28,52 @@ import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
 
-// Get latest receipts by tenant id
+/**
+ * @swagger
+ * /api/v1/tenants/{tenantId}/receipts/latest:
+ *   get:
+ *     tags: [Receipts]
+ *     summary: Get latest receipt by tenant ID
+ *     description: Retrieve the most recent receipt for a specific tenant.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/TenantIdParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetLatestReceiptSuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get(
   '/tenants/:tenantId/receipts/latest',
   validateRequestParams(GetReceiptByTenantParamSchema),
   getLatestReceiptByTenantIdController
 );
 
-// Get receipts history by tenant id
+/**
+ * @swagger
+ * /api/v1/tenants/{tenantId}/receipts/history:
+ *   get:
+ *     tags: [Receipts]
+ *     summary: Get receipt history by tenant ID
+ *     description: Retrieve all receipt history for a specific tenant with pagination.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/TenantIdParam'
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/ReceiptHistorySuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get(
   '/tenants/:tenantId/receipts/history',
   validateRequestParams(GetReceiptByTenantParamSchema),
@@ -43,8 +81,29 @@ router.get(
   getReceiptHistoriesByTenantIdController
 );
 
-// Dashboard
-// Get all receipts
+/**
+ * @swagger
+ * /api/v1/receipts:
+ *   get:
+ *     tags: [Receipts]
+ *     summary: Get all receipts (Admin & Staff only)
+ *     description: Retrieves a list of all receipts with pagination and filtering support. Accessible only to Admin and Staff users.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PaymentMethodFilterParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/PaginatedReceiptsResponse'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get(
   '/receipts',
   hasRole(['Admin', 'Staff']),
@@ -52,7 +111,27 @@ router.get(
   getAllReceiptsController
 );
 
-// Get receipt by invoice Id
+/**
+ * @swagger
+ * /api/v1/receipts/invoices/{invoiceId}:
+ *   get:
+ *     tags: [Receipts]
+ *     summary: Get receipt by invoice ID (Admin & Staff only)
+ *     description: Retrieve a receipt by its associated invoice ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/InvoiceIdParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetReceiptSuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get(
   '/receipts/invoices/:invoiceId',
   hasRole(['Admin', 'Staff']),
@@ -60,7 +139,27 @@ router.get(
   getReceiptByInvoiceIdController
 );
 
-// Get receipt by receipt Id
+/**
+ * @swagger
+ * /api/v1/receipts/{id}:
+ *   get:
+ *     tags: [Receipts]
+ *     summary: Get receipt by ID (Admin & Staff only)
+ *     description: Retrieve a specific receipt by its ID. Accessible only to Admin and Staff users.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/ReceiptIdParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetReceiptSuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get(
   '/receipts/:id',
   hasRole(['Admin', 'Staff']),
@@ -68,6 +167,29 @@ router.get(
   getReceiptByIdController
 );
 
+/**
+ * @swagger
+ * /api/v1/receipts:
+ *   post:
+ *     tags: [Receipts]
+ *     summary: Create a new receipt (Admin & Staff only)
+ *     description: Create a new receipt for an invoice. Accessible only to Admin and Staff users.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/CreateReceiptRequest'
+ *     responses:
+ *       201:
+ *         $ref: '#/components/responses/CreateReceiptSuccess'
+ *       400:
+ *         $ref: '#/components/responses/BadRequestError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.post(
   '/receipts',
   hasRole(['Admin', 'Staff']),
@@ -75,6 +197,31 @@ router.post(
   createReceiptController
 );
 
+/**
+ * @swagger
+ * /api/v1/receipts/{id}:
+ *   put:
+ *     tags: [Receipts]
+ *     summary: Update receipt by ID (Admin & Staff only)
+ *     description: Update receipt information. At least one field must be provided.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/ReceiptIdParam'
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/UpdateReceiptRequest'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/UpdateReceiptSuccess'
+ *       400:
+ *         $ref: '#/components/responses/BadRequestError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.put(
   '/receipts/:id',
   hasRole(['Admin', 'Staff']),
@@ -83,7 +230,25 @@ router.put(
   updateReceiptController
 );
 
-// receipt mail send
+/**
+ * @swagger
+ * /api/v1/receipts/send-mail:
+ *   post:
+ *     tags: [Receipts]
+ *     summary: Send receipt by email
+ *     description: Send receipt by email to the tenant
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/SendReceiptRequest'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/SendReceiptEmailSuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.post(
   '/receipts/send-mail',
   hasRole(['Admin', 'Staff']),
