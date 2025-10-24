@@ -41,7 +41,19 @@
  *                     type: object
  *                     properties:
  *                       invoice:
- *                         $ref: '#/components/schemas/Invoice'
+ *                         allOf:
+ *                           - $ref: '#/components/schemas/Invoice'
+ *                           - type: object
+ *                             properties:
+ *                               receipt:
+ *                                 type: object
+ *                                 properties:
+ *                                   paymentMethod:
+ *                                     type: string
+ *                                     example: Cash
+ *                                   paidDate:
+ *                                     type: string
+ *                                     example: 2025-10-14T04:07:20.031Z
  */
 
 /**
