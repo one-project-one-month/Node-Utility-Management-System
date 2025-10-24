@@ -417,6 +417,264 @@ components:
           format: date-time
           example: 2025-10-01T00:00:00.000Z
 
+    # Bill Schema
+    Bill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+        roomId:
+          type: string
+          format: uuid
+          example: d44605d3-4f8e-4057-b778-201111db860d
+        rentalFee:
+          type: number
+          example: 1200000
+        electricityFee:
+          type: number
+          example: 15000
+        waterFee:
+          type: number
+          example: 8000
+        fineFee:
+          type: number
+          example: 0
+        serviceFee:
+          type: number
+          example: 3000
+        groundFee:
+          type: number
+          example: 1000
+        carParkingFee:
+          type: number
+          example: 2000
+        wifiFee:
+          type: number
+          example: 1500
+        totalAmount:
+          type: number
+          example: 1229500
+        dueDate:
+          type: string
+          format: date-time
+          example: 2025-11-15T00:00:00.000Z
+        createdAt:
+          type: string
+          format: date-time
+          example: 2025-10-15T08:00:00.000Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2025-10-15T08:00:00.000Z
+
+    BillWithTenant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 'af09b965-a817-433c-8a7f-ce211dd31210'
+        rentalFee:
+          type: string
+          example: '300000'
+        electricityFee:
+          type: string
+          example: '44975'
+        waterFee:
+          type: string
+          example: '8550'
+        fineFee:
+          type: string
+          nullable: true
+          example: null
+        serviceFee:
+          type: string
+          example: '5000'
+        groundFee:
+          type: string
+          example: '5000'
+        carParkingFee:
+          type: string
+          nullable: true
+          example: null
+        wifiFee:
+          type: string
+          example: '10000'
+        totalAmount:
+          type: string
+          example: '363525'
+        dueDate:
+          type: string
+          format: date-time
+          example: '2025-04-10T07:45:15.542Z'
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-04-01T05:51:15.542Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2025-04-01T09:14:15.542Z'
+        roomId:
+          type: string
+          format: uuid
+          example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+        room:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+            roomNo:
+              type: integer
+              example: 101
+            floor:
+              type: integer
+              example: 1
+            dimension:
+              type: string
+              example: '25x23 ft'
+            noOfBedRoom:
+              type: integer
+              example: 3
+            status:
+              type: string
+              example: 'Rented'
+            sellingPrice:
+              type: string
+              nullable: true
+              example: null
+            maxNoOfPeople:
+              type: integer
+              example: 4
+            description:
+              type: string
+              example: 'Spacious room with natural lighting'
+            createdAt:
+              type: string
+              format: date-time
+              example: '2025-10-22T08:35:15.064Z'
+            updatedAt:
+              type: string
+              format: date-time
+              example: '2025-10-22T08:35:15.064Z'
+            tenant:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                  example: '6d744ea8-ff9d-4fac-85c1-3b5ac3a3fff6'
+                name:
+                  type: string
+                  example: 'Sandy Corkery-Bayer'
+                email:
+                  type: string
+                  example: 'sandy.corkery-bayer83@gmail.com'
+                nrc:
+                  type: string
+                  example: '5/ABCD(N)129013'
+                phoneNo:
+                  type: string
+                  example: '+959999650870'
+                emergencyNo:
+                  type: string
+                  example: '+959586250222'
+                createdAt:
+                  type: string
+                  format: date-time
+                  example: '2025-10-22T08:35:15.291Z'
+                updatedAt:
+                  type: string
+                  format: date-time
+                  example: '2025-10-22T08:35:15.291Z'
+                roomId:
+                  type: string
+                  format: uuid
+                  example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+        totalUnit:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 'f7ef9d08-5ddf-4632-8a71-508807f0b86a'
+            electricityUnits:
+              type: string
+              example: '128.5'
+            waterUnits:
+              type: string
+              example: '57'
+            createdAt:
+              type: string
+              format: date-time
+              example: '2025-04-01T05:51:15.542Z'
+            updatedAt:
+              type: string
+              format: date-time
+              example: '2025-04-01T04:37:15.542Z'
+            billId:
+              type: string
+              format: uuid
+              example: 'af09b965-a817-433c-8a7f-ce211dd31210'
+        invoice:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: '8b273544-6393-4cfd-911b-7d91d890ca7a'
+            invoiceNo:
+              type: string
+              example: 'INV-HCI3NX9Y'
+            status:
+              type: string
+              example: 'Paid'
+            receiptSent:
+              type: boolean
+              example: false
+            billId:
+              type: string
+              format: uuid
+              example: 'af09b965-a817-433c-8a7f-ce211dd31210'
+            createdAt:
+              type: string
+              format: date-time
+              example: '2025-04-04T05:51:15.542Z'
+            updatedAt:
+              type: string
+              format: date-time
+              example: '2025-04-04T03:51:15.542Z'
+            receipt:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                  example: '100e5e36-385c-4e5d-9834-284f8b4d12d8'
+                paymentMethod:
+                  type: string
+                  example: 'Mobile_Banking'
+                paidDate:
+                  type: string
+                  format: date-time
+                  example: '2025-04-09T08:29:15.542Z'
+                createdAt:
+                  type: string
+                  format: date-time
+                  example: '2025-04-09T08:29:15.542Z'
+                updatedAt:
+                  type: string
+                  format: date-time
+                  example: '2025-04-10T10:53:15.542Z'
+                invoiceId:
+                  type: string
+                  format: uuid
+                  example: '8b273544-6393-4cfd-911b-7d91d890ca7a'
+
     # Pagination Schema
     PaginationMeta:
       type: object
@@ -566,6 +824,16 @@ components:
         type: string
         format: uuid
         example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+
+    BillTenantIdParam:
+      name: tenantId
+      in: path
+      description: Tenant ID (UUID) for bill operations
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 2ca12c44-dfc8-4c24-a5d3-5ef650b02758
 
     RoleFilterParam:
       name: role
@@ -1230,6 +1498,110 @@ components:
                 type: string
                 example: City view with large balcony
 
+    CreateBillRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              roomId:
+                type: string
+                format: uuid
+                example: d44605d3-4f8e-4057-b778-201111db860d
+              rentalFee:
+                type: number
+                minimum: 0
+                example: 1200000
+              electricityFee:
+                type: number
+                minimum: 0
+                example: 15000
+              waterFee:
+                type: number
+                minimum: 0
+                example: 8000
+              fineFee:
+                type: number
+                minimum: 0
+                example: 0
+              serviceFee:
+                type: number
+                minimum: 0
+                example: 3000
+              groundFee:
+                type: number
+                minimum: 0
+                example: 1000
+              carParkingFee:
+                type: number
+                minimum: 0
+                example: 2000
+              wifiFee:
+                type: number
+                minimum: 0
+                example: 1500
+              totalAmount:
+                type: number
+                minimum: 0
+                example: 1229500
+              dueDate:
+                type: string
+                format: date-time
+                example: 2025-11-15T00:00:00.000Z
+
+    UpdateBillRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              roomId:
+                type: string
+                format: uuid
+                example: d44605d3-4f8e-4057-b778-201111db860d
+              rentalFee:
+                type: number
+                minimum: 0
+                example: 1250000
+              electricityFee:
+                type: number
+                minimum: 0
+                example: 16000
+              waterFee:
+                type: number
+                minimum: 0
+                example: 8500
+              fineFee:
+                type: number
+                minimum: 0
+                example: 500
+              serviceFee:
+                type: number
+                minimum: 0
+                example: 3500
+              groundFee:
+                type: number
+                minimum: 0
+                example: 1200
+              carParkingFee:
+                type: number
+                minimum: 0
+                example: 2500
+              wifiFee:
+                type: number
+                minimum: 0
+                example: 1800
+              totalAmount:
+                type: number
+                minimum: 0
+                example: 1285000
+              dueDate:
+                type: string
+                format: date-time
+                example: 2025-11-20T00:00:00.000Z
+
   # Reusable Responses
   responses:
     # Error Response
@@ -1557,6 +1929,503 @@ components:
                         $ref: '#/components/schemas/PaginationMeta'
                       links:
                         $ref: '#/components/schemas/PaginationLinks'
+
+    AutoGenerateBillsResponse:
+      description: Bills auto-generated successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bills auto-generated successfully
+                  content:
+                    type: object
+                    properties:
+                      data:
+                        type: string
+                        example: Bill generated for 15 rooms and sent invoices via mail
+
+    PaginatedBillsResponse:
+      description: Bills fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: All Bills fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                              example: '5eeecfa9-d1e8-4f2a-ad84-246a640a4b01'
+                            rentalFee:
+                              type: string
+                              example: '320000'
+                            electricityFee:
+                              type: string
+                              example: '37275'
+                            waterFee:
+                              type: string
+                              example: '6090'
+                            fineFee:
+                              type: string
+                              nullable: true
+                              example: null
+                            serviceFee:
+                              type: string
+                              example: '5000'
+                            groundFee:
+                              type: string
+                              example: '5000'
+                            carParkingFee:
+                              type: string
+                              example: '14399'
+                            wifiFee:
+                              type: string
+                              example: '10000'
+                            totalAmount:
+                              type: string
+                              example: '387764'
+                            dueDate:
+                              type: string
+                              format: date-time
+                              example: '2025-10-11T03:03:15.557Z'
+                            createdAt:
+                              type: string
+                              format: date-time
+                              example: '2025-10-01T10:38:15.557Z'
+                            updatedAt:
+                              type: string
+                              format: date-time
+                              example: '2025-10-02T07:03:15.557Z'
+                            roomId:
+                              type: string
+                              format: uuid
+                              example: '1a61e3fb-fa86-43bc-b497-643bdb8f6717'
+                            room:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  example: '1a61e3fb-fa86-43bc-b497-643bdb8f6717'
+                                roomNo:
+                                  type: integer
+                                  example: 309
+                                floor:
+                                  type: integer
+                                  example: 3
+                                dimension:
+                                  type: string
+                                  example: '23x20 ft'
+                                noOfBedRoom:
+                                  type: integer
+                                  example: 2
+                                status:
+                                  type: string
+                                  example: 'Rented'
+                                sellingPrice:
+                                  type: string
+                                  nullable: true
+                                  example: null
+                                maxNoOfPeople:
+                                  type: integer
+                                  example: 2
+                                description:
+                                  type: string
+                                  example: 'Standard room with essential amenities'
+                                createdAt:
+                                  type: string
+                                  format: date-time
+                                  example: '2025-10-22T08:35:15.064Z'
+                                updatedAt:
+                                  type: string
+                                  format: date-time
+                                  example: '2025-10-22T08:35:15.064Z'
+                                contract:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                        format: uuid
+                                        example: '977a3526-3431-47d6-9f39-a1cefe16064f'
+                                      expiryDate:
+                                        type: string
+                                        format: date-time
+                                        example: '2026-12-21T09:00:15.526Z'
+                                      createdDate:
+                                        type: string
+                                        format: date-time
+                                        example: '2024-12-21T09:00:15.526Z'
+                                      updatedDate:
+                                        type: string
+                                        format: date-time
+                                        example: '2024-12-26T09:18:15.526Z'
+                                      roomId:
+                                        type: string
+                                        format: uuid
+                                        example: '1a61e3fb-fa86-43bc-b497-643bdb8f6717'
+                                      tenantId:
+                                        type: string
+                                        format: uuid
+                                        example: 'a17ee4e1-b5b4-4060-aa78-272573916ed9'
+                                      contractTypeId:
+                                        type: string
+                                        format: uuid
+                                        example: '5ed5697f-ddd5-4b26-9450-52a4fc178ad0'
+                                      contractType:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            format: uuid
+                                            example: '5ed5697f-ddd5-4b26-9450-52a4fc178ad0'
+                                          name:
+                                            type: string
+                                            example: '24 Months'
+                                          duration:
+                                            type: integer
+                                            example: 24
+                                          price:
+                                            type: string
+                                            example: '280000'
+                                          facilities:
+                                            type: array
+                                            items:
+                                              type: string
+                                              example: 'WiFi'
+                                          createdAt:
+                                            type: string
+                                            format: date-time
+                                            example: '2025-10-22T08:35:15.055Z'
+                                          updatedAt:
+                                            type: string
+                                            format: date-time
+                                            example: '2025-10-22T08:35:15.055Z'
+                            totalUnit:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  example: '7691a824-221e-47f3-a7fa-a8c60b40438e'
+                                electricityUnits:
+                                  type: string
+                                  example: '106.5'
+                                waterUnits:
+                                  type: string
+                                  example: '40.6'
+                                createdAt:
+                                  type: string
+                                  format: date-time
+                                  example: '2025-10-01T10:38:15.557Z'
+                                updatedAt:
+                                  type: string
+                                  format: date-time
+                                  example: '2025-10-03T05:10:15.557Z'
+                                billId:
+                                  type: string
+                                  format: uuid
+                                  example: '5eeecfa9-d1e8-4f2a-ad84-246a640a4b01'
+                            invoice:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  example: '63dd694f-6ae1-4cb4-87ee-35c6d5f3d834'
+                                invoiceNo:
+                                  type: string
+                                  example: 'INV-SXKGQIMS'
+                                status:
+                                  type: string
+                                  example: 'Overdue'
+                                receiptSent:
+                                  type: boolean
+                                  example: false
+                                billId:
+                                  type: string
+                                  format: uuid
+                                  example: '5eeecfa9-d1e8-4f2a-ad84-246a640a4b01'
+                                createdAt:
+                                  type: string
+                                  format: date-time
+                                  example: '2025-10-01T02:58:15.557Z'
+                                updatedAt:
+                                  type: string
+                                  format: date-time
+                                  example: '2025-10-03T05:13:15.557Z'
+                                receipt:
+                                  type: object
+                                  nullable: true
+                                  example: null
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    PaginatedBillHistoryResponse:
+      description: Bill history fetched successfully with pagination
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bill History fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BillWithTenant'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+                      links:
+                        $ref: '#/components/schemas/PaginationLinks'
+
+    LatestBillResponse:
+      description: Latest bill fetched successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiSuccessResponse'
+              - type: object
+                properties:
+                  message:
+                    type: string
+                    example: Latest Bill fetched successfully
+                  content:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: 'baa7bc8c-a796-4ebd-b47e-a29b1f6c6210'
+                          rentalFee:
+                            type: string
+                            example: '300000'
+                          electricityFee:
+                            type: string
+                            example: '5080'
+                          waterFee:
+                            type: string
+                            example: '9801'
+                          fineFee:
+                            type: string
+                            example: '1852'
+                          serviceFee:
+                            type: string
+                            example: '3175'
+                          groundFee:
+                            type: string
+                            example: '1342'
+                          carParkingFee:
+                            type: string
+                            example: '1618'
+                          wifiFee:
+                            type: string
+                            example: '1112'
+                          totalAmount:
+                            type: string
+                            example: '323980'
+                          dueDate:
+                            type: string
+                            format: date-time
+                            example: '2025-11-04T17:48:38.796Z'
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: '2025-10-23T12:35:23.011Z'
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: '2025-10-23T12:35:23.011Z'
+                          roomId:
+                            type: string
+                            format: uuid
+                            example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+                          room:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+                              roomNo:
+                                type: integer
+                                example: 101
+                              floor:
+                                type: integer
+                                example: 1
+                              dimension:
+                                type: string
+                                example: '25x23 ft'
+                              noOfBedRoom:
+                                type: integer
+                                example: 3
+                              status:
+                                type: string
+                                example: 'Rented'
+                              sellingPrice:
+                                type: string
+                                nullable: true
+                                example: null
+                              maxNoOfPeople:
+                                type: integer
+                                example: 4
+                              description:
+                                type: string
+                                example: 'Spacious room with natural lighting'
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-22T08:35:15.064Z'
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-22T08:35:15.064Z'
+                              tenant:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                    format: uuid
+                                    example: '6d744ea8-ff9d-4fac-85c1-3b5ac3a3fff6'
+                                  name:
+                                    type: string
+                                    example: 'Sandy Corkery-Bayer'
+                                  email:
+                                    type: string
+                                    example: 'sandy.corkery-bayer83@gmail.com'
+                                  nrc:
+                                    type: string
+                                    example: '5/ABCD(N)129013'
+                                  phoneNo:
+                                    type: string
+                                    example: '+959999650870'
+                                  emergencyNo:
+                                    type: string
+                                    example: '+959586250222'
+                                  createdAt:
+                                    type: string
+                                    format: date-time
+                                    example: '2025-10-22T08:35:15.291Z'
+                                  updatedAt:
+                                    type: string
+                                    format: date-time
+                                    example: '2025-10-22T08:35:15.291Z'
+                                  roomId:
+                                    type: string
+                                    format: uuid
+                                    example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+                          totalUnit:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: 'a1a2b10d-fbda-4ce3-ba79-5b91d37f2bf2'
+                              electricityUnits:
+                                type: string
+                                example: '10.16'
+                              waterUnits:
+                                type: string
+                                example: '32.67'
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-23T12:35:23.023Z'
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-23T12:35:23.023Z'
+                              billId:
+                                type: string
+                                format: uuid
+                                example: 'baa7bc8c-a796-4ebd-b47e-a29b1f6c6210'
+                          invoice:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: '700edcb5-09fe-49f7-946e-687dbbd0a29d'
+                              invoiceNo:
+                                type: string
+                                example: 'INV-A770D752'
+                              status:
+                                type: string
+                                example: 'Pending'
+                              receiptSent:
+                                type: boolean
+                                example: false
+                              billId:
+                                type: string
+                                format: uuid
+                                example: 'baa7bc8c-a796-4ebd-b47e-a29b1f6c6210'
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-23T12:35:23.033Z'
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-23T12:35:23.033Z'
+                              receipt:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                    format: uuid
+                                    example: '19b43301-ae65-4456-b522-105254a0f2a3'
+                                  paymentMethod:
+                                    type: string
+                                    example: 'Cash'
+                                  paidDate:
+                                    type: string
+                                    format: date-time
+                                    nullable: true
+                                    example: null
+                                  createdAt:
+                                    type: string
+                                    format: date-time
+                                    example: '2025-10-23T12:35:23.033Z'
+                                  updatedAt:
+                                    type: string
+                                    format: date-time
+                                    example: '2025-10-23T12:35:23.033Z'
+                                  invoiceId:
+                                    type: string
+                                    format: uuid
+                                    example: '700edcb5-09fe-49f7-946e-687dbbd0a29d'
+
+
 
 paths:
   # Authentication Endpoints
@@ -2683,6 +3552,24 @@ paths:
         404:
           $ref: '#/components/responses/NotFoundError'
 
+  /api/v1/receipts/send-mail:
+    post:
+      tags:
+        - Receipts
+      summary: Send receipt by email
+      description: Send receipt by email
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/SendReceiptRequest'
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
   # Total Units Endpoints
   /api/v1/total-units:
     get:
@@ -3407,5 +4294,527 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         403:
           $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  # Bill Auto-generation Endpoint
+  /api/v1/bills/auto-generate:
+    get:
+      tags:
+        - Bills
+      summary: Auto-generate bills for all rented rooms (Admin & Staff only)
+      description: Automatically generates bills for all rooms with status 'Rented' and sends email notifications to tenants.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          $ref: '#/components/responses/AutoGenerateBillsResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+
+  # Bill CRUD Endpoints
+  /api/v1/bills:
+    post:
+      tags:
+        - Bills
+      summary: Create a new bill (Admin & Staff only)
+      description: Create a new bill for a specific room. If fees are not provided, they will be auto-generated.
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/CreateBillRequest'
+      responses:
+        201:
+          description: Bill created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Bill created successfully
+                      content:
+                        type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: 'baa7bc8c-a796-4ebd-b47e-a29b1f6c6210'
+                              rentalFee:
+                                type: string
+                                example: '300000'
+                              electricityFee:
+                                type: string
+                                example: '5080'
+                              waterFee:
+                                type: string
+                                example: '9801'
+                              fineFee:
+                                type: string
+                                example: '1852'
+                              serviceFee:
+                                type: string
+                                example: '3175'
+                              groundFee:
+                                type: string
+                                example: '1342'
+                              carParkingFee:
+                                type: string
+                                example: '1618'
+                              wifiFee:
+                                type: string
+                                example: '1112'
+                              totalAmount:
+                                type: string
+                                example: '323980'
+                              dueDate:
+                                type: string
+                                format: date-time
+                                example: '2025-11-04T17:48:38.796Z'
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-23T12:35:23.011Z'
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-23T12:35:23.011Z'
+                              roomId:
+                                type: string
+                                format: uuid
+                                example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    get:
+      tags:
+        - Bills
+      summary: Get all bills (Admin & Staff only)
+      description: Retrieves a list of all bills with pagination support.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        200:
+          $ref: '#/components/responses/PaginatedBillsResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/bills/{billId}:
+    get:
+      tags:
+        - Bills
+      summary: Get bill by ID (Admin & Staff only)
+      description: Retrieve a specific bill by its ID with full details including room, contract, total units, and invoice.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BillIdParam'
+      responses:
+        200:
+          description: Bill details retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Bill details retrieved successfully
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: '4618962d-6992-490d-bd89-10017d9c8fb8'
+                          rentalFee:
+                            type: string
+                            example: '300000'
+                          electricityFee:
+                            type: string
+                            example: '24378'
+                          waterFee:
+                            type: string
+                            example: '11914'
+                          fineFee:
+                            type: string
+                            example: '1179'
+                          serviceFee:
+                            type: string
+                            example: '1475'
+                          groundFee:
+                            type: string
+                            example: '995'
+                          carParkingFee:
+                            type: string
+                            example: '1115'
+                          wifiFee:
+                            type: string
+                            example: '2428'
+                          totalAmount:
+                            type: string
+                            example: '343484'
+                          dueDate:
+                            type: string
+                            format: date-time
+                            example: '2025-11-04T17:48:38.796Z'
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: '2025-10-22T17:48:38.796Z'
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: '2025-10-22T17:48:38.796Z'
+                          roomId:
+                            type: string
+                            format: uuid
+                            example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+                          room:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+                              roomNo:
+                                type: integer
+                                example: 101
+                              floor:
+                                type: integer
+                                example: 1
+                              dimension:
+                                type: string
+                                example: '25x23 ft'
+                              noOfBedRoom:
+                                type: integer
+                                example: 3
+                              status:
+                                type: string
+                                example: 'Rented'
+                              sellingPrice:
+                                type: string
+                                nullable: true
+                                example: null
+                              maxNoOfPeople:
+                                type: integer
+                                example: 4
+                              description:
+                                type: string
+                                example: 'Spacious room with natural lighting'
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-22T08:35:15.064Z'
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-22T08:35:15.064Z'
+                              contract:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                      format: uuid
+                                      example: '9ae37a1f-e240-40e8-a6aa-ae2889a52fbf'
+                                    expiryDate:
+                                      type: string
+                                      format: date-time
+                                      example: '2025-04-14T03:08:15.524Z'
+                                    createdDate:
+                                      type: string
+                                      format: date-time
+                                      example: '2024-04-14T03:08:15.524Z'
+                                    updatedDate:
+                                      type: string
+                                      format: date-time
+                                      example: '2024-04-17T06:21:15.524Z'
+                                    roomId:
+                                      type: string
+                                      format: uuid
+                                      example: '91c3dcfa-7826-41c7-bd89-3e4f3735827a'
+                                    tenantId:
+                                      type: string
+                                      format: uuid
+                                      example: '6d744ea8-ff9d-4fac-85c1-3b5ac3a3fff6'
+                                    contractTypeId:
+                                      type: string
+                                      format: uuid
+                                      example: 'ed0097d0-f4f9-4889-8311-746fe4d9fbbf'
+                                    contractType:
+                                      type: object
+                                      properties:
+                                        id:
+                                          type: string
+                                          format: uuid
+                                          example: 'ed0097d0-f4f9-4889-8311-746fe4d9fbbf'
+                                        name:
+                                          type: string
+                                          example: '12 Months'
+                                        duration:
+                                          type: integer
+                                          example: 12
+                                        price:
+                                          type: string
+                                          example: '300000'
+                                        facilities:
+                                          type: array
+                                          items:
+                                            type: string
+                                            example: 'WiFi'
+                                        createdAt:
+                                          type: string
+                                          format: date-time
+                                          example: '2025-10-22T08:35:15.055Z'
+                                        updatedAt:
+                                          type: string
+                                          format: date-time
+                                          example: '2025-10-22T08:35:15.055Z'
+                          totalUnit:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: '50959636-7e7b-4453-873a-540a5419b7a0'
+                              electricityUnits:
+                                type: string
+                                example: '48.76'
+                              waterUnits:
+                                type: string
+                                example: '39.71'
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-22T17:48:38.804Z'
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-22T17:48:38.804Z'
+                              billId:
+                                type: string
+                                format: uuid
+                                example: '4618962d-6992-490d-bd89-10017d9c8fb8'
+                          invoice:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: 'f7958220-6491-46e9-8987-3dc6df44d112'
+                              invoiceNo:
+                                type: string
+                                example: 'INV-D96A5423'
+                              status:
+                                type: string
+                                example: 'Pending'
+                              receiptSent:
+                                type: boolean
+                                example: false
+                              billId:
+                                type: string
+                                format: uuid
+                                example: '4618962d-6992-490d-bd89-10017d9c8fb8'
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-22T17:48:38.813Z'
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-22T17:48:38.813Z'
+                              receipt:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                    format: uuid
+                                    example: 'c921eedb-46e3-44ab-a91d-6ad652ac8c71'
+                                  paymentMethod:
+                                    type: string
+                                    example: 'Cash'
+                                  paidDate:
+                                    type: string
+                                    format: date-time
+                                    nullable: true
+                                    example: null
+                                  createdAt:
+                                    type: string
+                                    format: date-time
+                                    example: '2025-10-22T17:48:38.813Z'
+                                  updatedAt:
+                                    type: string
+                                    format: date-time
+                                    example: '2025-10-22T17:48:38.813Z'
+                                  invoiceId:
+                                    type: string
+                                    format: uuid
+                                    example: 'f7958220-6491-46e9-8987-3dc6df44d112'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      tags:
+        - Bills
+      summary: Update bill by ID (Admin & Staff only)
+      description: Update bill information. At least one field must be provided. Total units are automatically recalculated.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BillIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateBillRequest'
+      responses:
+        200:
+          description: Bill updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Bill updated successfully
+                      content:
+                        type: object
+                        properties:
+                          data:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: '4618962d-6992-490d-bd89-10017d9c8fb8'
+                              rentalFee:
+                                type: string
+                                example: '300000'
+                              electricityFee:
+                                type: string
+                                example: '24378'
+                              waterFee:
+                                type: string
+                                example: '11914'
+                              fineFee:
+                                type: string
+                                example: '1179'
+                              serviceFee:
+                                type: string
+                                example: '1475'
+                              groundFee:
+                                type: string
+                                example: '995'
+                              carParkingFee:
+                                type: string
+                                example: '1115'
+                              wifiFee:
+                                type: string
+                                example: '2000'
+                              totalAmount:
+                                type: string
+                                example: '343056'
+                              dueDate:
+                                type: string
+                                format: date-time
+                                example: '2025-11-04T17:48:38.796Z'
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-22T17:48:38.796Z'
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: '2025-10-23T12:31:23.156Z'
+                              roomId:
+                                type: string
+                                format: uuid
+                                example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+
+        400:
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiErrorResponse'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: At least one field must be provided for update
+                      status:
+                        type: integer
+                        example: 400
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  # Tenant-specific Bill Endpoints
+  /api/v1/tenants/{tenantId}/bills/latest:
+    get:
+      tags:
+        - Bills
+      summary: Get latest bill by tenant ID (Admin, Staff & Tenant)
+      description: Retrieve the most recent bill for a specific tenant. Accessible by Admin, Staff, and the tenant themselves.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BillTenantIdParam'
+      responses:
+        200:
+          $ref: '#/components/responses/LatestBillResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/tenants/{tenantId}/bills/history:
+    get:
+      tags:
+        - Bills
+      summary: Get bill history by tenant ID (Admin, Staff & Tenant)
+      description: Retrieve all bill history for a specific tenant with pagination. Accessible by Admin, Staff, and the tenant themselves.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/BillTenantIdParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        200:
+          $ref: '#/components/responses/PaginatedBillHistoryResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
         404:
           $ref: '#/components/responses/NotFoundError'
