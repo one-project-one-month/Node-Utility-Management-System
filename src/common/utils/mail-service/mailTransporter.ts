@@ -13,7 +13,7 @@ export async function mailOptionConfig(
 ): Promise<nodemailer.SendMailOptions> {
   const { name, to, message, subject, htmlContent } = mailData;
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: "nestflowums@resend.dev",
     to: to,
     subject: subject,
     text: `Dear ${name},\n\n${message}\n\nBest regards,\nUtility Management Team`,
@@ -24,23 +24,20 @@ export async function mailOptionConfig(
 
 export async function mailTransporter(): Promise<nodemailer.Transporter> {
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587, // Change from 465 to 587
-    secure: false, // Must be false for port 587
+    host: 'smtp.resend.com',
+    secure: true,           
+    port: 465,              
     auth: {
-      type: 'OAuth2',
-      user: process.env.EMAIL_USER,
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+      user: 'resend',                      
+      pass: process.env.RESEND_API_KEY,
     },
   });
 
   try {
     await transporter.verify();
-    console.log('mail server connection successful');
+    console.log('SMTP server connection successful');
   } catch (error) {
-    console.error('mail verification failed:', error);
+    console.error('SMTP verification failed:', error);
     throw error;
   }
 
