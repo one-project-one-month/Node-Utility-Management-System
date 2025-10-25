@@ -13,7 +13,7 @@ export async function mailOptionConfig(
 ): Promise<nodemailer.SendMailOptions> {
   const { name, to, message, subject, htmlContent } = mailData;
   const mailOptions = {
-    from: "nestflowums@resend.dev",
+    from: 'nestflowums@resend.dev',
     to: to,
     subject: subject,
     text: `Dear ${name},\n\n${message}\n\nBest regards,\nUtility Management Team`,
@@ -25,10 +25,10 @@ export async function mailOptionConfig(
 export async function mailTransporter(): Promise<nodemailer.Transporter> {
   const transporter = nodemailer.createTransport({
     host: 'smtp.resend.com',
-    secure: true,           
-    port: 465,              
+    secure: true,
+    port: 465,
     auth: {
-      user: 'resend',                      
+      user: 'resend',
       pass: process.env.RESEND_API_KEY,
     },
   });
