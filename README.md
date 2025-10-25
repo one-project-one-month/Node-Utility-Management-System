@@ -91,21 +91,6 @@ make help
 - `npm run lint:fix` – eslint auto fix
 ```
 
-## To get credential from Google for nodemailer auth
-🔐 1. Enable 2-Step Verification
-- Go to https://myaccount.google.com/security
-- Scroll to the "Signing in to Google" section.
-- Find 2-Step Verification.
-- Click it and set it up (if not already enabled).
-
-🔑 2. Generate an App Password
-- Scroll down to App passwords (under "Signing in to Google").
-- Click App passwords
-- Under "Select app", choose "Mail".
-- Under "Select device", choose "Other", and type something like DocumentStamp App.
-- Click Generate.
-- Copy the 16-character app password
-
 ## Getting Started
 
 ### 1. Clone the repo
