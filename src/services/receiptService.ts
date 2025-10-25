@@ -313,7 +313,7 @@ export async function sendReceiptEmailService(
       <li><strong>Paid Date:</strong> ${receipt.paidDate?.toDateString()}</li>
     </ul>
     <p>Thank you for your prompt payment. If you have any questions, feel free to contact us.</p>
-    <p>Best regards,<br/>Utility Management Team</p>
+    <p>Best regards,<br/>Nest Flow Team</p>
   `;
 
   // prepare mail data

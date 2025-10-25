@@ -58,7 +58,7 @@ const mailBodyGenerator = (
         <li><strong>Total Amount:</strong> ${bill.totalAmount} Kyats</li>
       </ul>
       <p>If you have any questions, feel free to contact us.</p>
-      <p>Best regards,<br/>Nest Flow</p>
+      <p>Best regards,<br/>Nest Flow Team</p>
     `;
   return htmlContent;
 };
