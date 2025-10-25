@@ -9,8 +9,8 @@ import {
 import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   mailOptionConfig,
-  mailTransporter,
-} from '../common/utils/mail-service/mailTransporter';
+  mailSend,
+} from '../common/utils/mail-service/resendMailTransporter';
 import { Bill, Invoice, Room, TotalUnits } from '../../generated/prisma';
 
 // define rate constants (cost per unit)
@@ -58,7 +58,7 @@ const mailBodyGenerator = (
         <li><strong>Total Amount:</strong> ${bill.totalAmount} Kyats</li>
       </ul>
       <p>If you have any questions, feel free to contact us.</p>
-      <p>Best regards,<br/>Utility Management Team</p>
+      <p>Best regards,<br/>Nest Flow</p>
     `;
   return htmlContent;
 };
@@ -73,9 +73,6 @@ export const autoGenerateBillsService = async () => {
       tenant: true,
     },
   });
-
-  // Create Mail Transporter
-  const transporter = await mailTransporter();
 
   // Generate bills for each room
   for (const room of rooms) {
@@ -97,7 +94,7 @@ export const autoGenerateBillsService = async () => {
     );
 
     // prepare mail data
-    const mailOptions = await mailOptionConfig({
+    const mailOptions = mailOptionConfig({
       name: tenantName,
       to: process.env.MAIL_HOST || tenantEmail,
       subject: 'Your Bill for this month',
@@ -105,7 +102,7 @@ export const autoGenerateBillsService = async () => {
     });
 
     // Send email
-    await transporter.sendMail(mailOptions);
+    await mailSend(mailOptions);
   }
   return rooms.length;
 };

@@ -1,8 +1,8 @@
 import { Request } from 'express';
 import {
   mailOptionConfig,
-  mailTransporter,
-} from '../common/utils/mail-service/mailTransporter';
+  mailSend,
+} from '../common/utils/mail-service/resendMailTransporter';
 import { Prisma } from '../../generated/prisma';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import { generatePaginationData } from '../common/utils/paginationHelper';
@@ -323,10 +323,9 @@ export async function sendReceiptEmailService(
     subject: 'Your Receipt for this month',
     htmlContent: htmlContent,
   });
-  const transporter = await mailTransporter();
 
   // Send email
-  const info = await transporter.sendMail(mailOptions);
+  const info = await mailSend(mailOptions);
 
   // Update invoice to mark receipt as sent
   await prisma.invoice.update({
@@ -336,9 +335,6 @@ export async function sendReceiptEmailService(
 
   // Return payload for response
   return {
-    messageId: info.messageId,
-    envelope: info.envelope,
-    messageTime: info.messageTime,
-    messageSize: info.messageSize,
+    messageId: info?.id,
   };
 }
