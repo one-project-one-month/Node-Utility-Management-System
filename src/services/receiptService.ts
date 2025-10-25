@@ -319,8 +319,8 @@ export async function sendReceiptEmailService(
   // prepare mail data
   const mailOptions = await mailOptionConfig({
     name: tenantName,
-    to: tenantEmail,
-    subject: 'Your Receipt from Utility Management System for this month',
+    to: process.env.MAIL_HOST || tenantEmail,
+    subject: 'Your Receipt for this month',
     htmlContent: htmlContent,
   });
   const transporter = await mailTransporter();
