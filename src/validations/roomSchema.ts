@@ -9,13 +9,11 @@ export const RoomIdSchema = z.object({
 
 export const CreateRoomSchema = z.object({
   roomNo: z
-    .number()
     .int()
     .min(1, 'Room number is required and choose a positive number in the list'),
-  floor: z.number().int(),
+  floor: z.int(),
   dimension: z.string(),
   noOfBedRoom: z
-    .number()
     .int()
     .min(1, 'Number of bedrooms is required and must be at least 1'),
   status: z.enum(
@@ -24,7 +22,6 @@ export const CreateRoomSchema = z.object({
   ),
   sellingPrice: z.number().optional(), // Prisma Decimal maps to number in TS
   maxNoOfPeople: z
-    .number()
     .int()
     .min(1, 'Maximum number of people is required and must be at least 1'),
   description: z.string().optional().nullable(),

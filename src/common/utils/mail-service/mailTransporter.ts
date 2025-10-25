@@ -40,6 +40,6 @@ export async function mailTransporter(): Promise<nodemailer.Transporter> {
     console.error('SMTP verification failed:', error);
     throw error;
   }
-  
+
   return transporter;
 }
