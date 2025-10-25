@@ -214,6 +214,7 @@ export async function getTenantInvoiceHistoryService(req: Request) {
         status: true,
         billId: true,
         invoiceNo: true,
+        receiptSent: true,
         createdAt: true,
         updatedAt: true,
       },

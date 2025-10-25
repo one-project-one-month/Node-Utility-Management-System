@@ -108,7 +108,7 @@ export const deleteServiceController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const service = await deleteCustomerServiceById(req.validatedParams.id)
+    const service = await deleteCustomerServiceById(req.validatedParams.id);
     successResponse(
       res,
       'Delete customer service by ID successfully',
@@ -116,6 +116,6 @@ export const deleteServiceController = async (
       200
     );
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};

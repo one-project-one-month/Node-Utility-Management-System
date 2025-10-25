@@ -217,11 +217,25 @@ POST   /api/v1/users
 PUT    /api/v1/users/:userId
 DELETE /api/v1/users/:userId
 
+# Rooms (Admin/Staff only)
+GET    /api/v1/rooms
+GET    /api/v1/rooms/:roomId
+POST   /api/v1/rooms
+PUT    /api/v1/rooms/:roomId
+DELETE /api/v1/rooms/:roomId
+
 # Tenants (Admin/Staff only)
 GET    /api/v1/tenants
 GET    /api/v1/tenants/:tenantId
 POST   /api/v1/tenants
 PUT    /api/v1/tenants/:tenantId
+GET /api/v1/tenants/:tenantId/receipts (All roles)
+
+# Occupants (Admin/Staff only)
+GET    /api/v1/occupants
+GET    /api/v1/occupants/:occupantId
+POST   /api/v1/occupants
+PUT    /api/v1/occupants/:occupantId
 
 # Contract Types (Admin/Staff only)
 GET    /api/v1/contract-types
@@ -243,17 +257,37 @@ POST   /api/v1/total-units
 PUT    /api/v1/total-units/:id
 DELETE /api/v1/total-units/:id
 
+# Bills (Admin/Staff only)
+GET    /api/v1/bills
+GET    /api/v1/bills/:billId
+POST   /api/v1/bills
+PUT    /api/v1/bills/:billId
+GET    /api/v1/bills/auto-generate
+GET    /api/v1/tenants/:tenantId/bills/latest (All roles)
+GET    /api/v1/tenants/:tenantId/bills/history (All roles)
+
+# Invoices
+POST   /api/v1/invoices (Admin/Staff)
+GET    /api/v1/invoices (Admin/Staff)
+GET    /api/v1/invoices/:invoiceId (Admin/Staff)
+PUT    /api/v1/invoices/:invoiceId (Admin/Staff)
+GET    /api/v1/tenants/:tenantId/invoices/latest (All roles)
+GET    /api/v1/tenants/:tenantId/invoices/history (All roles)
+
 # Customer Service
 POST /api/v1/tenants/:id/customer-services/create
+GET  /api/v1/tenants/:id/customer-services/history/:status (All roles)
 GET  /api/v1/customer-services/
 GET  /api/v1/customer-services/:id
 PUT  /api/v1/customer-services/:id
+DELETE /api/v1/customer-services/:id (Admin/Staff)
 
 # Receipts
 GET  /api/v1/receipts
 GET  /api/v1/receipts/:id
 POST /api/v1/receipts
 PUT  /api/v1/receipts/:id
+POST /api/v1/receipts/send-mail (Admin/Staff)
 ```
 
 ## Development Status

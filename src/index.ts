@@ -6,7 +6,7 @@ import { deployedUrls } from './common/auth/allowedOrigins';
 import corsOptions from './common/auth/corsOptions';
 import { crediential } from './common/auth/credential';
 import { customLogger } from './common/utils/customLogger';
-import swaggerDocs from './config/swagger';
+import { setupSwagger } from './docs/openapi';
 import { hasRole, isAuthenticated } from './middlewares/authMiddleware';
 import { errorHandler } from './middlewares/errorHandlingMiddleware';
 
@@ -40,7 +40,7 @@ app.use(crediential);
 app.use(cors(corsOptions));
 
 // API DOCUMENTATION
-swaggerDocs(app, port || 3000);
+setupSwagger(app, Number(port) || 3000);
 
 // ROUTES
 app.use('/api/v1/auth', authRoute);

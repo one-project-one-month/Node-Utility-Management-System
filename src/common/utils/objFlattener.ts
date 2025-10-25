@@ -2,6 +2,7 @@ export const TOTAL_UNIT_FLATTENER_CONFIG = {
   id: 'id',
   electricityUnits: 'electricityUnits',
   waterUnits: 'waterUnits',
+  updatedAt: 'updatedAt',
   createdAt: 'createdAt',
   billId: 'billId',
   roomId: 'bill.room.id',
