@@ -143,8 +143,8 @@ async function createTenantsAndUsersBatch(
     const name = faker.person.fullName();
     const email = `${name.toLowerCase().replace(/\s+/g, '.')}${faker.number.int({ min: 1, max: 99 })}@gmail.com`;
     const nrc = `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`;
-    const phoneNo = `+959${faker.string.numeric(9)}`;
-    const emergencyNo = `+959${faker.string.numeric(9)}`;
+    const phoneNo = `09${faker.string.numeric(9)}`;
+    const emergencyNo = `09${faker.string.numeric(9)}`;
 
     tenantData.push({
       name,
