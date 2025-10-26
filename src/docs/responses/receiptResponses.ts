@@ -17,7 +17,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       receipt:
+ *                       data:
  *                         allOf:
  *                           - $ref: '#/components/schemas/Receipt'
  *                           - type: object
@@ -48,7 +48,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       receipt:
+ *                       data:
  *                         allOf:
  *                           - $ref: '#/components/schemas/Receipt'
  *                           - type: object
@@ -76,7 +76,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       receipt:
+ *                       data:
  *                          allOf:
  *                            - $ref: '#/components/schemas/Receipt'
  *                            - type: object

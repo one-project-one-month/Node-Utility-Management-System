@@ -17,7 +17,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       invoice:
+ *                       data:
  *                         $ref: '#/components/schemas/Invoice'
  */
 
@@ -63,7 +63,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       invoice:
+ *                       data:
  *                         $ref: '#/components/schemas/Invoice'
  */
 

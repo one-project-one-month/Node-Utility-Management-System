@@ -17,7 +17,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       contractType:
+ *                       data:
  *                         $ref: '#/components/schemas/ContractType'
  *                   status:
  *                     type: number
@@ -43,7 +43,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       contractType:
+ *                       data:
  *                         $ref: '#/components/schemas/ContractType'
  */
 
@@ -66,7 +66,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       contractType:
+ *                       data:
  *                         $ref: '#/components/schemas/ContractType'
  */
 

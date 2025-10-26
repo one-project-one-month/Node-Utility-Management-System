@@ -66,7 +66,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       user:
+ *                       data:
  *                         oneOf:
  *                           - $ref: '#/components/schemas/AdminUser'
  *                           - $ref: '#/components/schemas/TenantUser'
@@ -87,7 +87,9 @@
  *                 properties:
  *                   content:
  *                     type: object
- *                     $ref: '#/components/schemas/TenantUser'
+ *                     properties:
+ *                       data:
+ *                         $ref: '#/components/schemas/TenantUser'
  *                   message:
  *                     type: string
  *                     example: User deleted successfully

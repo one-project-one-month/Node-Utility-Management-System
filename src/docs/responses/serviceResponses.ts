@@ -16,7 +16,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       service:
+ *                       data:
  *                         $ref: '#/components/schemas/CustomerService'
  *                   status:
  *                     type: integer
@@ -42,7 +42,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       service:
+ *                       data:
  *                         $ref: '#/components/schemas/CustomerService'
  */
 
@@ -63,7 +63,7 @@
  *                     example: Customer service updated successfully
  *                   content:
  *                     properties:
- *                       service:
+ *                       data:
  *                         $ref: '#/components/schemas/CustomerService'
  */
 
