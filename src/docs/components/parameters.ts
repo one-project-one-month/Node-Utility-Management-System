@@ -233,12 +233,16 @@
  *     MonthParam:
  *       name: month
  *       in: query
- *       description: Filter by month (3-letter abbreviation)
+ *       description: |-
+ *         Filter by month. Accepts:
+ *         - Full names (January, February, etc.)
+ *         - Partial names (Janu, Febr, Octo, etc.)
+ *         - 3-letter abbreviations (Jan, Feb, Oct, etc.)
+ *         - Case insensitive
  *       required: false
  *       schema:
  *         type: string
- *         enum: [Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec]
- *         example: Oct
+ *         example: October
  *
  *     YearParam:
  *       name: year
