@@ -4,10 +4,12 @@ import prisma from '../lib/prismaClient';
 import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateServiceType,
+  GetAllServiceQueryType,
   TenantIdAndStatusType,
   UpdateServiceType,
 } from '../validations/serviceSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
+import { Prisma } from '../../generated/prisma';
 
 //create customer service
 export const createCustomerService = async (
@@ -123,12 +125,34 @@ export const updateCustomerService = async (
 
 //get all cutomer service
 export const getAllCustomerService = async (req: Request) => {
-  const { page, limit } = req.validatedQuery as PaginationQueryType;
+  const { page, limit, status, priorityLevel, category, search } =
+    req.validatedQuery as GetAllServiceQueryType;
+
+  // skip amount per page
   const skip = (page - 1) * limit;
+
+  //prisma where clause
+  const where: Prisma.CustomerServiceWhereInput = {};
+
+  //Status filter
+  if (status) where.status = status;
+  //Category filter
+  if (category) where.category = category;
+  //Priority filter
+  if (priorityLevel) where.priorityLevel = priorityLevel;
+
+  //Serach filter
+  if (search) {
+    where.description = {
+      contains: search,
+      mode: 'insensitive',
+    };
+  }
 
   //Get sevices and totalCount
   const [services, totalCount] = await Promise.all([
     prisma.customerService.findMany({
+      where,
       include: {
         room: {
           select: {
@@ -139,7 +163,7 @@ export const getAllCustomerService = async (req: Request) => {
       skip,
       take: limit,
     }),
-    prisma.customerService.count(),
+    prisma.customerService.count({ where }),
   ]);
 
   if (Array.isArray(services) && services.length === 0) {
@@ -180,4 +204,17 @@ export const getCustomerServiceById = async (id: string) => {
   };
 
   return data;
+};
+
+//delete customer service by id
+export const deleteCustomerServiceById = async (id: string) => {
+  const existingService = await prisma.customerService.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+  if (!existingService) {
+    throw new NotFoundError('No customer service found.');
+  }
+
+  return await prisma.customerService.delete({ where: { id } });
 };

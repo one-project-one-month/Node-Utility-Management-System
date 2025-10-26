@@ -3,6 +3,7 @@ import { successResponse } from '../common/apiResponse';
 import {
   createCustomerService,
   cutomerServiceHistory,
+  deleteCustomerServiceById,
   getAllCustomerService,
   getCustomerServiceById,
   updateCustomerService,
@@ -92,6 +93,25 @@ export const getServiceById = async (
     successResponse(
       res,
       'Fetch customer service by ID successfully',
+      { data: service },
+      200
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+//delete customer service by id
+export const deleteServiceController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const service = await deleteCustomerServiceById(req.validatedParams.id);
+    successResponse(
+      res,
+      'Delete customer service by ID successfully',
       { data: service },
       200
     );

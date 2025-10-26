@@ -48,6 +48,12 @@ export async function getAllUsersService(req: Request) {
             id: true,
             name: true,
             roomId: true,
+            room: {
+              select: {
+                roomNo: true,
+                floor: true,
+              },
+            },
           },
         },
       },
@@ -80,6 +86,19 @@ export async function getUserService(userId: string) {
       createdAt: true,
       updatedAt: true,
       // Exclude password from results
+      tenant: {
+        select: {
+          id: true,
+          name: true,
+          roomId: true,
+          room: {
+            select: {
+              roomNo: true,
+              floor: true,
+            },
+          },
+        },
+      },
     },
   });
 }

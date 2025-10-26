@@ -112,7 +112,7 @@ export async function deleteOccupantService(
   }
 
   // Delete occupant
-  await prisma.occupant.delete({
+  return await prisma.occupant.delete({
     where: { id: occupantId },
   });
 }
