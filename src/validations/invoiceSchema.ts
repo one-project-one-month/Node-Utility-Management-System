@@ -2,21 +2,6 @@ import * as z from 'zod';
 import { InvoiceStatus } from '../../generated/prisma';
 import { PaginationQuerySchema } from './paginationSchema';
 
-const MonthEnum = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-] as const;
-
 export const GetTenantInvoiceParamSchema = z.object({
   tenantId: z.uuid({ version: 'v4' }),
 });
@@ -31,12 +16,7 @@ export const GetInvoiceQuerySchema = PaginationQuerySchema.extend({
       error: "Status must be one of 'Pending', 'Paid', 'Partial', 'Overdue'",
     })
     .optional(),
-  month: z
-    .enum(MonthEnum, {
-      error:
-        "Month must be one of 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'",
-    })
-    .optional(),
+  month: z.string().optional(),
   year: z
     .string()
     .length(4, { message: 'Year must be exactly 4 digits' })
