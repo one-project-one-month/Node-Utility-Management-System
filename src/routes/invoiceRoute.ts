@@ -61,6 +61,9 @@ router.post(
  *     parameters:
  *       - $ref: '#/components/parameters/PageParam'
  *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/InvoiceStatusParam'
+ *       - $ref: '#/components/parameters/MonthParam'
+ *       - $ref: '#/components/parameters/YearParam'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/PaginatedInvoicesResponse'
@@ -173,6 +176,9 @@ router.get(
  *       - $ref: '#/components/parameters/TenantIdParam'
  *       - $ref: '#/components/parameters/PageParam'
  *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/InvoiceStatusParam'
+ *       - $ref: '#/components/parameters/MonthParam'
+ *       - $ref: '#/components/parameters/YearParam'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/InvoiceHistorySuccess'

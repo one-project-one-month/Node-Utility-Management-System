@@ -8,119 +8,122 @@
  *         id:
  *           type: string
  *           format: uuid
- *           example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+ *           example: c8339a18-4f14-4fbd-b756-78516c97e8ea
  *         roomId:
  *           type: string
  *           format: uuid
- *           example: d44605d3-4f8e-4057-b778-201111db860d
+ *           example: 91c3dcfa-7826-41c7-b8d0-3e4f3735827a
  *         rentalFee:
- *           type: number
- *           example: 1200000
+ *           type: string
+ *           example: "300000"
  *         electricityFee:
- *           type: number
- *           example: 15000
+ *           type: string
+ *           example: "29604"
  *         waterFee:
- *           type: number
- *           example: 8000
+ *           type: string
+ *           example: "12428"
  *         fineFee:
- *           type: number
- *           example: 0
+ *           type: string
+ *           example: "87"
  *         serviceFee:
- *           type: number
- *           example: 3000
+ *           type: string
+ *           example: "2602"
  *         groundFee:
- *           type: number
- *           example: 1000
+ *           type: string
+ *           example: "1115"
  *         carParkingFee:
- *           type: number
- *           example: 2000
+ *           type: string
+ *           example: "1745"
  *         wifiFee:
- *           type: number
- *           example: 1500
+ *           type: string
+ *           example: "2024"
  *         totalAmount:
- *           type: number
- *           example: 1229500
+ *           type: string
+ *           example: "349605"
  *         dueDate:
  *           type: string
  *           format: date-time
- *           example: 2025-11-15T00:00:00.000Z
+ *           example: 2025-11-04T17:48:38.796Z
  *         createdAt:
  *           type: string
  *           format: date-time
- *           example: 2025-10-15T08:00:00.000Z
+ *           example: 2025-10-24T15:17:56.372Z
  *         updatedAt:
  *           type: string
  *           format: date-time
- *           example: 2025-10-15T08:00:00.000Z
- *
+ *           example: 2025-10-24T15:17:56.372Z
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
  *     BillWithTenant:
  *       type: object
  *       properties:
  *         id:
  *           type: string
  *           format: uuid
- *           example: 'af09b965-a817-433c-8a7f-ce211dd31210'
+ *           example: 'fc917030-c0c8-47dd-a88e-1a04e0d8cc57'
  *         rentalFee:
  *           type: string
  *           example: '300000'
  *         electricityFee:
  *           type: string
- *           example: '44975'
+ *           example: '18162'
  *         waterFee:
  *           type: string
- *           example: '8550'
+ *           example: '8600'
  *         fineFee:
  *           type: string
- *           nullable: true
- *           example: null
+ *           example: '1580'
  *         serviceFee:
  *           type: string
- *           example: '5000'
+ *           example: '4386'
  *         groundFee:
  *           type: string
- *           example: '5000'
+ *           example: '1002'
  *         carParkingFee:
  *           type: string
- *           nullable: true
- *           example: null
+ *           example: '1038'
  *         wifiFee:
  *           type: string
- *           example: '10000'
+ *           example: '1155'
  *         totalAmount:
  *           type: string
- *           example: '363525'
+ *           example: '335923'
  *         dueDate:
  *           type: string
  *           format: date-time
- *           example: '2025-04-10T07:45:15.542Z'
+ *           example: '2025-10-22T16:32:09.653Z'
  *         createdAt:
  *           type: string
  *           format: date-time
- *           example: '2025-04-01T05:51:15.542Z'
+ *           example: '2025-10-24T16:32:09.654Z'
  *         updatedAt:
  *           type: string
  *           format: date-time
- *           example: '2025-04-01T09:14:15.542Z'
+ *           example: '2025-10-24T16:32:09.654Z'
  *         roomId:
  *           type: string
  *           format: uuid
- *           example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+ *           example: '7203a342-7f84-4beb-b9bc-ef423c443dbe'
  *         room:
  *           type: object
  *           properties:
  *             id:
  *               type: string
  *               format: uuid
- *               example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+ *               example: '7203a342-7f84-4beb-b9bc-ef423c443dbe'
  *             roomNo:
  *               type: integer
- *               example: 101
+ *               example: 517
  *             floor:
  *               type: integer
- *               example: 1
+ *               example: 5
  *             dimension:
  *               type: string
- *               example: '25x23 ft'
+ *               example: '23x25 ft'
  *             noOfBedRoom:
  *               type: integer
  *               example: 3
@@ -133,7 +136,7 @@
  *               example: null
  *             maxNoOfPeople:
  *               type: integer
- *               example: 4
+ *               example: 2
  *             description:
  *               type: string
  *               example: 'Spacious room with natural lighting'
@@ -151,22 +154,22 @@
  *                 id:
  *                   type: string
  *                   format: uuid
- *                   example: '6d744ea8-ff9d-4fac-85c1-3b5ac3a3fff6'
+ *                   example: 'c25d41d2-7b6e-4e82-aa2c-ab58f3c9a068'
  *                 name:
  *                   type: string
- *                   example: 'Sandy Corkery-Bayer'
+ *                   example: 'Clara Altenwerth'
  *                 email:
  *                   type: string
- *                   example: 'sandy.corkery-bayer83@gmail.com'
+ *                   example: 'clara.altenwerth74@gmail.com'
  *                 nrc:
  *                   type: string
- *                   example: '5/ABCD(N)129013'
+ *                   example: '15/ABCD(N)647139'
  *                 phoneNo:
  *                   type: string
- *                   example: '+959999650870'
+ *                   example: '+959226610308'
  *                 emergencyNo:
  *                   type: string
- *                   example: '+959586250222'
+ *                   example: '+959051632519'
  *                 createdAt:
  *                   type: string
  *                   format: date-time
@@ -178,84 +181,357 @@
  *                 roomId:
  *                   type: string
  *                   format: uuid
- *                   example: '91c3dcfa-7826-41c7-b8d0-3e4f3735827a'
+ *                   example: '7203a342-7f84-4beb-b9bc-ef423c443dbe'
+ *             contract:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     format: uuid
+ *                     example: 'afcf6fdd-39f5-457a-bccb-570eaa068455'
+ *                   expiryDate:
+ *                     type: string
+ *                     format: date-time
+ *                     example: '2026-07-28T05:02:15.526Z'
+ *                   createdDate:
+ *                     type: string
+ *                     format: date-time
+ *                     example: '2025-07-28T05:02:15.526Z'
+ *                   updatedDate:
+ *                     type: string
+ *                     format: date-time
+ *                     example: '2025-07-31T03:16:15.526Z'
+ *                   roomId:
+ *                     type: string
+ *                     format: uuid
+ *                     example: '7203a342-7f84-4beb-b9bc-ef423c443dbe'
+ *                   tenantId:
+ *                     type: string
+ *                     format: uuid
+ *                     example: 'c25d41d2-7b6e-4e82-aa2c-ab58f3c9a068'
+ *                   contractTypeId:
+ *                     type: string
+ *                     format: uuid
+ *                     example: 'ed0097d0-f4f9-4889-8311-746fe4d9fbbf'
+ *                   contractType:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                         example: 'ed0097d0-f4f9-4889-8311-746fe4d9fbbf'
+ *                       name:
+ *                         type: string
+ *                         example: '12 Months'
+ *                       duration:
+ *                         type: integer
+ *                         example: 12
+ *                       price:
+ *                         type: string
+ *                         example: '300000'
+ *                       facilities:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                         example: ['WiFi', 'Water', 'Electricity', 'Security', 'Parking', 'Cleaning']
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: '2025-10-22T08:35:15.055Z'
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: '2025-10-22T08:35:15.055Z'
  *         totalUnit:
  *           type: object
  *           properties:
  *             id:
  *               type: string
  *               format: uuid
- *               example: 'f7ef9d08-5ddf-4632-8a71-508807f0b86a'
+ *               example: 'a634f151-3834-47f1-849a-a704d552d960'
  *             electricityUnits:
  *               type: string
- *               example: '128.5'
+ *               example: '36.32'
  *             waterUnits:
  *               type: string
- *               example: '57'
+ *               example: '28.67'
  *             createdAt:
  *               type: string
  *               format: date-time
- *               example: '2025-04-01T05:51:15.542Z'
+ *               example: '2025-10-24T16:32:09.663Z'
  *             updatedAt:
  *               type: string
  *               format: date-time
- *               example: '2025-04-01T04:37:15.542Z'
+ *               example: '2025-10-24T16:32:09.663Z'
  *             billId:
  *               type: string
  *               format: uuid
- *               example: 'af09b965-a817-433c-8a7f-ce211dd31210'
+ *               example: 'fc917030-c0c8-47dd-a88e-1a04e0d8cc57'
  *         invoice:
  *           type: object
  *           properties:
  *             id:
  *               type: string
  *               format: uuid
- *               example: '8b273544-6393-4cfd-911b-7d91d890ca7a'
+ *               example: '8b19e41f-f99c-4e64-b3e3-6640b887c2ce'
  *             invoiceNo:
  *               type: string
- *               example: 'INV-HCI3NX9Y'
+ *               example: 'INV-9A5A1F4B'
  *             status:
  *               type: string
- *               example: 'Paid'
+ *               example: 'Pending'
  *             receiptSent:
  *               type: boolean
  *               example: false
  *             billId:
  *               type: string
  *               format: uuid
- *               example: 'af09b965-a817-433c-8a7f-ce211dd31210'
+ *               example: 'fc917030-c0c8-47dd-a88e-1a04e0d8cc57'
  *             createdAt:
  *               type: string
  *               format: date-time
- *               example: '2025-04-04T05:51:15.542Z'
+ *               example: '2025-10-24T16:32:09.669Z'
  *             updatedAt:
  *               type: string
  *               format: date-time
- *               example: '2025-04-04T03:51:15.542Z'
+ *               example: '2025-10-24T16:32:09.669Z'
  *             receipt:
  *               type: object
  *               properties:
  *                 id:
  *                   type: string
  *                   format: uuid
- *                   example: '100e5e36-385c-4e5d-9834-284f8b4d12d8'
+ *                   example: '6037565d-7233-491b-a63e-6c16b4ee9869'
  *                 paymentMethod:
  *                   type: string
- *                   example: 'Mobile_Banking'
+ *                   example: 'Cash'
  *                 paidDate:
  *                   type: string
  *                   format: date-time
- *                   example: '2025-04-09T08:29:15.542Z'
+ *                   nullable: true
+ *                   example: null
  *                 createdAt:
  *                   type: string
  *                   format: date-time
- *                   example: '2025-04-09T08:29:15.542Z'
+ *                   example: '2025-10-24T16:32:09.669Z'
  *                 updatedAt:
  *                   type: string
  *                   format: date-time
- *                   example: '2025-04-10T10:53:15.542Z'
+ *                   example: '2025-10-24T16:32:09.669Z'
  *                 invoiceId:
  *                   type: string
  *                   format: uuid
- *                   example: '8b273544-6393-4cfd-911b-7d91d890ca7a'
+ *                   example: '8b19e41f-f99c-4e64-b3e3-6640b887c2ce'
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     BillWithTenantId:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           example: 'fc917030-c0c8-47dd-a88e-1a04e0d8cc57'
+ *         rentalFee:
+ *           type: string
+ *           example: '300000'
+ *         electricityFee:
+ *           type: string
+ *           example: '18162'
+ *         waterFee:
+ *           type: string
+ *           example: '8600'
+ *         fineFee:
+ *           type: string
+ *           example: '1580'
+ *         serviceFee:
+ *           type: string
+ *           example: '4386'
+ *         groundFee:
+ *           type: string
+ *           example: '1002'
+ *         carParkingFee:
+ *           type: string
+ *           example: '1038'
+ *         wifiFee:
+ *           type: string
+ *           example: '1155'
+ *         totalAmount:
+ *           type: string
+ *           example: '335923'
+ *         dueDate:
+ *           type: string
+ *           format: date-time
+ *           example: '2025-10-22T16:32:09.653Z'
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           example: '2025-10-24T16:32:09.654Z'
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           example: '2025-10-24T16:32:09.654Z'
+ *         roomId:
+ *           type: string
+ *           format: uuid
+ *           example: '7203a342-7f84-4beb-b9bc-ef423c443dbe'
+ *         room:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               format: uuid
+ *               example: '7203a342-7f84-4beb-b9bc-ef423c443dbe'
+ *             roomNo:
+ *               type: integer
+ *               example: 517
+ *             floor:
+ *               type: integer
+ *               example: 5
+ *             dimension:
+ *               type: string
+ *               example: '23x25 ft'
+ *             noOfBedRoom:
+ *               type: integer
+ *               example: 3
+ *             status:
+ *               type: string
+ *               example: 'Rented'
+ *             sellingPrice:
+ *               type: string
+ *               nullable: true
+ *               example: null
+ *             maxNoOfPeople:
+ *               type: integer
+ *               example: 2
+ *             description:
+ *               type: string
+ *               example: 'Spacious room with natural lighting'
+ *             createdAt:
+ *               type: string
+ *               format: date-time
+ *               example: '2025-10-22T08:35:15.064Z'
+ *             updatedAt:
+ *               type: string
+ *               format: date-time
+ *               example: '2025-10-22T08:35:15.064Z'
+ *             tenant:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   format: uuid
+ *                   example: 'c25d41d2-7b6e-4e82-aa2c-ab58f3c9a068'
+ *                 name:
+ *                   type: string
+ *                   example: 'Clara Altenwerth'
+ *                 email:
+ *                   type: string
+ *                   example: 'clara.altenwerth74@gmail.com'
+ *                 nrc:
+ *                   type: string
+ *                   example: '15/ABCD(N)647139'
+ *                 phoneNo:
+ *                   type: string
+ *                   example: '+959226610308'
+ *                 emergencyNo:
+ *                   type: string
+ *                   example: '+959051632519'
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: '2025-10-22T08:35:15.291Z'
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: '2025-10-22T08:35:15.291Z'
+ *                 roomId:
+ *                   type: string
+ *                   format: uuid
+ *                   example: '7203a342-7f84-4beb-b9bc-ef423c443dbe'
+ *         totalUnit:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               format: uuid
+ *               example: 'a634f151-3834-47f1-849a-a704d552d960'
+ *             electricityUnits:
+ *               type: string
+ *               example: '36.32'
+ *             waterUnits:
+ *               type: string
+ *               example: '28.67'
+ *             createdAt:
+ *               type: string
+ *               format: date-time
+ *               example: '2025-10-24T16:32:09.663Z'
+ *             updatedAt:
+ *               type: string
+ *               format: date-time
+ *               example: '2025-10-24T16:32:09.663Z'
+ *             billId:
+ *               type: string
+ *               format: uuid
+ *               example: 'fc917030-c0c8-47dd-a88e-1a04e0d8cc57'
+ *         invoice:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               format: uuid
+ *               example: '8b19e41f-f99c-4e64-b3e3-6640b887c2ce'
+ *             invoiceNo:
+ *               type: string
+ *               example: 'INV-9A5A1F4B'
+ *             status:
+ *               type: string
+ *               example: 'Pending'
+ *             receiptSent:
+ *               type: boolean
+ *               example: false
+ *             billId:
+ *               type: string
+ *               format: uuid
+ *               example: 'fc917030-c0c8-47dd-a88e-1a04e0d8cc57'
+ *             createdAt:
+ *               type: string
+ *               format: date-time
+ *               example: '2025-10-24T16:32:09.669Z'
+ *             updatedAt:
+ *               type: string
+ *               format: date-time
+ *               example: '2025-10-24T16:32:09.669Z'
+ *             receipt:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   format: uuid
+ *                   example: '6037565d-7233-491b-a63e-6c16b4ee9869'
+ *                 paymentMethod:
+ *                   type: string
+ *                   example: 'Cash'
+ *                 paidDate:
+ *                   type: string
+ *                   format: date-time
+ *                   nullable: true
+ *                   example: null
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: '2025-10-24T16:32:09.669Z'
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: '2025-10-24T16:32:09.669Z'
+ *                 invoiceId:
+ *                   type: string
+ *                   format: uuid
+ *                   example: '8b19e41f-f99c-4e64-b3e3-6640b887c2ce'
  */

@@ -59,7 +59,7 @@
  *                 properties:
  *                   message:
  *                     type: string
- *                     example: Bill details retrieved successfully
+ *                     example: Bill fetched successfully
  *                   data:
  *                     $ref: '#/components/schemas/BillWithTenant'
  */
@@ -108,5 +108,5 @@
  *                     type: object
  *                     properties:
  *                       data:
- *                         $ref: '#/components/schemas/BillWithTenant'
+ *                         $ref: '#/components/schemas/BillWithTenantId'
  */
