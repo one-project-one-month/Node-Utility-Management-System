@@ -8,50 +8,50 @@
  *         id:
  *           type: string
  *           format: uuid
- *           example: b2c3d4e5-f6g7-8901-bcde-f23456789012
+ *           example: c8339a18-4f14-4fbd-b756-78516c97e8ea
  *         roomId:
  *           type: string
  *           format: uuid
- *           example: d44605d3-4f8e-4057-b778-201111db860d
+ *           example: 91c3dcfa-7826-41c7-b8d0-3e4f3735827a
  *         rentalFee:
- *           type: number
- *           example: 1200000
+ *           type: string
+ *           example: "300000"
  *         electricityFee:
- *           type: number
- *           example: 15000
+ *           type: string
+ *           example: "29604"
  *         waterFee:
- *           type: number
- *           example: 8000
+ *           type: string
+ *           example: "12428"
  *         fineFee:
- *           type: number
- *           example: 0
+ *           type: string
+ *           example: "87"
  *         serviceFee:
- *           type: number
- *           example: 3000
+ *           type: string
+ *           example: "2602"
  *         groundFee:
- *           type: number
- *           example: 1000
+ *           type: string
+ *           example: "1115"
  *         carParkingFee:
- *           type: number
- *           example: 2000
+ *           type: string
+ *           example: "1745"
  *         wifiFee:
- *           type: number
- *           example: 1500
+ *           type: string
+ *           example: "2024"
  *         totalAmount:
- *           type: number
- *           example: 1229500
+ *           type: string
+ *           example: "349605"
  *         dueDate:
  *           type: string
  *           format: date-time
- *           example: 2025-11-15T00:00:00.000Z
+ *           example: 2025-11-04T17:48:38.796Z
  *         createdAt:
  *           type: string
  *           format: date-time
- *           example: 2025-10-15T08:00:00.000Z
+ *           example: 2025-10-24T15:17:56.372Z
  *         updatedAt:
  *           type: string
  *           format: date-time
- *           example: 2025-10-15T08:00:00.000Z
+ *           example: 2025-10-24T15:17:56.372Z
  */
 
 /**

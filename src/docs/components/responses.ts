@@ -363,7 +363,7 @@
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/Invoice'
+ *                           $ref: '#/components/schemas/InvoiceWithDetails'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:
