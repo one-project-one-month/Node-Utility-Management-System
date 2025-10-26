@@ -339,11 +339,12 @@
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/BillWithTenant'
+ *                           $ref: '#/components/schemas/BillWithTenantId'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:
  *                         $ref: '#/components/schemas/PaginationLinks'
+ *
  *     PaginatedInvoicesResponse:
  *       description: Invoices retrieved successfully with pagination
  *       content:
@@ -355,14 +356,14 @@
  *                 properties:
  *                   message:
  *                     type: string
- *                     example: Invoices retrieved successfully
+ *                     example: Invoices fetched successfully
  *                   content:
  *                     type: object
  *                     properties:
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/Invoice'
+ *                           $ref: '#/components/schemas/InvoiceWithDetails'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:

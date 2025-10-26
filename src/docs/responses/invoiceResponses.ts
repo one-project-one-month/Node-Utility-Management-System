@@ -40,20 +40,8 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       invoice:
- *                         allOf:
- *                           - $ref: '#/components/schemas/Invoice'
- *                           - type: object
- *                             properties:
- *                               receipt:
- *                                 type: object
- *                                 properties:
- *                                   paymentMethod:
- *                                     type: string
- *                                     example: Cash
- *                                   paidDate:
- *                                     type: string
- *                                     example: 2025-10-14T04:07:20.031Z
+ *                       data:
+ *                         $ref: '#/components/schemas/InvoiceById'
  */
 
 /**
@@ -98,8 +86,8 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       invoice:
- *                         $ref: '#/components/schemas/Invoice'
+ *                       data:
+ *                         $ref: '#/components/schemas/InvoiceById'
  */
 
 /**
@@ -117,14 +105,14 @@
  *                 properties:
  *                   message:
  *                     type: string
- *                     example: Invoice history retrieved successfully
+ *                     example: Invoice fetched successfully.
  *                   content:
  *                     type: object
  *                     properties:
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/Invoice'
+ *                           $ref: '#/components/schemas/InvoiceWithDetails'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:

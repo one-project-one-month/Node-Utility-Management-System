@@ -4,60 +4,60 @@ export const CreateBillSchema = z.object({
   roomId: z.uuid({ version: 'v4' }),
   rentalFee: z
     .number()
-    .positive({ message: 'Rental fee must be a positive number' })
+    .nonnegative({ message: 'Rental fee must be a non-negative number' })
     .optional(),
   electricityFee: z
     .number()
-    .positive({ message: 'Electricity fee must be a positive number' })
+    .nonnegative({ message: 'Electricity fee must be a non-negative number' })
     .optional(),
   waterFee: z
     .number()
-    .positive({ message: 'Water fee must be a positive number' })
+    .nonnegative({ message: 'Water fee must be a non-negative number' })
     .optional(),
   fineFee: z
     .number()
-    .positive({ message: 'Fine fee must be a positive number' })
+    .nonnegative({ message: 'Fine fee must be a non-negative number' })
     .optional(),
   serviceFee: z
     .number()
-    .positive({ message: 'Service fee must be a positive number' })
+    .nonnegative({ message: 'Service fee must be a non-negative number' })
     .optional(),
   groundFee: z
     .number()
-    .positive({ message: 'Ground fee must be a positive number' })
+    .nonnegative({ message: 'Ground fee must be a non-negative number' })
     .optional(),
   carParkingFee: z
     .number()
-    .positive({ message: 'Card Parking fee must be a positive number' })
+    .nonnegative({ message: 'Car Parking fee must be a non-negative number' })
     .optional(),
   wifiFee: z
     .number()
-    .positive({ message: 'Wifi fee must be a positive number' })
+    .nonnegative({ message: 'Wifi fee must be a non-negative number' })
     .optional(),
   totalAmount: z
     .number()
-    .positive({ message: 'Total amount must be a positive number' })
+    .nonnegative({ message: 'Total amount must be a non-negative number' })
     .optional(),
   dueDate: z.coerce
     .date()
     .refine((date) => !isNaN(date.getTime()), {
-      message: 'Invalid due date',
+      error: 'Invalid due date',
     })
     .optional(),
 });
 
 export const UpdateBillSchema = z
   .object({
-    roomId: z.uuid({ version: 'v4' }).optional(),
-    rentalFee: z.number().optional(),
-    electricityFee: z.number().optional(),
-    waterFee: z.number().optional(),
-    fineFee: z.number().optional(),
-    serviceFee: z.number().optional(),
-    groundFee: z.number().optional(),
-    carParkingFee: z.number().optional(),
-    wifiFee: z.number().optional(),
-    totalAmount: z.number().optional(),
+    roomId: z.uuid({ version: 'v4' }),
+    rentalFee: z.number().nonnegative().optional(),
+    electricityFee: z.number().nonnegative().optional(),
+    waterFee: z.number().nonnegative().optional(),
+    fineFee: z.number().nonnegative().optional(),
+    serviceFee: z.number().nonnegative().optional(),
+    groundFee: z.number().nonnegative().optional(),
+    carParkingFee: z.number().nonnegative().optional(),
+    wifiFee: z.number().nonnegative().optional(),
+    totalAmount: z.number().nonnegative().optional(),
     dueDate: z.coerce.date().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {

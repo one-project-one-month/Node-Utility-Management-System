@@ -10,7 +10,7 @@ import { generatePaginationData } from '../common/utils/paginationHelper';
 import {
   TOTAL_UNIT_FLATTENER_CONFIG,
   universalFlattener,
-} from '../common/utils/objFlattener';
+} from '../common/utils/obj-flattener';
 
 // Get All Total Units
 export async function getAllTotalUnitsService(req: Request) {
