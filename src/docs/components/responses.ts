@@ -250,7 +250,7 @@
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/Room'
+ *                           $ref: '#/components/schemas/RoomWithRelationshipsWithoutContract'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:

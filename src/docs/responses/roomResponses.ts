@@ -17,7 +17,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       room:
+ *                       data:
  *                         $ref: '#/components/schemas/Room'
  *                   status:
  *                     type: number
@@ -43,8 +43,8 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       room:
- *                         $ref: '#/components/schemas/Room'
+ *                       data:
+ *                         $ref: '#/components/schemas/RoomWithRelationships'
  */
 
 /**
@@ -66,6 +66,6 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       room:
+ *                       data:
  *                         $ref: '#/components/schemas/Room'
  */
