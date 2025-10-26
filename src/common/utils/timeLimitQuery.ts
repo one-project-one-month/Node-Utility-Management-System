@@ -4,10 +4,6 @@ import { GetInvoiceQueryType } from '../../validations/invoiceSchema';
 export default function getTimeLimitQuery(query: GetInvoiceQueryType) {
   const { month, year } = query;
 
-  if (!month || !year) {
-    return { startDate: undefined, endDate: undefined };
-  }
-
   const startDate = moment(`${month} ${year}`, 'MMM YYYY')
     .startOf('month')
     .toDate();
