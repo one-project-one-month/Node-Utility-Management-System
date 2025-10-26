@@ -57,24 +57,7 @@
  *                         type: array
  *                         items:
  *                           oneOf:
- *                             - allOf:
- *                                 - $ref: '#/components/schemas/TenantUser'
- *                                 - type: object
- *                                   properties:
- *                                     tenant:
- *                                       type: object
- *                                       properties:
- *                                         id:
- *                                           type: string
- *                                           format: uuid
- *                                           example: 456e7890-f12a-34b5-c678-426614174000
- *                                         name:
- *                                           type: string
- *                                           example: Test Tenant
- *                                         roomId:
- *                                           type: string
- *                                           format: uuid
- *                                           example: d44605d3-4f8e-4057-b778-201111db860d
+ *                             - $ref: '#/components/schemas/UserWithTenant'
  *                             - allOf:
  *                                 - $ref: '#/components/schemas/AdminUser'
  *                                 - type: object

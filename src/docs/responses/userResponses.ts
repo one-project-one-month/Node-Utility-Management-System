@@ -17,10 +17,8 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       user:
- *                         oneOf:
- *                           - $ref: '#/components/schemas/AdminUser'
- *                           - $ref: '#/components/schemas/TenantUser'
+ *                       data:
+ *                         $ref: '#/components/schemas/UserWithTenant'
  */
 
 /**
@@ -42,7 +40,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       user:
+ *                       data:
  *                         $ref: '#/components/schemas/TenantUser'
  *                   status:
  *                     type: number
