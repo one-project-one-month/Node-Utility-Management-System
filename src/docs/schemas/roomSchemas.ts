@@ -56,7 +56,7 @@
  *             contract:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Contract'
+ *                 $ref: '#/components/schemas/ContractWithoutContractType'
  *             bill:
  *               type: array
  *               items:
