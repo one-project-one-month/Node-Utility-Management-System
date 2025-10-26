@@ -53,7 +53,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       tenant:
+ *                       data:
  *                         allOf:
  *                           - $ref: '#/components/schemas/Tenant'
  *                           - type: object
@@ -92,7 +92,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       tenant:
+ *                       data:
  *                         allOf:
  *                           - $ref: '#/components/schemas/Tenant'
  *                           - type: object

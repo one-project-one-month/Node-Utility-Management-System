@@ -10,33 +10,6 @@
  *           schema:
  *             $ref: '#/components/schemas/ApiSuccessResponse'
  *
- *     # Specific Resource Responses
- *     OccupantsByTenantResponse:
- *       description: Occupants fetched successfully
- *       content:
- *         application/json:
- *           schema:
- *             allOf:
- *               - $ref: '#/components/schemas/ApiSuccessResponse'
- *               - type: object
- *                 properties:
- *                   message:
- *                     type: string
- *                     example: Occupants fetched successfully
- *                   content:
- *                     type: object
- *                     properties:
- *                       data:
- *                         type: array
- *                         items:
- *                           allOf:
- *                             - $ref: '#/components/schemas/Occupant'
- *                             - type: object
- *                               properties:
- *                                 tenant:
- *                                   type: object
- *                                   $ref: '#/components/schemas/Tenant'
- *
  *     # Paginated Responses
  *     PaginatedUsersResponse:
  *       description: Users fetched successfully with pagination
