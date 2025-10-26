@@ -41,13 +41,14 @@
  *           type: string
  *           format: date-time
  *           example: 2025-10-05T19:17:18.241Z
- *         tenant:
- *           $ref: '#/components/schemas/Tenant'
- *         room:
- *           $ref: '#/components/schemas/Room'
  *         contractType:
  *           $ref: '#/components/schemas/ContractType'
- *
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
  *     ContractType:
  *       type: object
  *       properties:

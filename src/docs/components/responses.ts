@@ -123,6 +123,9 @@
  *                                   type: array
  *                                   items:
  *                                     $ref: '#/components/schemas/Occupant'
+ *                                 contract:
+ *                                   type: object
+ *                                   $ref: '#/components/schemas/Contract'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:

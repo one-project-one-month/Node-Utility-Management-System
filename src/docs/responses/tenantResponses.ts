@@ -17,7 +17,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       tenant:
+ *                       data:
  *                         allOf:
  *                           - $ref: '#/components/schemas/Tenant'
  *                           - type: object
@@ -29,6 +29,9 @@
  *                                 type: array
  *                                 items:
  *                                   $ref: '#/components/schemas/Occupant'
+ *                               contract:
+ *                                 type: object
+ *                                 $ref: '#/components/schemas/Contract'
  */
 
 /**
@@ -60,7 +63,11 @@
  *                                 $ref: '#/components/schemas/Room'
  *                               occupants:
  *                                 type: array
- *                                 example: []
+ *                                 items:
+ *                                   $ref: '#/components/schemas/Occupant'
+ *                               contract:
+ *                                 type: object
+ *                                 example: null
  *                   status:
  *                     type: number
  *                     example: 201
