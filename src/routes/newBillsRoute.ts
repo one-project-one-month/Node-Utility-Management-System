@@ -7,6 +7,7 @@ import {
 } from '../middlewares/validationMiddlware';
 import {
   CreateBillSchema,
+  GetAllBillQuerySchema,
   GetBillByIdSchema,
   GetBillByTenantIdSchema,
   UpdateBillSchema,
@@ -163,7 +164,7 @@ router.get(
 router.get(
   '/bills',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(PaginationQuerySchema),
+  validateRequestQuery(GetAllBillQuerySchema),
   getAllBillsController
 );
 

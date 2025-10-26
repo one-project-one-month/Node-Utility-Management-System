@@ -1,5 +1,6 @@
 import * as z from 'zod';
 import { RelationshipToTenant } from '../../generated/prisma';
+import { PaginationQuerySchema } from './paginationSchema';
 
 export const OccupantSchema = z.object({
   name: z.string().min(1, 'Occupant name is required'),
@@ -75,6 +76,42 @@ export const GetTenantParamSchema = z.object({
   tenantId: z.uuid({ version: 'v4' }),
 });
 
+export const GetAllTenantQuerySchema = PaginationQuerySchema.extend({
+  name: z.string().min(1, 'Tenant name is required').optional(),
+  email: z.email('Invalid email').optional(),
+  phoneNo: z
+    .string()
+    .regex(
+      /^[0-9]{6,15}$/,
+      'Phone number must contain only digits (6–15 characters)'
+    )
+    .optional(),
+  roomNo: z
+    .string()
+    .min(1, 'Room number is required and choose a positive number in the list')
+    .optional(),
+  contractType: z.string().min(1, 'Contract type name is required').optional(),
+  occupantCounts: z
+    .string()
+    .refine((data) => Number(data) && Number(data) > 0, {
+      message: 'occupant filter must be number and greater than 0',
+    })
+    .optional(),
+  minOccupants: z
+    .string()
+    .refine((data) => Number(data) && Number(data) > 0, {
+      message: 'occupant filter must be number and greater than 0',
+    })
+    .optional(),
+  maxOccupants: z
+    .string()
+    .refine((data) => Number(data) && Number(data) > 0, {
+      message: 'occupant filter must be number and greater than 0',
+    })
+    .optional(),
+});
+
 export type CreateTenantType = z.infer<typeof CreateTenantSchema>;
 export type UpdateTenantType = z.infer<typeof UpdateTenantSchema>;
 export type GetTenantParamType = z.infer<typeof GetTenantParamSchema>;
+export type GetAllTenantQueryType = z.infer<typeof GetAllTenantQuerySchema>;

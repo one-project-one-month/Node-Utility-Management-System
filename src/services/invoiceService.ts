@@ -49,28 +49,52 @@ export async function createInvoiceService(body: CreateInvoiceType) {
 }
 
 export async function getAllInvoicesService(req: Request) {
-  const query = req.validatedQuery as GetInvoiceQueryType;
-  const { startDate, endDate } = getTimeLimitQuery(query);
-  const whereClause: Prisma.InvoiceWhereInput = {
-    status: query.status,
-  };
-  // Calculate pagination
-  const { page, limit } = query;
+  const { page, limit, month, year, status, roomNo, tenantName } =
+    req.validatedQuery as GetInvoiceQueryType;
   const skip = (page - 1) * limit;
 
-  // The final where clause based on date filters
-  const finalWhereClause: Prisma.InvoiceWhereInput =
-    query.month || query.year
-      ? {
-          ...whereClause,
-          createdAt: { gt: startDate, lte: endDate },
-        }
-      : whereClause;
+  const whereClause: any = {};
 
-  // Get users and totalCount with pagination
+  if (month || year) {
+    const { startDate, endDate } = getTimeLimitQuery(month, year);
+    whereClause.createdAt = { gt: startDate, lte: endDate };
+  }
+
+  if (status) {
+    whereClause.status = status;
+  }
+
+  if (roomNo || tenantName) {
+    whereClause.bill = {
+      is: {},
+    };
+
+    whereClause.bill.is!.room = {
+      is: {},
+    };
+
+    if (roomNo) {
+      whereClause.bill.is!.room.is!.roomNo = Number(roomNo);
+    }
+
+    if (tenantName) {
+      whereClause.bill.is!.room.is!.tenant = {
+        is: {
+          name: {
+            contains: tenantName,
+            mode: 'insensitive',
+          },
+        },
+      };
+    }
+  }
+
   const [invoices, totalCount] = await prisma.$transaction([
     prisma.invoice.findMany({
-      where: finalWhereClause,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      where: whereClause,
       include: {
         bill: {
           select: {
@@ -88,13 +112,12 @@ export async function getAllInvoicesService(req: Request) {
             },
           },
         },
+        receipt: true,
       },
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
     }),
+
     prisma.invoice.count({
-      where: finalWhereClause,
+      where: whereClause,
     }),
   ]);
 
@@ -231,7 +254,7 @@ export async function getTenantInvoiceHistoryService(req: Request) {
   const param = req.params as GetTenantInvoiceParamType;
   const query = req.validatedQuery as GetInvoiceQueryType;
 
-  const { startDate, endDate } = getTimeLimitQuery(query);
+  const { startDate, endDate } = getTimeLimitQuery(query.month, query.year);
   const whereClause: Prisma.InvoiceWhereInput = {
     bill: {
       room: {

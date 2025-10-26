@@ -6,6 +6,7 @@ import prisma from '../lib/prismaClient';
 import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateTenantType,
+  GetAllTenantQueryType,
   UpdateTenantType,
 } from '../validations/tenantSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
@@ -150,13 +151,64 @@ export async function getByIdTenantService(tenantId: string) {
 }
 
 export async function getAllTenantService(req: Request) {
-  const { page, limit } = req.validatedQuery as PaginationQueryType;
+  const query = req.validatedQuery as GetAllTenantQueryType;
+  const { page, limit } = query;
   const skip = (page - 1) * limit;
+
+  const whereClause: any = {};
+
+  if (query.name) {
+    whereClause.name = { contains: query.name, mode: 'insensitive' };
+  }
+  if (query.email) {
+    whereClause.email = query.email;
+  }
+  if (query.phoneNo) {
+    whereClause.phoneNo = query.phoneNo;
+  }
+
+  if (query.roomNo) {
+    whereClause.room = {
+      is: {
+        roomNo: Number(query.roomNo),
+      },
+    };
+  }
+
+  if (query.contractType) {
+    whereClause.contract = {
+      is: {
+        contractType: {
+          is: {
+            name: query.contractType,
+          },
+        },
+      },
+    };
+  }
+
+  // const minCount = query.minOccupants ? Number(query.minOccupants) : undefined;
+  // const maxCount = query.maxOccupants ? Number(query.maxOccupants) : undefined;
+  // const exactCount = query.occupantCounts ? Number(query.occupantCounts) : undefined;
+
+  // if (exactCount) {
+  //   whereClause.occupants = {
+  //     _count: { equals: exactCount }
+  //   };
+  // } else if (minCount || maxCount) {
+  //   whereClause.occupants = {
+  //     _count: {
+  //       ...(minCount && { gte: minCount }),
+  //       ...(maxCount && { lte: maxCount }),
+  //     }
+  //   };
+  // }
 
   const [tenants, totalCount] = await Promise.all([
     prisma.tenant.findMany({
       skip,
       take: limit,
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
       include: {
         room: true,
@@ -166,9 +218,16 @@ export async function getAllTenantService(req: Request) {
             contractType: true,
           },
         },
+        _count: {
+          select: {
+            occupants: true,
+          },
+        },
       },
     }),
-    prisma.tenant.count(),
+    prisma.tenant.count({
+      where: whereClause,
+    }),
   ]);
 
   if (tenants.length === 0) {

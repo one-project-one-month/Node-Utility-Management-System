@@ -14,6 +14,7 @@ import { hasRole } from '../middlewares/authMiddleware';
 import { PaginationQuerySchema } from '../validations/paginationSchema';
 import {
   CreateTenantSchema,
+  GetAllTenantQuerySchema,
   GetTenantParamSchema,
   UpdateTenantSchema,
 } from '../validations/tenantSchema';
@@ -71,7 +72,7 @@ router.get(
 router.get(
   '/',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(PaginationQuerySchema),
+  validateRequestQuery(GetAllTenantQuerySchema),
   getAllTenantController
 );
 
