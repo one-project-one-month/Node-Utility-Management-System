@@ -2,6 +2,21 @@ import * as z from 'zod';
 import { InvoiceStatus } from '../../generated/prisma';
 import { PaginationQuerySchema } from './paginationSchema';
 
+const MonthEnum = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+] as const;
+
 export const GetTenantInvoiceParamSchema = z.object({
   tenantId: z.uuid({ version: 'v4' }),
 });
@@ -11,9 +26,29 @@ export const GetInvoiceParamSchema = z.object({
 });
 
 export const GetInvoiceQuerySchema = PaginationQuerySchema.extend({
-  status: z.enum(InvoiceStatus).optional(),
-  month: z.string().optional(),
-  year: z.string().optional(),
+  status: z
+    .enum(InvoiceStatus, {
+      error: "Status must be one of 'Pending', 'Paid', 'Partial', 'Overdue'",
+    })
+    .optional(),
+  month: z
+    .enum(MonthEnum, {
+      error:
+        "Month must be one of 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'",
+    })
+    .optional(),
+  year: z
+    .string()
+    .length(4, { message: 'Year must be exactly 4 digits' })
+    .regex(/^\d+$/, { message: 'Year must contain only numbers' })
+    .refine(
+      (year) => {
+        const yearNum = parseInt(year);
+        return yearNum >= 2020 && yearNum <= 2030;
+      },
+      { message: 'Year must be between 2020 and 2030' }
+    )
+    .optional(),
 });
 
 export const CreateInvoiceSchema = z.object({

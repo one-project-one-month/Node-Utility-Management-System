@@ -117,7 +117,7 @@
  *                 properties:
  *                   message:
  *                     type: string
- *                     example: Invoice history retrieved successfully
+ *                     example: Invoice fetched successfully.
  *                   content:
  *                     type: object
  *                     properties:

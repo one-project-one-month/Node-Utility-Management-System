@@ -356,7 +356,7 @@
  *                 properties:
  *                   message:
  *                     type: string
- *                     example: Invoices retrieved successfully
+ *                     example: Invoices fetched successfully
  *                   content:
  *                     type: object
  *                     properties:

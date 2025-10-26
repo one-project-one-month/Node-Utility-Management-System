@@ -23,7 +23,12 @@
  *         minimum: 1
  *         maximum: 100
  *         example: 10
- *
+ */
+
+/**
+ * @swagger
+ * components:
+ *   parameters:
  *     # ID Parameters
  *     UserIdParam:
  *       name: userId
@@ -154,7 +159,12 @@
  *         type: string
  *         format: uuid
  *         example: d44605d3-4f8e-4057-b778-201111db860d
- *
+ */
+
+/**
+ * @swagger
+ * components:
+ *   parameters:
  *     # Filter Parameters
  *     RoleFilterParam:
  *       name: role
@@ -202,4 +212,41 @@
  *         type: string
  *         enum: [Available, Rented, Maintenance]
  *         example: Available
+ */
+
+// Invoice
+/**
+ * @swagger
+ * components:
+ *   parameters:
+ *     # Invoice Filter Parameters
+ *     InvoiceStatusParam:
+ *       name: status
+ *       in: query
+ *       description: Filter by invoice status
+ *       required: false
+ *       schema:
+ *         type: string
+ *         enum: [Pending, Paid, Overdue]
+ *         example: Overdue
+ *
+ *     MonthParam:
+ *       name: month
+ *       in: query
+ *       description: Filter by month (3-letter abbreviation)
+ *       required: false
+ *       schema:
+ *         type: string
+ *         enum: [Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec]
+ *         example: Oct
+ *
+ *     YearParam:
+ *       name: year
+ *       in: query
+ *       description: Filter by year (4 digits)
+ *       required: false
+ *       schema:
+ *         type: string
+ *         pattern: '^\d{4}$'
+ *         example: '2024'
  */

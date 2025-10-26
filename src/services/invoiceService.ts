@@ -55,13 +55,13 @@ export async function getAllInvoicesService(req: Request) {
   const skip = (page - 1) * limit;
 
   // The final where clause based on date filters
-  const finalWhereClause: Prisma.InvoiceWhereInput =
-    query.month || query.year
-      ? {
-          ...whereClause,
-          createdAt: { gt: startDate, lte: endDate },
-        }
-      : whereClause;
+  const finalWhereClause: Prisma.InvoiceWhereInput = {
+    ...whereClause,
+    ...(startDate &&
+      endDate && {
+        createdAt: { gte: startDate, lte: endDate },
+      }),
+  };
 
   // Get users and totalCount with pagination
   const [invoices, totalCount] = await prisma.$transaction([
@@ -200,10 +200,13 @@ export async function getTenantInvoiceHistoryService(req: Request) {
   const { page, limit } = query;
   const skip = (page - 1) * limit;
 
-  const finalWhereClause: Prisma.InvoiceWhereInput =
-    query.month || query.year
-      ? { ...whereClause, createdAt: { gt: startDate, lte: endDate } }
-      : whereClause;
+  const finalWhereClause: Prisma.InvoiceWhereInput = {
+    ...whereClause,
+    ...(startDate &&
+      endDate && {
+        createdAt: { gte: startDate, lte: endDate },
+      }),
+  };
 
   // Get users and totalCount with pagination
   const [invoices, totalCount] = await prisma.$transaction([
