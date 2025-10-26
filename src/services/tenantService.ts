@@ -3,13 +3,13 @@ import { BadRequestError } from '../common/errors/badRequestError';
 import { NotFoundError } from '../common/errors/notFoundError';
 import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
 import prisma from '../lib/prismaClient';
-import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateTenantType,
   GetAllTenantQueryType,
   UpdateTenantType,
 } from '../validations/tenantSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
+import { Prisma } from '../../generated/prisma';
 
 export async function createTenantService(data: CreateTenantType) {
   const {
@@ -155,7 +155,7 @@ export async function getAllTenantService(req: Request) {
   const { page, limit } = query;
   const skip = (page - 1) * limit;
 
-  const whereClause: any = {};
+  const whereClause: Prisma.TenantWhereInput = {};
 
   if (query.name) {
     whereClause.name = { contains: query.name, mode: 'insensitive' };
@@ -204,11 +204,72 @@ export async function getAllTenantService(req: Request) {
   //   };
   // }
 
+  // Handle occupant count filtering
+  let occupantFilteredTenantIds: string[] | undefined;
+
+  if (query.occupantCounts || query.minOccupants || query.maxOccupants) {
+    const tenantIdsWithOccupantCount = await prisma.tenant.findMany({
+      select: {
+        id: true,
+        occupants: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    // Filter tenant IDs based on occupant count
+    occupantFilteredTenantIds = tenantIdsWithOccupantCount
+      .filter((tenant) => {
+        const totalPeople = tenant.occupants.length;
+
+        if (query.occupantCounts) {
+          return totalPeople === parseInt(query.occupantCounts);
+        }
+
+        if (query.minOccupants && query.maxOccupants) {
+          return (
+            totalPeople >= parseInt(query.minOccupants) &&
+            totalPeople <= parseInt(query.maxOccupants)
+          );
+        }
+
+        if (query.minOccupants) {
+          return totalPeople >= parseInt(query.minOccupants);
+        }
+
+        if (query.maxOccupants) {
+          return totalPeople <= parseInt(query.maxOccupants);
+        }
+
+        return false;
+      })
+      .map((tenant) => tenant.id);
+
+    if (occupantFilteredTenantIds.length === 0) {
+      return {
+        data: [],
+        meta: {
+          total: 0,
+          currentPage: page,
+          lastPage: 0,
+          perPage: limit,
+        },
+      };
+    }
+
+    // Add occupant filter to where clause
+    whereClause.id = {
+      in: occupantFilteredTenantIds,
+    };
+  }
+
   const [tenants, totalCount] = await Promise.all([
     prisma.tenant.findMany({
+      where: whereClause,
       skip,
       take: limit,
-      where: whereClause,
       orderBy: { createdAt: 'desc' },
       include: {
         room: true,
@@ -216,11 +277,6 @@ export async function getAllTenantService(req: Request) {
         contract: {
           include: {
             contractType: true,
-          },
-        },
-        _count: {
-          select: {
-            occupants: true,
           },
         },
       },

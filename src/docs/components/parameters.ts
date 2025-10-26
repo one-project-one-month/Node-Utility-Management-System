@@ -210,7 +210,7 @@
  *       required: false
  *       schema:
  *         type: string
- *         enum: [Available, Rented, Maintenance]
+ *         enum: [Available, Rented, InMaintenance]
  *         example: Available
  */
 
