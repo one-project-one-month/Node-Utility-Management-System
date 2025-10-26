@@ -1,4 +1,6 @@
 import * as z from 'zod';
+import { PaginationQuerySchema } from './paginationSchema';
+import { InvoiceStatus } from '../../generated/prisma';
 
 export const CreateBillSchema = z.object({
   roomId: z.uuid({ version: 'v4' }),
@@ -72,9 +74,21 @@ export const GetBillByTenantIdSchema = z.object({
   tenantId: z.uuid({ version: 'v4' }),
 });
 
+export const GetAllBillQuerySchema = PaginationQuerySchema.extend({
+  status: z
+    .enum(InvoiceStatus, 'Status must be one of Paid, Overdue, Pending')
+    .optional(),
+  tenantName: z.string().min(1, 'Tenant name is required').optional(),
+  roomNo: z
+    .string()
+    .min(1, 'Room number is required and choose a positive number in the list')
+    .optional(),
+});
+
 export type CreateBillSchemaType = z.infer<typeof CreateBillSchema>;
 export type UpdateBillSchemaType = z.infer<typeof UpdateBillSchema>;
 export type GetBillByIdSchemaType = z.infer<typeof GetBillByIdSchema>;
 export type GetBillByTenantIdSchemaType = z.infer<
   typeof GetBillByTenantIdSchema
 >;
+export type GetAllBillQueryType = z.infer<typeof GetAllBillQuerySchema>;
