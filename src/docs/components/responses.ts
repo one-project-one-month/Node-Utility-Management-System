@@ -226,7 +226,7 @@
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/Contract'
+ *                           $ref: '#/components/schemas/ContractWithRelationships'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:
