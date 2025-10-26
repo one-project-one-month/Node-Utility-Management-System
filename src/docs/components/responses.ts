@@ -339,11 +339,12 @@
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/BillWithTenant'
+ *                           $ref: '#/components/schemas/BillWithTenantId'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:
  *                         $ref: '#/components/schemas/PaginationLinks'
+ *
  *     PaginatedInvoicesResponse:
  *       description: Invoices retrieved successfully with pagination
  *       content:
