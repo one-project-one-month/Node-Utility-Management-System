@@ -43,3 +43,49 @@
  *           format: date-time
  *           example: 2025-10-05T19:17:18.158Z
  */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     RoomWithRelationships:
+ *       allOf:
+ *         - $ref: '#/components/schemas/Room'
+ *         - type: object
+ *           properties:
+ *             contract:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ContractWithoutContractType'
+ *             bill:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Bill'
+ *             customerService:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/CustomerService'
+ *             tenant:
+ *               $ref: '#/components/schemas/Tenant'
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     RoomWithRelationshipsWithoutContract:
+ *       allOf:
+ *         - $ref: '#/components/schemas/Room'
+ *         - type: object
+ *           properties:
+ *             bill:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Bill'
+ *             customerService:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/CustomerService'
+ *             tenant:
+ *               $ref: '#/components/schemas/Tenant'
+ */

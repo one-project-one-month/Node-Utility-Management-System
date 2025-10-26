@@ -17,7 +17,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       totalUnits:
+ *                       data:
  *                         $ref: '#/components/schemas/TotalUnits'
  *                   status:
  *                     type: number
@@ -43,7 +43,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       totalUnits:
+ *                       data:
  *                         $ref: '#/components/schemas/TotalUnits'
  */
 
@@ -66,7 +66,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       totalUnits:
+ *                       data:
  *                         $ref: '#/components/schemas/TotalUnits'
  */
 
@@ -89,6 +89,6 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       totalUnits:
+ *                       data:
  *                         $ref: '#/components/schemas/TotalUnits'
  */

@@ -10,33 +10,6 @@
  *           schema:
  *             $ref: '#/components/schemas/ApiSuccessResponse'
  *
- *     # Specific Resource Responses
- *     OccupantsByTenantResponse:
- *       description: Occupants fetched successfully
- *       content:
- *         application/json:
- *           schema:
- *             allOf:
- *               - $ref: '#/components/schemas/ApiSuccessResponse'
- *               - type: object
- *                 properties:
- *                   message:
- *                     type: string
- *                     example: Occupants fetched successfully
- *                   content:
- *                     type: object
- *                     properties:
- *                       data:
- *                         type: array
- *                         items:
- *                           allOf:
- *                             - $ref: '#/components/schemas/Occupant'
- *                             - type: object
- *                               properties:
- *                                 tenant:
- *                                   type: object
- *                                   $ref: '#/components/schemas/Tenant'
- *
  *     # Paginated Responses
  *     PaginatedUsersResponse:
  *       description: Users fetched successfully with pagination
@@ -57,24 +30,7 @@
  *                         type: array
  *                         items:
  *                           oneOf:
- *                             - allOf:
- *                                 - $ref: '#/components/schemas/TenantUser'
- *                                 - type: object
- *                                   properties:
- *                                     tenant:
- *                                       type: object
- *                                       properties:
- *                                         id:
- *                                           type: string
- *                                           format: uuid
- *                                           example: 456e7890-f12a-34b5-c678-426614174000
- *                                         name:
- *                                           type: string
- *                                           example: Test Tenant
- *                                         roomId:
- *                                           type: string
- *                                           format: uuid
- *                                           example: d44605d3-4f8e-4057-b778-201111db860d
+ *                             - $ref: '#/components/schemas/UserWithTenant'
  *                             - allOf:
  *                                 - $ref: '#/components/schemas/AdminUser'
  *                                 - type: object
@@ -140,6 +96,9 @@
  *                                   type: array
  *                                   items:
  *                                     $ref: '#/components/schemas/Occupant'
+ *                                 contract:
+ *                                   type: object
+ *                                   $ref: '#/components/schemas/Contract'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:
@@ -267,7 +226,7 @@
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/Contract'
+ *                           $ref: '#/components/schemas/ContractWithRelationships'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:
@@ -291,7 +250,7 @@
  *                       data:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/Room'
+ *                           $ref: '#/components/schemas/RoomWithRelationshipsWithoutContract'
  *                       meta:
  *                         $ref: '#/components/schemas/PaginationMeta'
  *                       links:

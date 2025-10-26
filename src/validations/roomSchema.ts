@@ -34,13 +34,13 @@ export const CreateRoomSchema = z.object({
 
 export const UpdateRoomSchema = z
   .object({
-    roomNo: z.number().int().optional(),
-    floor: z.number().int().optional(),
+    roomNo: z.int().optional(),
+    floor: z.int().optional(),
     dimension: z.string().optional(),
-    noOfBedRoom: z.number().int().optional(),
+    noOfBedRoom: z.int().optional(),
     status: z.enum(RoomStatus).optional(),
     sellingPrice: z.number().optional(), // Prisma Decimal maps to number in TS
-    maxNoOfPeople: z.number().int().optional(),
+    maxNoOfPeople: z.int().optional(),
     description: z.string().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
@@ -50,7 +50,7 @@ export const UpdateRoomSchema = z
 //Add Query Schema (for filtering and pagination)
 export const GetAllRoomsQuerySchema = PaginationQuerySchema.extend({
   roomNo: z.string().optional(),
-  floor: z.number().int().optional(),
+  floor: z.string().optional(),
   status: z
     .enum(
       RoomStatus,
@@ -58,6 +58,7 @@ export const GetAllRoomsQuerySchema = PaginationQuerySchema.extend({
     )
     .optional(),
 });
+
 //Type inference
 export type CreateRoomType = z.infer<typeof CreateRoomSchema>;
 export type UpdateRoomType = z.infer<typeof UpdateRoomSchema>;

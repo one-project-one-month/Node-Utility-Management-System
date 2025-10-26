@@ -37,7 +37,12 @@
  *           type: string
  *           format: uuid
  *           example: d44605d3-4f8e-4057-b778-201111db860d
- *
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
  *     Occupant:
  *       type: object
  *       properties:
@@ -68,7 +73,12 @@
  *           type: string
  *           format: date-time
  *           example: 2025-10-05T19:17:18.241Z
- *
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
  *     RelationshipToTenant:
  *       type: string
  *       enum: [SPOUSE, PARENT, CHILD, SIBLING, RELATIVE, FRIEND, OTHER]

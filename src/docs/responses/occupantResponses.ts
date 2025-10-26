@@ -17,8 +17,14 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       occupant:
- *                         $ref: '#/components/schemas/Occupant'
+ *                       data:
+ *                         allOf:
+ *                             - $ref: '#/components/schemas/Occupant'
+ *                             - type: object
+ *                               properties:
+ *                                 tenants:
+ *                                   type: object
+ *                                   $ref: '#/components/schemas/Tenant'
  */
 
 /**
@@ -40,7 +46,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       occupant:
+ *                       data:
  *                         type: array
  *                         items:
  *                           $ref: '#/components/schemas/Occupant'
@@ -68,7 +74,7 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       occupant:
+ *                       data:
  *                         $ref: '#/components/schemas/Occupant'
  */
 
@@ -91,6 +97,37 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       occupant:
+ *                       data:
  *                         $ref: '#/components/schemas/Occupant'
+ */
+
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     OccupantsByTenantResponse:
+ *       description: Occupants fetched successfully
+ *       content:
+ *         application/json:
+ *           schema:
+ *             allOf:
+ *               - $ref: '#/components/schemas/ApiSuccessResponse'
+ *               - type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: Occupants fetched successfully
+ *                   content:
+ *                     type: object
+ *                     properties:
+ *                       data:
+ *                         type: array
+ *                         items:
+ *                           allOf:
+ *                             - $ref: '#/components/schemas/Occupant'
+ *                             - type: object
+ *                               properties:
+ *                                 tenant:
+ *                                   type: object
+ *                                   $ref: '#/components/schemas/Tenant'
  */

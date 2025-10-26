@@ -17,8 +17,8 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       contract:
- *                         $ref: '#/components/schemas/Contract'
+ *                       data:
+ *                         $ref: '#/components/schemas/ContractWithoutContractType'
  *                   status:
  *                     type: number
  *                     example: 201
@@ -43,8 +43,8 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       contract:
- *                         $ref: '#/components/schemas/Contract'
+ *                       data:
+ *                         $ref: '#/components/schemas/ContractWithoutContractType'
  */
 
 /**
@@ -66,8 +66,8 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       contract:
- *                         $ref: '#/components/schemas/Contract'
+ *                       data:
+ *                         $ref: '#/components/schemas/ContractWithRelationships'
  */
 
 /**
@@ -89,6 +89,6 @@
  *                   content:
  *                     type: object
  *                     properties:
- *                       contract:
- *                         $ref: '#/components/schemas/Contract'
+ *                       data:
+ *                         $ref: '#/components/schemas/ContractWithRelationships'
  */
