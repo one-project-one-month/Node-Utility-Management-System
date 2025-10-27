@@ -136,18 +136,21 @@ export const getAllCustomerService = async (req: Request) => {
 
   //Status filter
   if (status) where.status = status;
+
   //Category filter
   if (category) where.category = category;
+
   //Priority filter
   if (priorityLevel) where.priorityLevel = priorityLevel;
 
   //Serach filter
-  if (search) {
+  if (!isNaN(Number(search))) {
+    // Search by room number OR description
     where.OR = [
       {
         room: {
-          roomNo: {
-            in: isNaN(Number(search)) ? undefined : [Number(search)],
+          is: {
+            roomNo: Number(search),
           },
         },
       },
@@ -158,6 +161,12 @@ export const getAllCustomerService = async (req: Request) => {
         },
       },
     ];
+  } else {
+    // Search by description only
+    where.description = {
+      contains: search,
+      mode: 'insensitive',
+    };
   }
 
   //Get sevices and totalCount
