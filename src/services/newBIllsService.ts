@@ -333,7 +333,7 @@ export const getBillsByIdService = async (billId: string) => {
 
 export const getAllBillsService = async (req: Request) => {
   // Calculate pagination
-  const { page, limit, status, roomNo, tenantName } =
+  const { page, limit, status, roomNo, tenantName, search } =
     req.validatedQuery as GetAllBillQueryType;
   const skip = (page - 1) * limit;
 
@@ -365,6 +365,47 @@ export const getAllBillsService = async (req: Request) => {
           },
         },
       };
+    }
+  }
+
+  // universal search -> query params [tenant name and roomNo]
+  const searchString = search?.toString();
+
+  if (searchString) {
+    const searchNumber = isNaN(Number(searchString)) ? undefined : Number(searchString);
+    const OR_conditions: any[] = [];
+
+    // For RoomNo
+    if (searchNumber !== undefined) {
+      OR_conditions.push({
+        room: {
+          is: {
+            roomNo: searchNumber,
+          },
+        },
+      });
+    }
+    else{
+      // For Tenant Name
+      OR_conditions.push({
+        room: {
+          is: {
+            tenant: {
+              is: {
+                name: {
+                  contains: searchString,
+                  mode: 'insensitive',
+                },
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // OR will only be applied if search param is provided 
+    if (OR_conditions.length > 0) {
+      whereClause.OR = OR_conditions;
     }
   }
 
