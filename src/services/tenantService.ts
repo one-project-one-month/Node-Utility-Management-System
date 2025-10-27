@@ -191,7 +191,9 @@ export async function getAllTenantService(req: Request) {
   const searchString = query.search?.toString();
 
   if (searchString) {
-    const searchNumber = isNaN(Number(searchString)) ? undefined : Number(searchString);
+    const searchNumber = isNaN(Number(searchString))
+      ? undefined
+      : Number(searchString);
     const OR_conditions: any[] = [];
 
     // For RoomNo
@@ -203,8 +205,7 @@ export async function getAllTenantService(req: Request) {
           },
         },
       });
-    }
-    else{
+    } else {
       // For Tenant Name
       OR_conditions.push({
         name: {
@@ -214,28 +215,11 @@ export async function getAllTenantService(req: Request) {
       });
     }
 
-    // OR will only be applied if search param is provided 
+    // OR will only be applied if search param is provided
     if (OR_conditions.length > 0) {
       whereClause.OR = OR_conditions;
     }
   }
-
-  // const minCount = query.minOccupants ? Number(query.minOccupants) : undefined;
-  // const maxCount = query.maxOccupants ? Number(query.maxOccupants) : undefined;
-  // const exactCount = query.occupantCounts ? Number(query.occupantCounts) : undefined;
-
-  // if (exactCount) {
-  //   whereClause.occupants = {
-  //     _count: { equals: exactCount }
-  //   };
-  // } else if (minCount || maxCount) {
-  //   whereClause.occupants = {
-  //     _count: {
-  //       ...(minCount && { gte: minCount }),
-  //       ...(maxCount && { lte: maxCount }),
-  //     }
-  //   };
-  // }
 
   const [tenants, totalCount] = await Promise.all([
     prisma.tenant.findMany({

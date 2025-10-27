@@ -92,7 +92,9 @@ export async function getAllInvoicesService(req: Request) {
   const searchString = search?.toString();
 
   if (searchString) {
-    const searchNumber = isNaN(Number(searchString)) ? undefined : Number(searchString);
+    const searchNumber = isNaN(Number(searchString))
+      ? undefined
+      : Number(searchString);
     const OR_conditions: any[] = [];
 
     // For RoomNo
@@ -102,41 +104,38 @@ export async function getAllInvoicesService(req: Request) {
           is: {
             room: {
               is: {
-                roomNo: searchNumber
-              }
-            }
-          }
-        }
+                roomNo: searchNumber,
+              },
+            },
+          },
+        },
       });
-    }
-    else{
+    } else {
       // For Tenant Name
       OR_conditions.push({
-        bill:{
-          is:{
-            room:{
-              is:{
-                tenant:{
-                  is:{
+        bill: {
+          is: {
+            room: {
+              is: {
+                tenant: {
+                  is: {
                     name: {
                       contains: searchString,
                       mode: 'insensitive',
                     },
-                  }
-                }
-              }
-            }
-          }
-        }
+                  },
+                },
+              },
+            },
+          },
+        },
       });
     }
 
-    // OR will only be applied if search param is provided 
+    // OR will only be applied if search param is provided
     if (OR_conditions.length > 0) {
       whereClause.OR = OR_conditions;
     }
-
-    console.log("where clause: ", whereClause.OR)
   }
 
   const [invoices, totalCount] = await prisma.$transaction([

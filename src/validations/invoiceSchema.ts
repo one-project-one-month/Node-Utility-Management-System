@@ -34,8 +34,7 @@ export const GetInvoiceQuerySchema = PaginationQuerySchema.extend({
     .string()
     .min(1, 'Room number is required and choose a positive number in the list')
     .optional(),
-  search: z.string().min(1, 'Search cannot be empty')
-      .optional(),
+  search: z.string().min(1, 'Search cannot be empty').optional(),
 });
 
 export const CreateInvoiceSchema = z.object({

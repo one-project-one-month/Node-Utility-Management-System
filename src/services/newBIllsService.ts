@@ -372,7 +372,9 @@ export const getAllBillsService = async (req: Request) => {
   const searchString = search?.toString();
 
   if (searchString) {
-    const searchNumber = isNaN(Number(searchString)) ? undefined : Number(searchString);
+    const searchNumber = isNaN(Number(searchString))
+      ? undefined
+      : Number(searchString);
     const OR_conditions: any[] = [];
 
     // For RoomNo
@@ -384,8 +386,7 @@ export const getAllBillsService = async (req: Request) => {
           },
         },
       });
-    }
-    else{
+    } else {
       // For Tenant Name
       OR_conditions.push({
         room: {
@@ -396,14 +397,14 @@ export const getAllBillsService = async (req: Request) => {
                   contains: searchString,
                   mode: 'insensitive',
                 },
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       });
     }
 
-    // OR will only be applied if search param is provided 
+    // OR will only be applied if search param is provided
     if (OR_conditions.length > 0) {
       whereClause.OR = OR_conditions;
     }
