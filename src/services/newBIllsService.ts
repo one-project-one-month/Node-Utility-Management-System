@@ -218,7 +218,7 @@ export const updateBillsService = async (
     dueDate,
   } = data;
 
-  // check if bill exists
+  // Check if bill exists
   const existingBill = await prisma.bill.findUnique({
     where: { id: billId },
     include: { room: true },
@@ -229,69 +229,51 @@ export const updateBillsService = async (
     throw new BadRequestError('Room ID mismatch with existing bill');
   }
 
-  const toNumber = (value: any) => (value ? Number(value) : 0);
+  // ✅ Helper functions
+  const safeNumber = (value: any) => (value ? Number(value) : 0);
 
-  // Utility fallback to existing or new value
-  const valueOrExisting = (newVal: number | undefined, oldVal: number) =>
-    newVal !== undefined ? newVal : oldVal;
+  const recalcValue = (
+    newVal: number | undefined,
+    existingVal: number | null | undefined
+  ) => (newVal !== undefined ? newVal : safeNumber(existingVal));
 
-  // Recalculate all amounts safely
-  const newRental = valueOrExisting(
-    rentalFee,
-    toNumber(existingBill.rentalFee)
-  );
-  const newElectric = valueOrExisting(
-    electricityFee,
-    toNumber(existingBill.electricityFee)
-  );
-  const newWater = valueOrExisting(waterFee, toNumber(existingBill.waterFee));
-  const newFine = valueOrExisting(fineFee, toNumber(existingBill.fineFee));
-  const newService = valueOrExisting(
-    serviceFee,
-    toNumber(existingBill.serviceFee)
-  );
-  const newGround = valueOrExisting(
-    groundFee,
-    toNumber(existingBill.groundFee)
-  );
-  const newParking = valueOrExisting(
-    carParkingFee,
-    toNumber(existingBill.carParkingFee)
-  );
-  const newWifi = valueOrExisting(wifiFee, toNumber(existingBill.wifiFee));
+  // ✅ Centralized field definitions
+  const fees = {
+    rentalFee: recalcValue(rentalFee, safeNumber(existingBill.rentalFee)),
+    electricityFee: recalcValue(
+      electricityFee,
+      safeNumber(existingBill.electricityFee)
+    ),
+    waterFee: recalcValue(waterFee, safeNumber(existingBill.waterFee)),
+    fineFee: recalcValue(fineFee, safeNumber(existingBill.fineFee)),
+    serviceFee: recalcValue(serviceFee, safeNumber(existingBill.serviceFee)),
+    groundFee: recalcValue(groundFee, safeNumber(existingBill.groundFee)),
+    carParkingFee: recalcValue(
+      carParkingFee,
+      safeNumber(existingBill.carParkingFee)
+    ),
+    wifiFee: recalcValue(wifiFee, safeNumber(existingBill.wifiFee)),
+  };
 
-  const totalAmount =
-    newRental +
-    newElectric +
-    newWater +
-    newFine +
-    newService +
-    newGround +
-    newParking +
-    newWifi;
+  const totalAmount = Object.values(fees).reduce((sum, val) => sum + val, 0);
 
-  const electricityUnit = Number((newElectric / ELECTRICITY_RATE).toFixed(2));
-  const waterUnit = Number((newWater / WATER_RATE).toFixed(2));
+  // ✅ Units
+  const electricityUnit = Number(
+    (fees.electricityFee / ELECTRICITY_RATE).toFixed(2)
+  );
+  const waterUnit = Number((fees.waterFee / WATER_RATE).toFixed(2));
 
+  // ✅ Transaction block
   const updatedBill = await prisma.$transaction(async (tx) => {
-    // update bill
     const bill = await tx.bill.update({
       where: { id: billId },
       data: {
-        rentalFee: newRental,
-        electricityFee: newElectric,
-        waterFee: newWater,
-        fineFee: newFine,
-        serviceFee: newService,
-        groundFee: newGround,
-        carParkingFee: newParking,
-        wifiFee: newWifi,
+        ...fees,
         totalAmount,
         dueDate: dueDate ? new Date(dueDate) : existingBill.dueDate,
       },
     });
 
-    // update TotalUnits
     await tx.totalUnits.update({
       where: { billId },
       data: {
