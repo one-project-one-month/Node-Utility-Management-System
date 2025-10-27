@@ -149,7 +149,9 @@ export const getAllCustomerService = async (req: Request) => {
     where.OR = [
       {
         room: {
-          roomNo: Number(search),
+          is: {
+            roomNo: Number(search),
+          },
         },
       },
       {
