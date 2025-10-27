@@ -11,6 +11,10 @@ import {
 import { BadRequestError, NotFoundError } from '../common/errors';
 import getTimeLimitQuery from '../common/utils/timeLimitQuery';
 import { generatePaginationData } from '../common/utils/paginationHelper';
+import {
+  INVOICES_FLATTENER_CONFIG,
+  universalFlattener,
+} from '../common/utils/obj-flattener';
 
 export async function createInvoiceService(body: CreateInvoiceType) {
   const existingBill = await prisma.bill.findUnique({
@@ -45,51 +49,84 @@ export async function createInvoiceService(body: CreateInvoiceType) {
 }
 
 export async function getAllInvoicesService(req: Request) {
-  const query = req.validatedQuery as GetInvoiceQueryType;
-  const { startDate, endDate } = getTimeLimitQuery(query);
-  const whereClause: Prisma.InvoiceWhereInput = {
-    status: query.status,
-  };
-  // Calculate pagination
-  const { page, limit } = query;
+  const { page, limit, month, year, status, roomNo, tenantName } =
+    req.validatedQuery as GetInvoiceQueryType;
   const skip = (page - 1) * limit;
 
-  // The final where clause based on date filters
-  const finalWhereClause: Prisma.InvoiceWhereInput =
-    query.month || query.year
-      ? {
-          ...whereClause,
-          createdAt: { gt: startDate, lte: endDate },
-        }
-      : whereClause;
+  const whereClause: any = {};
 
-  // Get users and totalCount with pagination
+  if (month || year) {
+    const { startDate, endDate } = getTimeLimitQuery(month, year);
+    whereClause.createdAt = { gt: startDate, lte: endDate };
+  }
+
+  if (status) {
+    whereClause.status = status;
+  }
+
+  if (roomNo || tenantName) {
+    whereClause.bill = {
+      is: {},
+    };
+
+    whereClause.bill.is!.room = {
+      is: {},
+    };
+
+    if (roomNo) {
+      whereClause.bill.is!.room.is!.roomNo = Number(roomNo);
+    }
+
+    if (tenantName) {
+      whereClause.bill.is!.room.is!.tenant = {
+        is: {
+          name: {
+            contains: tenantName,
+            mode: 'insensitive',
+          },
+        },
+      };
+    }
+  }
+
   const [invoices, totalCount] = await prisma.$transaction([
     prisma.invoice.findMany({
-      where: finalWhereClause,
-      select: {
-        id: true,
-        status: true,
-        receiptSent: true,
-        billId: true,
-        invoiceNo: true,
-        createdAt: true,
-        updatedAt: true,
-      },
       skip,
       take: limit,
       orderBy: { createdAt: 'desc' },
+      where: whereClause,
+      include: {
+        bill: {
+          select: {
+            totalAmount: true,
+            dueDate: true,
+            room: {
+              select: {
+                roomNo: true,
+                tenant: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        receipt: true,
+      },
     }),
+
     prisma.invoice.count({
-      where: finalWhereClause,
+      where: whereClause,
     }),
   ]);
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
+  const data = universalFlattener(invoices, INVOICES_FLATTENER_CONFIG);
 
   return {
-    data: invoices,
+    data,
     ...paginationData,
   };
 }
@@ -134,24 +171,57 @@ export async function getInvoiceService(param: GetInvoiceParamType) {
   if (!existingInvoice) {
     throw new NotFoundError('Invoice ID does not exist.');
   }
-  return await prisma.invoice.findFirst({
+  const invoice = await prisma.invoice.findFirst({
     where: { id: param.invoiceId },
-    select: {
-      id: true,
-      status: true,
-      billId: true,
-      invoiceNo: true,
-      receiptSent: true,
-      createdAt: true,
-      updatedAt: true,
+    include: {
       receipt: {
         select: {
           paymentMethod: true,
           paidDate: true,
         },
       },
+      bill: {
+        include: {
+          room: {
+            select: {
+              roomNo: true,
+              tenant: {
+                select: {
+                  name: true,
+                },
+              },
+              contract: {
+                take: 1,
+                orderBy: { createdDate: 'desc' },
+                select: {
+                  contractType: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
+
+  if (!invoice) {
+    throw new NotFoundError('Invoice not found.');
+  }
+  const { room, ...billWithoutRoom } = invoice.bill;
+
+  const data = {
+    ...invoice,
+    bill: billWithoutRoom,
+    tenantName: room.tenant?.name,
+    roomNo: room.roomNo,
+    contractTypeName: room.contract[0]?.contractType?.name || null,
+  };
+
+  return data;
 }
 
 export async function getTenantInvoiceLatestService(
@@ -184,7 +254,7 @@ export async function getTenantInvoiceHistoryService(req: Request) {
   const param = req.params as GetTenantInvoiceParamType;
   const query = req.validatedQuery as GetInvoiceQueryType;
 
-  const { startDate, endDate } = getTimeLimitQuery(query);
+  const { startDate, endDate } = getTimeLimitQuery(query.month, query.year);
   const whereClause: Prisma.InvoiceWhereInput = {
     bill: {
       room: {
@@ -209,13 +279,23 @@ export async function getTenantInvoiceHistoryService(req: Request) {
   const [invoices, totalCount] = await prisma.$transaction([
     prisma.invoice.findMany({
       where: finalWhereClause,
-      select: {
-        id: true,
-        status: true,
-        billId: true,
-        invoiceNo: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
+        bill: {
+          select: {
+            totalAmount: true,
+            dueDate: true,
+            room: {
+              select: {
+                roomNo: true,
+                tenant: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       skip,
       take: limit,
@@ -228,9 +308,10 @@ export async function getTenantInvoiceHistoryService(req: Request) {
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
+  const data = universalFlattener(invoices, INVOICES_FLATTENER_CONFIG);
 
   return {
-    data: invoices,
+    data,
     ...paginationData,
   };
 }

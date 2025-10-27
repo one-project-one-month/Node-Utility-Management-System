@@ -9,8 +9,7 @@ import {
   UpdateServiceType,
 } from '../validations/serviceSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
-import { Prisma } from '../../generated/prisma'
-
+import { Prisma } from '../../generated/prisma';
 
 //create customer service
 export const createCustomerService = async (
@@ -126,33 +125,48 @@ export const updateCustomerService = async (
 
 //get all cutomer service
 export const getAllCustomerService = async (req: Request) => {
-  const {
-    page,
-    limit,
-    status,
-    priorityLevel,
-    category,
-    search } = req.validatedQuery as GetAllServiceQueryType;
+  const { page, limit, status, priorityLevel, category, search } =
+    req.validatedQuery as GetAllServiceQueryType;
 
   // skip amount per page
   const skip = (page - 1) * limit;
 
   //prisma where clause
-  const where: Prisma.CustomerServiceWhereInput = {}
+  const where: Prisma.CustomerServiceWhereInput = {};
 
   //Status filter
   if (status) where.status = status;
+
   //Category filter
   if (category) where.category = category;
+
   //Priority filter
   if (priorityLevel) where.priorityLevel = priorityLevel;
 
   //Serach filter
-  if (search) {
+  if (!isNaN(Number(search))) {
+    // Search by room number OR description
+    where.OR = [
+      {
+        room: {
+          is: {
+            roomNo: Number(search),
+          },
+        },
+      },
+      {
+        description: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+    ];
+  } else {
+    // Search by description only
     where.description = {
       contains: search,
       mode: 'insensitive',
-    }
+    };
   }
 
   //Get sevices and totalCount
@@ -216,11 +230,11 @@ export const getCustomerServiceById = async (id: string) => {
 export const deleteCustomerServiceById = async (id: string) => {
   const existingService = await prisma.customerService.findUnique({
     where: { id },
-    select: { id: true }
-  })
+    select: { id: true },
+  });
   if (!existingService) {
-    throw new NotFoundError("No customer service found.")
+    throw new NotFoundError('No customer service found.');
   }
 
-  return await prisma.customerService.delete({ where: { id } })
-}
+  return await prisma.customerService.delete({ where: { id } });
+};

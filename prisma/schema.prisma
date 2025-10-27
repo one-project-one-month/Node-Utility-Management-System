@@ -75,6 +75,9 @@ model User {
   tenant   Tenant? @relation(fields: [tenantId], references: [id])
   tenantId String? @unique
 
+  @@index([email])
+  @@index([role, isActive])
+  @@index([tenantId])
   @@map("users")
 }
 
@@ -93,8 +96,13 @@ model Tenant {
   room      Room       @relation(fields: [roomId], references: [id])
   occupants Occupant[]
   user      User?
-  contract  Contract? // typo fixed
+  contract  Contract?
 
+  @@index([email])
+  @@index([nrc])
+  @@index([phoneNo])
+  @@index([roomId])
+  @@index([name, email])
   @@map("tenants")
 }
 
@@ -110,6 +118,8 @@ model Occupant {
   tenant   Tenant @relation(fields: [tenantId], references: [id])
   tenantId String
 
+  @@index([tenantId])
+  @@index([tenantId, relationshipToTenant])
   @@map("occupants")
 }
 
@@ -132,6 +142,9 @@ model Room {
   customerService CustomerService[]
   bill            Bill[]
 
+  @@index([roomNo])
+  @@index([status, floor])
+  @@index([status, createdAt])
   @@map("rooms")
 }
 
@@ -149,6 +162,10 @@ model Contract {
   contractTypeId String
   contractType   ContractType @relation(fields: [contractTypeId], references: [id])
 
+  @@index([tenantId])
+  @@index([roomId])
+  @@index([expiryDate])
+  @@index([tenantId, expiryDate])
   @@map("contracts")
 }
 
@@ -163,6 +180,7 @@ model ContractType {
 
   contract Contract[]
 
+  @@index([name])
   @@map("contract_types")
 }
 
@@ -179,6 +197,10 @@ model CustomerService {
   room   Room   @relation(fields: [roomId], references: [id])
   roomId String
 
+  @@index([roomId])
+  @@index([status, priorityLevel])
+  @@index([category, status])
+  @@index([createdAt])
   @@map("customer_services")
 }
 
@@ -203,6 +225,9 @@ model Bill {
   totalUnit TotalUnits?
   invoice   Invoice?
 
+  @@index([roomId])
+  @@index([dueDate])
+  @@index([roomId, dueDate])
   @@map("bills")
 }
 
@@ -217,6 +242,7 @@ model TotalUnits {
   bill   Bill   @relation(fields: [billId], references: [id])
   billId String @unique
 
+  @@index([billId])
   @@map("total_units")
 }
 
@@ -234,6 +260,9 @@ model Invoice {
 
   receipt Receipt?
 
+  @@index([billId])
+  @@index([status, createdAt])
+  @@index([status, receiptSent])
   @@map("invoices")
 }
 
@@ -248,5 +277,7 @@ model Receipt {
   invoice   Invoice @relation(fields: [invoiceId], references: [id])
   invoiceId String  @unique
 
+  @@index([invoiceId])
+  @@index([paidDate])
   @@map("receipts")
 }

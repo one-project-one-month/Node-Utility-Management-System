@@ -1,8 +1,8 @@
 import { Request } from 'express';
 import {
   mailOptionConfig,
-  mailTransporter,
-} from '../common/utils/mail-service/mailTransporter';
+  mailSend,
+} from '../common/utils/mail-service/resendMailTransporter';
 import { Prisma } from '../../generated/prisma';
 import { BadRequestError, NotFoundError } from '../common/errors';
 import { generatePaginationData } from '../common/utils/paginationHelper';
@@ -313,20 +313,19 @@ export async function sendReceiptEmailService(
       <li><strong>Paid Date:</strong> ${receipt.paidDate?.toDateString()}</li>
     </ul>
     <p>Thank you for your prompt payment. If you have any questions, feel free to contact us.</p>
-    <p>Best regards,<br/>Utility Management Team</p>
+    <p>Best regards,<br/>Nest Flow Team</p>
   `;
 
   // prepare mail data
   const mailOptions = await mailOptionConfig({
     name: tenantName,
-    to: tenantEmail,
-    subject: 'Your Receipt from Utility Management System for this month',
+    to: process.env.MAIL_HOST || tenantEmail,
+    subject: 'Your Receipt for this month',
     htmlContent: htmlContent,
   });
-  const transporter = await mailTransporter();
 
   // Send email
-  const info = await transporter.sendMail(mailOptions);
+  const info = await mailSend(mailOptions);
 
   // Update invoice to mark receipt as sent
   await prisma.invoice.update({
@@ -336,9 +335,6 @@ export async function sendReceiptEmailService(
 
   // Return payload for response
   return {
-    messageId: info.messageId,
-    envelope: info.envelope,
-    messageTime: info.messageTime,
-    messageSize: info.messageSize,
+    messageId: info?.id,
   };
 }

@@ -1,16 +1,3 @@
-export const TOTAL_UNIT_FLATTENER_CONFIG = {
-  id: 'id',
-  electricityUnits: 'electricityUnits',
-  waterUnits: 'waterUnits',
-  createdAt: 'createdAt',
-  billId: 'billId',
-  roomId: 'bill.room.id',
-  roomNo: 'bill.room.roomNo',
-  floor: 'bill.room.floor',
-  roomStatus: 'bill.room.status',
-  tenantName: 'bill.room.tenant.name',
-};
-
 const genericFlattener = (rawObject: object, config: object) => {
   const flatObject: any = {};
 
@@ -37,3 +24,6 @@ export const universalFlattener = (
 
   return rawData.map((item) => genericFlattener(item, config));
 };
+
+export * from './invoiceConfig';
+export * from './totalUnitsConfig';

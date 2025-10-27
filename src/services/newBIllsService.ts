@@ -4,13 +4,14 @@ import { generatePaginationData } from '../common/utils/paginationHelper';
 import prisma from '../lib/prismaClient';
 import {
   CreateBillSchemaType,
+  GetAllBillQueryType,
   UpdateBillSchemaType,
 } from '../validations/newBillsSchema';
 import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   mailOptionConfig,
-  mailTransporter,
-} from '../common/utils/mail-service/mailTransporter';
+  mailSend,
+} from '../common/utils/mail-service/resendMailTransporter';
 import { Bill, Invoice, Room, TotalUnits } from '../../generated/prisma';
 
 // define rate constants (cost per unit)
@@ -58,7 +59,7 @@ const mailBodyGenerator = (
         <li><strong>Total Amount:</strong> ${bill.totalAmount} Kyats</li>
       </ul>
       <p>If you have any questions, feel free to contact us.</p>
-      <p>Best regards,<br/>Utility Management Team</p>
+      <p>Best regards,<br/>Nest Flow Team</p>
     `;
   return htmlContent;
 };
@@ -73,9 +74,6 @@ export const autoGenerateBillsService = async () => {
       tenant: true,
     },
   });
-
-  // Create Mail Transporter
-  const transporter = await mailTransporter();
 
   // Generate bills for each room
   for (const room of rooms) {
@@ -97,7 +95,7 @@ export const autoGenerateBillsService = async () => {
     );
 
     // prepare mail data
-    const mailOptions = await mailOptionConfig({
+    const mailOptions = mailOptionConfig({
       name: tenantName,
       to: process.env.MAIL_HOST || tenantEmail,
       subject: 'Your Bill for this month',
@@ -105,7 +103,7 @@ export const autoGenerateBillsService = async () => {
     });
 
     // Send email
-    await transporter.sendMail(mailOptions);
+    await mailSend(mailOptions);
   }
   return rooms.length;
 };
@@ -317,15 +315,47 @@ export const getBillsByIdService = async (billId: string) => {
 
 export const getAllBillsService = async (req: Request) => {
   // Calculate pagination
-  const { page, limit } = req.validatedQuery as PaginationQueryType;
+  const { page, limit, status, roomNo, tenantName } =
+    req.validatedQuery as GetAllBillQueryType;
   const skip = (page - 1) * limit;
 
-  // get all bills and total count
+  const whereClause: any = {};
+
+  if (status) {
+    whereClause.invoice = {
+      is: {
+        status: status,
+      },
+    };
+  }
+
+  if (roomNo || tenantName) {
+    whereClause.room = {
+      is: {},
+    };
+
+    if (roomNo) {
+      whereClause.room.is!.roomNo = Number(roomNo);
+    }
+
+    if (tenantName) {
+      whereClause.room.is!.tenant = {
+        is: {
+          name: {
+            contains: tenantName,
+            mode: 'insensitive',
+          },
+        },
+      };
+    }
+  }
+
   const [bills, totalCount] = await prisma.$transaction([
     prisma.bill.findMany({
       skip,
       take: limit,
       orderBy: { createdAt: 'desc' },
+      where: whereClause,
       include: {
         room: {
           include: {
@@ -345,7 +375,9 @@ export const getAllBillsService = async (req: Request) => {
         },
       },
     }),
-    prisma.bill.count(),
+    prisma.bill.count({
+      where: whereClause,
+    }),
   ]);
 
   if (Array.isArray(bills) && !bills.length)
