@@ -143,10 +143,21 @@ export const getAllCustomerService = async (req: Request) => {
 
   //Serach filter
   if (search) {
-    where.description = {
-      contains: search,
-      mode: 'insensitive',
-    };
+    where.OR = [
+      {
+        room: {
+          roomNo: {
+            in: isNaN(Number(search)) ? undefined : [Number(search)],
+          },
+        },
+      },
+      {
+        description: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+    ];
   }
 
   //Get sevices and totalCount

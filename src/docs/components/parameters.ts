@@ -212,6 +212,45 @@
  *         type: string
  *         enum: [Available, Rented, Maintenance]
  *         example: Available
+ *
+ *     CategoryParam:
+ *        name: category
+ *        in: query
+ *        description: Filter by category
+ *        required: false
+ *        schema:
+ *          type: string
+ *          enum: [Complain, Maintenance, Other]
+ *          example: Complain
+ *
+ *     PriorityLevelParam:
+ *        name: priorityLevel
+ *        in: query
+ *        description: Filter by priority
+ *        required: false
+ *        schema:
+ *          type: string
+ *          enum: [Low, Medium, High]
+ *          example: Low
+ *
+ *     StatusQuery:
+ *        name: status
+ *        in: query
+ *        description: Filter by status
+ *        required: false
+ *        schema:
+ *          type: string
+ *          enum: [Pending, Ongoing, Resolved]
+ *          example: Pending
+ *
+ *     SearchParam:
+ *       name: search
+ *       in: query
+ *       description: Filter by search term ( desc or roomNo )
+ *       required: false
+ *       schema:
+ *         type: string
+ *         example:
  */
 
 // Invoice

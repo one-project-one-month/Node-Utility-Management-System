@@ -95,6 +95,10 @@ router.get(
  *     parameters:
  *       - $ref: '#/components/parameters/PageParam'
  *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/CategoryParam'
+ *       - $ref: '#/components/parameters/StatusQuery'
+ *       - $ref: '#/components/parameters/PriorityLevelParam'
+ *       - $ref: '#/components/parameters/SearchParam'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/PaginatedCustomerServicesResponse'
