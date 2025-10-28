@@ -9,7 +9,7 @@ import {
   UpdateServiceType,
 } from '../validations/serviceSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
-import { Prisma, PrismaClient } from '../../generated/prisma';
+import { Prisma } from '../../generated/prisma';
 
 //create customer service
 export const createCustomerService = async (
