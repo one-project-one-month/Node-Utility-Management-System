@@ -3,7 +3,7 @@ import {
   createContractService,
   getAllContractService,
   getContractByIdService,
-  getContractByTenantIdService,
+  getAllContractsByTenantIdService,
   updateContractService,
 } from '../services/contractService';
 import { successResponse } from '../common/apiResponse';
@@ -93,17 +93,17 @@ export const getAllContractController = async (
 // @route GET | api/v1/tenants/:tenantId/contracts
 // @desc get contract by tenant id
 // @access Client
-export const getContractByTenantIdController = async (
+export const getAllContractsByTenantIdController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const contract = await getContractByTenantIdService(req.params.tenantId);
+    const contract = await getAllContractsByTenantIdService(req);
     successResponse(
       res,
       'All Contracts fetched By tenantId successfully',
-      { data: contract },
+      contract,
       200
     );
   } catch (error) {

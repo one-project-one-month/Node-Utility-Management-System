@@ -1,8 +1,13 @@
 import { Request } from 'express';
-import { BadRequestError, NotFoundError } from '../common/errors';
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} from '../common/errors';
 import prisma from '../lib/prismaClient';
 import {
   CreateContractSchemaType,
+  GetContractByTenantSchemaType,
   UpdateContractSchemaType,
 } from '../validations/contractSchema';
 import { PaginationQueryType } from '../validations/paginationSchema';
@@ -140,20 +145,50 @@ export const getAllContractService = async (req: Request) => {
   };
 };
 
-// get contract by tenantId
-export const getContractByTenantIdService = async (tenantId: string) => {
+// get contracts by tenantId
+export const getAllContractsByTenantIdService = async (req: Request) => {
+  const { tenantId } = req.params as GetContractByTenantSchemaType;
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
+  const skip = (page - 1) * limit;
+
+  // Allow if user is the tenant, or Admin/Staff
+  if (
+    req.user?.tenantId !== tenantId &&
+    req.user?.role !== 'Admin' &&
+    req.user?.role !== 'Staff'
+  ) {
+    throw new ForbiddenError('Unauthorized');
+  }
+
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     select: { id: true },
   });
   if (!tenant) throw new NotFoundError('Tenant not found');
 
-  return await prisma.contract.findUnique({
-    where: { tenantId: tenant.id },
-    include: {
-      tenant: true,
-      room: true,
-      contractType: true,
-    },
-  });
+  const [contracts, totalCount] = await prisma.$transaction([
+    prisma.contract.findMany({
+      where: { tenantId: tenant.id },
+      skip,
+      take: limit,
+      include: {
+        tenant: true,
+        room: true,
+        contractType: true,
+      },
+      orderBy: { createdDate: 'desc' },
+    }),
+    prisma.contract.count({ where: { tenantId } }),
+  ]);
+
+  if (Array.isArray(contracts) && !contracts.length)
+    throw new NotFoundError('Contracts not found');
+
+  // Generate pagination data
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
+
+  return {
+    data: contracts,
+    ...paginationData,
+  };
 };

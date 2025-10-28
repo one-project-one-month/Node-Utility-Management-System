@@ -13,7 +13,7 @@ import {
 } from '../validations/contractSchema';
 import {
   createContractController,
-  getContractByTenantIdController,
+  getAllContractsByTenantIdController,
   getAllContractController,
   getContractByIdController,
   updateContractController,
@@ -147,7 +147,7 @@ router.get(
  * /api/v1/tenants/{tenantId}/contracts:
  *   get:
  *     tags: [Contracts]
- *     summary: Get contract by tenant ID
+ *     summary: Get All contracts by tenant ID
  *     description: Retrieve all contracts for a specific tenant. Accessible by Admin, Staff, and the tenant themselves.
  *     security:
  *       - bearerAuth: []
@@ -165,7 +165,8 @@ router.get(
   '/tenants/:tenantId/contracts',
   hasRole(['Admin', 'Staff', 'Tenant']),
   validateRequestParams(GetContractByTenantSchema),
-  getContractByTenantIdController
+  validateRequestQuery(PaginationQuerySchema),
+  getAllContractsByTenantIdController
 );
 
 export default router;
