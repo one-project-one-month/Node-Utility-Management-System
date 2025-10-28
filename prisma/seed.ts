@@ -142,7 +142,26 @@ async function createTenantsAndUsersBatch(
   const userData: Prisma.UserCreateManyInput[] = [];
   const tenantPassword = await hashPassword('tenant123');
 
-  for (const room of occupiedRooms) {
+  // Reserve a specific room for tenant@gmail.com (room 101)
+  const reservedRoomForDemoTenant = occupiedRooms.find(
+    (room) => room.roomNo === 101
+  );
+  const otherRooms = occupiedRooms.filter((room) => room.roomNo !== 101);
+
+  // Create demo tenant (tenant@gmail.com) with room 101
+  if (reservedRoomForDemoTenant) {
+    tenantData.push({
+      name: 'TenantName',
+      email: 'tenant@gmail.com',
+      nrc: `14/ABCD(N)123456`,
+      phoneNo: `09${faker.string.numeric(9)}`,
+      emergencyNo: `09${faker.string.numeric(9)}`,
+      roomId: reservedRoomForDemoTenant.id,
+    });
+  }
+
+  // Create other tenants for remaining rooms
+  for (const room of otherRooms) {
     const name = faker.person.fullName();
     const email = `${name.toLowerCase().replace(/\s+/g, '.')}${faker.number.int({ min: 1, max: 99 })}@gmail.com`;
     const nrc = `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`;
@@ -196,12 +215,6 @@ async function createTenantsAndUsersBatch(
       email: 'john.staff@gmail.com',
       password: staffPassword,
       role: 'Staff' as UserRole,
-    },
-    {
-      userName: 'staff.sarah',
-      email: 'sarah.staff@gmail.com',
-      password: staffPassword,
-      role: 'Staff' as UserRole,
     }
   );
 
@@ -218,23 +231,49 @@ async function createOccupantsBatch(
   const occupantData: Prisma.OccupantCreateManyInput[] = [];
 
   for (const tenant of tenants) {
-    const numberOfOccupants = faker.number.int({ min: 1, max: 3 }); // Minimum 1 occupant for rented/purchased rooms
-    const relationships: RelationshipToTenant[] = faker.helpers.arrayElements(
-      ['SPOUSE', 'PARENT', 'CHILD', 'SIBLING', 'RELATIVE', 'FRIEND', 'OTHER'],
-      numberOfOccupants
-    );
+    // Add more occupants for tenant@gmail.com to show relationships
+    if (tenant.email === 'tenant@gmail.com') {
+      // Create family relationships for demo tenant
+      occupantData.push(
+        {
+          name: 'Mary Tenant',
+          nrc: `14/ABCD(N)654321`,
+          relationshipToTenant: 'SPOUSE' as RelationshipToTenant,
+          tenantId: tenant.id,
+        },
+        {
+          name: 'Johnny Tenant Jr.',
+          nrc: null, // Child might not have NRC
+          relationshipToTenant: 'CHILD' as RelationshipToTenant,
+          tenantId: tenant.id,
+        },
+        {
+          name: 'Sarah Tenant',
+          nrc: `14/ABCD(N)789012`,
+          relationshipToTenant: 'SIBLING' as RelationshipToTenant,
+          tenantId: tenant.id,
+        }
+      );
+    } else {
+      // Regular occupants for other tenants
+      const numberOfOccupants = faker.number.int({ min: 1, max: 3 });
+      const relationships: RelationshipToTenant[] = faker.helpers.arrayElements(
+        ['SPOUSE', 'PARENT', 'CHILD', 'SIBLING', 'RELATIVE', 'FRIEND', 'OTHER'],
+        numberOfOccupants
+      );
 
-    relationships.forEach((relationship) => {
-      occupantData.push({
-        name: faker.person.fullName(),
-        nrc:
-          Math.random() < 0.8
-            ? `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`
-            : null,
-        relationshipToTenant: relationship,
-        tenantId: tenant.id,
+      relationships.forEach((relationship) => {
+        occupantData.push({
+          name: faker.person.fullName(),
+          nrc:
+            Math.random() < 0.8
+              ? `${faker.number.int({ min: 1, max: 15 })}/ABCD(N)${faker.number.int({ min: 100000, max: 999999 })}`
+              : null,
+          relationshipToTenant: relationship,
+          tenantId: tenant.id,
+        });
       });
-    });
+    }
   }
 
   // Batch create all occupants
@@ -462,7 +501,12 @@ async function createCustomerServicesBatch(
   for (const tenant of tenants) {
     const room = occupiedRooms.find((r) => r.id === tenant.roomId)!;
     const contractStart = randomPastDate({ monthsAgoMin: 3, monthsAgoMax: 18 });
-    const serviceCount = faker.number.int({ min: 1, max: 5 }); // Minimum 1 service for occupied rooms
+
+    // Create more service requests for tenant@gmail.com to show relationships
+    const serviceCount =
+      tenant.email === 'tenant@gmail.com'
+        ? faker.number.int({ min: 3, max: 8 }) // More services for demo tenant
+        : faker.number.int({ min: 1, max: 5 });
 
     for (let i = 0; i < serviceCount; i++) {
       const selectedService = faker.helpers.weightedArrayElement(
@@ -609,6 +653,17 @@ async function main() {
     _count: true,
   });
 
+  // Print demo tenant info
+  const demoTenant = await prisma.tenant.findFirst({
+    where: { email: 'tenant@gmail.com' },
+    include: {
+      room: true,
+      occupants: true,
+      contract: true,
+      user: true,
+    },
+  });
+
   const endTime = Date.now();
   console.log('✅ Database seeding completed!');
   console.log(
@@ -641,6 +696,10 @@ async function main() {
   console.log(
     `🛠️ Created: ${await prisma.customerService.count()} service requests (only for occupied rooms)`
   );
+
+  if (demoTenant) {
+    console.log('👤 Demo tenant info:', JSON.stringify(demoTenant, null, 2));
+  }
 }
 
 main()
