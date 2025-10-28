@@ -29,6 +29,12 @@ export const GetInvoiceQuerySchema = PaginationQuerySchema.extend({
       { message: 'Year must be between 2020 and 2030' }
     )
     .optional(),
+  tenantName: z.string().min(1, 'Tenant name is required').optional(),
+  roomNo: z
+    .string()
+    .min(1, 'Room number is required and choose a positive number in the list')
+    .optional(),
+  search: z.string().min(1, 'Search cannot be empty').optional(),
 });
 
 export const CreateInvoiceSchema = z.object({

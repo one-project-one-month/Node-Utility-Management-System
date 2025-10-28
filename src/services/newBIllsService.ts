@@ -4,6 +4,7 @@ import { generatePaginationData } from '../common/utils/paginationHelper';
 import prisma from '../lib/prismaClient';
 import {
   CreateBillSchemaType,
+  GetAllBillQueryType,
   UpdateBillSchemaType,
 } from '../validations/newBillsSchema';
 import { PaginationQueryType } from '../validations/paginationSchema';
@@ -332,15 +333,89 @@ export const getBillsByIdService = async (billId: string) => {
 
 export const getAllBillsService = async (req: Request) => {
   // Calculate pagination
-  const { page, limit } = req.validatedQuery as PaginationQueryType;
+  const { page, limit, status, roomNo, tenantName, search } =
+    req.validatedQuery as GetAllBillQueryType;
   const skip = (page - 1) * limit;
 
-  // get all bills and total count
+  const whereClause: any = {};
+
+  if (status) {
+    whereClause.invoice = {
+      is: {
+        status: status,
+      },
+    };
+  }
+
+  if (roomNo || tenantName) {
+    whereClause.room = {
+      is: {},
+    };
+
+    if (roomNo) {
+      whereClause.room.is!.roomNo = Number(roomNo);
+    }
+
+    if (tenantName) {
+      whereClause.room.is!.tenant = {
+        is: {
+          name: {
+            contains: tenantName,
+            mode: 'insensitive',
+          },
+        },
+      };
+    }
+  }
+
+  // universal search -> query params [tenant name and roomNo]
+  const searchString = search?.toString();
+
+  if (searchString) {
+    const searchNumber = isNaN(Number(searchString))
+      ? undefined
+      : Number(searchString);
+    const OR_conditions: any[] = [];
+
+    // For RoomNo
+    if (searchNumber !== undefined) {
+      OR_conditions.push({
+        room: {
+          is: {
+            roomNo: searchNumber,
+          },
+        },
+      });
+    } else {
+      // For Tenant Name
+      OR_conditions.push({
+        room: {
+          is: {
+            tenant: {
+              is: {
+                name: {
+                  contains: searchString,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // OR will only be applied if search param is provided
+    if (OR_conditions.length > 0) {
+      whereClause.OR = OR_conditions;
+    }
+  }
+
   const [bills, totalCount] = await prisma.$transaction([
     prisma.bill.findMany({
       skip,
       take: limit,
       orderBy: { createdAt: 'desc' },
+      where: whereClause,
       include: {
         room: {
           include: {
@@ -360,7 +435,9 @@ export const getAllBillsService = async (req: Request) => {
         },
       },
     }),
-    prisma.bill.count(),
+    prisma.bill.count({
+      where: whereClause,
+    }),
   ]);
 
   if (Array.isArray(bills) && !bills.length)

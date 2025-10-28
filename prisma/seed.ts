@@ -95,10 +95,13 @@ async function createRoomsBatch(totalFloors: number, roomsPerFloor: number) {
 
       let status: RoomStatus;
       const random = Math.random();
-      if (random < 0.7) status = 'Rented';
-      else if (random < 0.8) status = 'Purchased';
-      else if (random < 0.9) status = 'InMaintenance';
-      else status = 'Available';
+      if (random < 0.6)
+        status = 'Rented'; // 60% rented
+      else if (random < 0.8)
+        status = 'Purchased'; // 20% purchased
+      else if (random < 0.9)
+        status = 'Available'; // 10% available
+      else status = 'InMaintenance'; // 10% maintenance
 
       roomData.push({
         roomNo: roomNo,
@@ -215,7 +218,7 @@ async function createOccupantsBatch(
   const occupantData: Prisma.OccupantCreateManyInput[] = [];
 
   for (const tenant of tenants) {
-    const numberOfOccupants = faker.number.int({ min: 0, max: 3 });
+    const numberOfOccupants = faker.number.int({ min: 1, max: 3 }); // Minimum 1 occupant for rented/purchased rooms
     const relationships: RelationshipToTenant[] = faker.helpers.arrayElements(
       ['SPOUSE', 'PARENT', 'CHILD', 'SIBLING', 'RELATIVE', 'FRIEND', 'OTHER'],
       numberOfOccupants
@@ -248,12 +251,9 @@ async function createContractsBatch(
   console.log(`📜 Creating contracts in batch...`);
 
   const contractData: Prisma.ContractCreateManyInput[] = [];
-  const rentedRooms = occupiedRooms.filter((r) => r.status === 'Rented');
-  const rentedTenants = tenants.filter((t) =>
-    rentedRooms.some((r) => r.id === t.roomId)
-  );
 
-  for (const tenant of rentedTenants) {
+  for (const tenant of tenants) {
+    const room = occupiedRooms.find((r) => r.id === tenant.roomId)!;
     const contractType = faker.helpers.arrayElement(allContractTypes);
     const contractStart = randomPastDate({ monthsAgoMin: 3, monthsAgoMax: 18 });
     const contractExpiry = new Date(contractStart);
@@ -304,20 +304,31 @@ async function createBillsAndInvoicesBatch(
 
     for (const billDate of billDates) {
       const utilities = calculateUtilities();
-      const baseRental =
-        room.status === 'Rented' ? Number(contractType.price) : 0;
+
+      // Different billing logic for Rented vs Purchased
+      let baseRental = 0;
+      if (room.status === 'Rented') {
+        baseRental = Number(contractType.price);
+      } else if (room.status === 'Purchased') {
+        // For purchased rooms, only charge utilities and maintenance fees
+        baseRental = 0;
+      }
+
       const electricityFee = utilities.electricity * 350;
       const waterFee = utilities.water * 150;
       const hasFine =
         Math.random() < 0.2 ? faker.number.int({ min: 5000, max: 20000 }) : 0;
       const hasCarParking =
         Math.random() < 0.4 ? faker.number.int({ min: 10000, max: 20000 }) : 0;
+      const maintenanceFee = faker.number.int({ min: 20000, max: 50000 });
+
       const totalAmount =
         baseRental +
         electricityFee +
         waterFee +
         hasFine +
         hasCarParking +
+        maintenanceFee +
         10000;
 
       const billId = faker.string.uuid();
@@ -329,8 +340,11 @@ async function createBillsAndInvoicesBatch(
         electricityFee: new Prisma.Decimal(electricityFee),
         waterFee: new Prisma.Decimal(waterFee),
         fineFee: hasFine ? new Prisma.Decimal(hasFine) : null,
-        serviceFee: new Prisma.Decimal(5000),
-        groundFee: new Prisma.Decimal(5000),
+        serviceFee: new Prisma.Decimal(maintenanceFee),
+        groundFee:
+          room.status === 'Purchased'
+            ? new Prisma.Decimal(0)
+            : new Prisma.Decimal(5000),
         carParkingFee: hasCarParking ? new Prisma.Decimal(hasCarParking) : null,
         wifiFee: new Prisma.Decimal(10000),
         totalAmount: new Prisma.Decimal(totalAmount),
@@ -396,6 +410,7 @@ async function createBillsAndInvoicesBatch(
   // Batch create all bills and related data in transaction
   console.log('💾 Saving bills and related data...');
   const chunkSize = 1000;
+
   // Bills
   for (let i = 0; i < billData.length; i += chunkSize) {
     const chunk = billData.slice(i, i + chunkSize);
@@ -447,7 +462,7 @@ async function createCustomerServicesBatch(
   for (const tenant of tenants) {
     const room = occupiedRooms.find((r) => r.id === tenant.roomId)!;
     const contractStart = randomPastDate({ monthsAgoMin: 3, monthsAgoMax: 18 });
-    const serviceCount = faker.number.int({ min: 0, max: 5 });
+    const serviceCount = faker.number.int({ min: 1, max: 5 }); // Minimum 1 service for occupied rooms
 
     for (let i = 0; i < serviceCount; i++) {
       const selectedService = faker.helpers.weightedArrayElement(
@@ -559,24 +574,33 @@ async function main() {
   const roomsPerFloor = 20;
   const rooms = await createRoomsBatch(totalFloors, roomsPerFloor);
 
-  // Filter occupied rooms
+  // Filter occupied rooms (Rented and Purchased only)
   const occupiedRooms = rooms.filter(
     (r) => r.status === 'Rented' || r.status === 'Purchased'
   );
 
-  // Create tenants and users
+  // Filter empty rooms (Available and InMaintenance)
+  const emptyRooms = rooms.filter(
+    (r) => r.status === 'Available' || r.status === 'InMaintenance'
+  );
+
+  console.log(`🏠 Room distribution:`);
+  console.log(` - Occupied (Rented/Purchased): ${occupiedRooms.length} rooms`);
+  console.log(` - Empty (Available/InMaintenance): ${emptyRooms.length} rooms`);
+
+  // Create tenants and users ONLY for occupied rooms
   const tenants = await createTenantsAndUsersBatch(occupiedRooms);
 
-  // Create occupants
+  // Create occupants ONLY for occupied rooms
   await createOccupantsBatch(tenants);
 
-  // Create contracts
+  // Create contracts ONLY for occupied rooms
   await createContractsBatch(tenants, allContractTypes, occupiedRooms);
 
-  // Create bills and invoices (this is the most time-consuming part)
+  // Create bills and invoices ONLY for occupied rooms
   await createBillsAndInvoicesBatch(tenants, allContractTypes, occupiedRooms);
 
-  // Create customer services
+  // Create customer services ONLY for occupied rooms
   await createCustomerServicesBatch(tenants, occupiedRooms);
 
   // Print statistics
@@ -595,15 +619,27 @@ async function main() {
   roomStatusCount.forEach((status) => {
     console.log(` - ${status.status}: ${status._count} rooms`);
   });
-  console.log(`👥 Created: ${tenants.length} tenants`);
-  console.log(`👪 Created: ${await prisma.occupant.count()} occupants`);
-  console.log(`👤 Created: ${await prisma.user.count()} users`);
-  console.log(`📊 Created: ${await prisma.contract.count()} contracts`);
-  console.log(`💰 Created: ${await prisma.bill.count()} bills`);
-  console.log(`🧾 Created: ${await prisma.invoice.count()} invoices`);
-  console.log(`📄 Created: ${await prisma.receipt.count()} receipts`);
   console.log(
-    `🛠️ Created: ${await prisma.customerService.count()} service requests`
+    `👥 Created: ${tenants.length} tenants (only for occupied rooms)`
+  );
+  console.log(
+    `👪 Created: ${await prisma.occupant.count()} occupants (only for occupied rooms)`
+  );
+  console.log(`👤 Created: ${await prisma.user.count()} users`);
+  console.log(
+    `📊 Created: ${await prisma.contract.count()} contracts (only for occupied rooms)`
+  );
+  console.log(
+    `💰 Created: ${await prisma.bill.count()} bills (only for occupied rooms)`
+  );
+  console.log(
+    `🧾 Created: ${await prisma.invoice.count()} invoices (only for occupied rooms)`
+  );
+  console.log(
+    `📄 Created: ${await prisma.receipt.count()} receipts (only for occupied rooms)`
+  );
+  console.log(
+    `🛠️ Created: ${await prisma.customerService.count()} service requests (only for occupied rooms)`
   );
 }
 

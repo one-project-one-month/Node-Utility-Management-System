@@ -6,6 +6,7 @@ import prisma from '../lib/prismaClient';
 import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateTenantType,
+  GetAllTenantQueryType,
   UpdateTenantType,
 } from '../validations/tenantSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
@@ -150,13 +151,81 @@ export async function getByIdTenantService(tenantId: string) {
 }
 
 export async function getAllTenantService(req: Request) {
-  const { page, limit } = req.validatedQuery as PaginationQueryType;
+  const query = req.validatedQuery as GetAllTenantQueryType;
+  const { page, limit } = query;
   const skip = (page - 1) * limit;
+
+  const whereClause: any = {};
+
+  if (query.name) {
+    whereClause.name = { contains: query.name, mode: 'insensitive' };
+  }
+  if (query.email) {
+    whereClause.email = query.email;
+  }
+  if (query.phoneNo) {
+    whereClause.phoneNo = query.phoneNo;
+  }
+
+  if (query.roomNo) {
+    whereClause.room = {
+      is: {
+        roomNo: Number(query.roomNo),
+      },
+    };
+  }
+
+  if (query.contractType) {
+    whereClause.contract = {
+      is: {
+        contractType: {
+          is: {
+            name: query.contractType,
+          },
+        },
+      },
+    };
+  }
+
+  // universal search -> query params [tenant name and roomNo]
+  const searchString = query.search?.toString();
+
+  if (searchString) {
+    const searchNumber = isNaN(Number(searchString))
+      ? undefined
+      : Number(searchString);
+    const OR_conditions: any[] = [];
+
+    // For RoomNo
+    if (searchNumber !== undefined) {
+      OR_conditions.push({
+        room: {
+          is: {
+            roomNo: searchNumber,
+          },
+        },
+      });
+    } else {
+      // For Tenant Name
+      OR_conditions.push({
+        name: {
+          contains: searchString,
+          mode: 'insensitive',
+        },
+      });
+    }
+
+    // OR will only be applied if search param is provided
+    if (OR_conditions.length > 0) {
+      whereClause.OR = OR_conditions;
+    }
+  }
 
   const [tenants, totalCount] = await Promise.all([
     prisma.tenant.findMany({
       skip,
       take: limit,
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
       include: {
         room: true,
@@ -166,9 +235,16 @@ export async function getAllTenantService(req: Request) {
             contractType: true,
           },
         },
+        _count: {
+          select: {
+            occupants: true,
+          },
+        },
       },
     }),
-    prisma.tenant.count(),
+    prisma.tenant.count({
+      where: whereClause,
+    }),
   ]);
 
   if (tenants.length === 0) {

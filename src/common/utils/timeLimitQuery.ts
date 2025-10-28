@@ -1,9 +1,7 @@
 import moment from 'moment';
 import { GetInvoiceQueryType } from '../../validations/invoiceSchema';
 
-export default function getTimeLimitQuery(query: GetInvoiceQueryType) {
-  const { month, year } = query;
-
+export default function getTimeLimitQuery(month?: string, year?: string) {
   const startDate = moment(`${month} ${year}`, 'MMM YYYY')
     .startOf('month')
     .toDate();
