@@ -77,15 +77,23 @@ export const IdSchema = z.object({
   id: z.uuid({ version: 'v4', error: 'Invalid UUID' }),
 });
 
-export const TenantIdAndStatusSchema = z.object({
+export const TenantIdSchema = z.object({
   id: z.uuid({ version: 'v4', error: 'Invalid UUID' }),
-  status: z.enum(
-    ServiceStatus,
-    "Status must be one of 'Pending', 'Ongoing', or 'Resolved'"
-  ),
+});
+
+export const TenantServiceHistorySchema = PaginationQuerySchema.extend({
+  status: z
+    .enum(
+      ServiceStatus,
+      "Status must be one of 'Pending', 'Ongoing', or 'Resolved'"
+    )
+    .optional(),
 });
 
 export type CreateServiceType = z.infer<typeof CreateCustomerServiceSchema>;
 export type UpdateServiceType = z.infer<typeof UpdateCustomerServiceSchema>;
 export type GetAllServiceQueryType = z.infer<typeof GetAllServiceQuerySchema>;
-export type TenantIdAndStatusType = z.infer<typeof TenantIdAndStatusSchema>;
+export type TenantIdType = z.infer<typeof TenantIdSchema>;
+export type TenantServiceHistoryType = z.infer<
+  typeof TenantServiceHistorySchema
+>;

@@ -16,10 +16,10 @@ import {
   CreateCustomerServiceSchema,
   GetAllServiceQuerySchema,
   IdSchema,
-  TenantIdAndStatusSchema,
+  TenantIdSchema,
+  TenantServiceHistorySchema,
   UpdateCustomerServiceSchema,
 } from '../validations/serviceSchema';
-import { PaginationQuerySchema } from '../validations/paginationSchema';
 import { hasRole } from '../middlewares/authMiddleware';
 
 const router = Router();
@@ -77,9 +77,9 @@ router.post(
  *         $ref: '#/components/responses/NotFoundError'
  */
 router.get(
-  '/tenants/:id/customer-services/history/:status',
-  validateRequestParams(TenantIdAndStatusSchema),
-  validateRequestQuery(PaginationQuerySchema),
+  '/tenants/:id/customer-services/history',
+  validateRequestParams(TenantIdSchema),
+  validateRequestQuery(TenantServiceHistorySchema),
   serviceHistoryController
 );
 
