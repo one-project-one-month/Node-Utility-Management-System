@@ -26,7 +26,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/v1/tenants/{id}/customer-services/create:
+ * /api/v1/tenants/{tenantId}/customer-services/create:
  *   post:
  *     tags: [Customer Services]
  *     summary: Create a new customer service request
@@ -56,18 +56,18 @@ router.post(
 
 /**
  * @swagger
- * /api/v1/tenants/{id}/customer-services/history/{status}:
+ * /api/v1/tenants/{tenantId}/customer-services/history:
  *   get:
  *     tags: [Customer Services]
- *     summary: Get customer service history by status
- *     description: Retrieves all customer service records for a tenant filtered by status.
+ *     summary: Get customer service history
+ *     description: Retrieves all customer service records for a tenant.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/TenantIdParam'
- *       - $ref: '#/components/parameters/StatusParam'
  *       - $ref: '#/components/parameters/PageParam'
  *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/StatusQuery'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/ServiceHistorySuccess'

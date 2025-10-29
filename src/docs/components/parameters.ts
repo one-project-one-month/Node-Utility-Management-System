@@ -193,16 +193,6 @@
  *         enum: [Cash, Mobile Banking]
  *         example: Cash
  *
- *     StatusParam:
- *       name: status
- *       in: path
- *       description: Service status filter
- *       required: true
- *       schema:
- *         type: string
- *         enum: [Pending, Ongoing, Resolved]
- *         example: Pending
- *
  *     RoomStatusFilterParam:
  *       name: status
  *       in: query
@@ -292,4 +282,15 @@
  *         type: string
  *         pattern: '^\d{4}$'
  *         example: '2024'
+ *
+ *     StatusQuery:
+ *       name: status
+ *       in: query
+ *       description: Service status filter
+ *       required: false
+ *       schema:
+ *         type: string
+ *         enum: [Pending, Ongoing, Resolved]
+ *         example: Pending
+ *
  */
