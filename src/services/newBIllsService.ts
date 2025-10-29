@@ -464,6 +464,7 @@ export const getLatestBillByTenantIdService = async (tenantId: string) => {
       room: {
         include: {
           tenant: true,
+          contract: true,
         },
       },
       totalUnit: true,
@@ -500,6 +501,7 @@ export const getBillHistoryByTenantIdService = async (req: Request) => {
         room: {
           include: {
             tenant: true,
+            contract: true,
           },
         },
         totalUnit: true,
