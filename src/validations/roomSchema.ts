@@ -27,9 +27,9 @@ export const CreateRoomSchema = z.object({
   description: z.string().optional().nullable(),
 
   //Relations
-  tenantId: z.uuid({ version: 'v4' }).optional().nullable(),
-  billId: z.uuid({ version: 'v4' }).optional().nullable(),
-  customerServiceId: z.uuid({ version: 'v4' }).optional().nullable(),
+  // tenantId: z.uuid({ version: 'v4' }).optional().nullable(),
+  // billId: z.uuid({ version: 'v4' }).optional().nullable(),
+  // customerServiceId: z.uuid({ version: 'v4' }).optional().nullable(),
 });
 
 export const UpdateRoomSchema = z

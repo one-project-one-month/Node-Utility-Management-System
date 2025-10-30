@@ -7,10 +7,8 @@ type ValidateProps = {
   target: 'BODY' | 'PARAMS' | 'QUERY';
 };
 
-const validate = (props: ValidateProps) => {
+const validate = ({ schema, target }: ValidateProps) => {
   return (req: Request, _res: Response, next: NextFunction) => {
-    const { schema, target } = props;
-
     // Get the correct data source based on target
     const dataToValidate =
       target === 'BODY'
@@ -19,10 +17,10 @@ const validate = (props: ValidateProps) => {
           ? req.params
           : req.query;
 
-    const validation = schema.safeParse(dataToValidate);
+    const { success, error, data } = schema.safeParse(dataToValidate);
 
-    if (!validation.success) {
-      const formattedErrors = validation.error.issues.map((err) => ({
+    if (!success) {
+      const formattedErrors = error.issues.map((err) => ({
         path: err.path.join('.'),
         message: err.message,
       }));
@@ -31,35 +29,33 @@ const validate = (props: ValidateProps) => {
 
     // Store validated data in the correct request property
     if (target === 'BODY') {
-      req.validatedBody = validation.data;
+      req.validatedBody = data;
     } else if (target === 'PARAMS') {
-      req.validatedParams = validation.data;
+      req.validatedParams = data;
     } else if (target === 'QUERY') {
-      req.validatedQuery = validation.data;
+      req.validatedQuery = data;
     }
     next();
   };
 };
 
-const validateRequestParams = (schema: z.Schema<any>) => {
+export const validateRequestParams = (schema: z.Schema<any>) => {
   return validate({
     schema,
     target: 'PARAMS',
   });
 };
 
-const validateRequestQuery = (schema: z.Schema<any>) => {
+export const validateRequestQuery = (schema: z.Schema<any>) => {
   return validate({
     schema,
     target: 'QUERY',
   });
 };
 
-const validateRequestBody = (schema: z.Schema<any>) => {
+export const validateRequestBody = (schema: z.Schema<any>) => {
   return validate({
     schema,
     target: 'BODY',
   });
 };
-
-export { validateRequestBody, validateRequestQuery, validateRequestParams };

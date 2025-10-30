@@ -14,7 +14,7 @@ export async function getByIdTenantController(
 ): Promise<void> {
   try {
     const tenant = await getByIdTenantService(req.validatedParams.tenantId);
-    successResponse(res, 'Tenant gets successfull.', { data: tenant }, 200);
+    successResponse(res, 'Tenant gets successful.', { data: tenant }, 200);
   } catch (error) {
     return next(error);
   }

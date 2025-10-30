@@ -18,11 +18,10 @@ export async function getAllTotalUnitsService(req: Request) {
   const skip = (page - 1) * limit;
 
   // Get totalUnits & totalCount
-  const [totalUnits, totalCount] = await Promise.all([
+  const [totalUnits, totalCount] = await prisma.$transaction([
     prisma.totalUnits.findMany({
       skip,
       take: limit,
-      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         electricityUnits: true,
@@ -49,13 +48,13 @@ export async function getAllTotalUnitsService(req: Request) {
           },
         },
       },
+      orderBy: { createdAt: 'desc' },
     }),
     prisma.totalUnits.count(),
   ]);
 
-  if (totalUnits.length === 0) {
+  if (!totalUnits || totalUnits.length === 0)
     throw new NotFoundError('No total units found');
-  }
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
@@ -74,6 +73,32 @@ export async function getAllTotalUnitsService(req: Request) {
 export async function getTotalUnitsByIdService(totalUnitId: string) {
   return await prisma.totalUnits.findUnique({
     where: { id: totalUnitId },
+    select: {
+      id: true,
+      electricityUnits: true,
+      waterUnits: true,
+      createdAt: true,
+      updatedAt: true,
+      billId: true,
+      bill: {
+        select: {
+          id: true,
+          room: {
+            select: {
+              id: true,
+              roomNo: true,
+              floor: true,
+              status: true,
+              tenant: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 }
 

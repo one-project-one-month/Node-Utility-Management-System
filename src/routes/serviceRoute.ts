@@ -11,7 +11,7 @@ import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from '../middlewares/validationMiddlware';
+} from '../middlewares/validationMiddleware';
 import {
   CreateCustomerServiceSchema,
   GetAllServiceQuerySchema,
@@ -49,7 +49,7 @@ const router = Router();
  */
 router.post(
   '/tenants/:id/customer-services/create',
-  validateRequestParams(IdSchema),
+  validateRequestParams(TenantIdSchema),
   validateRequestBody(CreateCustomerServiceSchema),
   createServiceController
 );

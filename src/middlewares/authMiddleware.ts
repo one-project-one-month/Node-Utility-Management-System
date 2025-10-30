@@ -17,6 +17,9 @@ export function isAuthenticated(
 
   try {
     const decoded = verifyAccessToken(token);
+    if (!decoded) {
+      throw new UnauthorizedError('Invalid or expired token');
+    }
     req.user = decoded;
     next();
   } catch (error) {

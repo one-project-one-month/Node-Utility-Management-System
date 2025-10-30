@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { successResponse } from '../common/apiResponse';
 import {
   createCustomerService,
-  cutomerServiceHistory,
+  customerServiceHistory,
   deleteCustomerServiceById,
   getAllCustomerService,
   getCustomerServiceById,
@@ -39,8 +39,8 @@ export const serviceHistoryController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await cutomerServiceHistory(req);
-    successResponse(res, 'Fetch service history successfullly', result, 200);
+    const result = await customerServiceHistory(req);
+    successResponse(res, 'Fetch service history successfully', result, 200);
   } catch (error) {
     next(error);
   }
