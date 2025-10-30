@@ -58,7 +58,7 @@ export async function updateInvoiceController(
 
     successResponse(
       res,
-      'Bill updated successfully',
+      'Invoice updated successfully',
       { data: updatedInvoice },
       200
     );
@@ -80,7 +80,7 @@ export async function getInvoiceController(
     }
     successResponse(
       res,
-      'Invoice fetched successfully.',
+      'Invoice by id fetched successfully.',
       {
         data: fetchedInvoice,
       },
@@ -99,10 +99,12 @@ export async function getTenantInvoiceLatestController(
   try {
     const tenantId = req.validatedParams;
     const result = await getTenantInvoiceLatestService(tenantId);
+    if (!result)
+      return next(new NotFoundError('No latest invoice by tenant id'));
 
     successResponse(
       res,
-      'Invoice fetched successfully.',
+      'Latest invoice by tenant id fetched successfully.',
       {
         data: result,
       },

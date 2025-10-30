@@ -24,7 +24,6 @@ import {
   SendReceiptEmailSchema,
 } from '../validations/receiptSchema';
 import { hasRole } from '../middlewares/authMiddleware';
-import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
 
@@ -77,7 +76,7 @@ router.get(
 router.get(
   '/tenants/:tenantId/receipts/history',
   validateRequestParams(GetReceiptByTenantParamSchema),
-  validateRequestQuery(PaginationQuerySchema),
+  validateRequestQuery(GetAllReceiptsQuerySchema),
   getReceiptHistoriesByTenantIdController
 );
 

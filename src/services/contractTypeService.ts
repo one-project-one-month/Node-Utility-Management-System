@@ -24,12 +24,12 @@ export const getAllContractTypeService = async () => {
     orderBy: { createdAt: 'desc' },
     include: {
       contract: true,
-       _count: {
+      _count: {
         select: {
-          contract: true
-        }
-      }
-    }
+          contract: true,
+        },
+      },
+    },
   });
 
   if (Array.isArray(contractTypes) && !contractTypes.length)
@@ -46,10 +46,10 @@ export const getByIdContractTypeService = async (contractTypeId: string) => {
       contract: true,
       _count: {
         select: {
-          contract: true
-        }
-      }
-    }
+          contract: true,
+        },
+      },
+    },
   });
   if (!contractType) throw new NotFoundError('Contract type not found');
   return contractType;

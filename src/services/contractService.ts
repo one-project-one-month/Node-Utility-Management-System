@@ -148,7 +148,16 @@ export const getContractByTenantIdService = async (tenantId: string) => {
   });
   if (!tenant) throw new NotFoundError('Tenant not found');
 
-  return await prisma.contract.findUnique({
+  // return await prisma.contract.findUnique({
+  //   where: { tenantId: tenant.id },
+  //   include: {
+  //     tenant: true,
+  //     room: true,
+  //     contractType: true,
+  //   },
+  // });
+
+  const contract = await prisma.contract.findUnique({
     where: { tenantId: tenant.id },
     include: {
       tenant: true,
@@ -156,4 +165,7 @@ export const getContractByTenantIdService = async (tenantId: string) => {
       contractType: true,
     },
   });
+  if (!contract) throw new NotFoundError('Contract by tenant id not found');
+
+  return contract;
 };
