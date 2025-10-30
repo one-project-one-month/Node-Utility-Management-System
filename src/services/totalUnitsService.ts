@@ -74,6 +74,32 @@ export async function getAllTotalUnitsService(req: Request) {
 export async function getTotalUnitsByIdService(totalUnitId: string) {
   return await prisma.totalUnits.findUnique({
     where: { id: totalUnitId },
+    select: {
+        id: true,
+        electricityUnits: true,
+        waterUnits: true,
+        createdAt: true,
+        updatedAt: true,
+        billId: true,
+        bill: {
+          select: {
+            id: true,
+            room: {
+              select: {
+                id: true,
+                roomNo: true,
+                floor: true,
+                status: true,
+                tenant: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
   });
 }
 
@@ -81,6 +107,32 @@ export async function getTotalUnitsByIdService(totalUnitId: string) {
 export async function getTotalUnitsByBillIdService(billId: string) {
   return await prisma.totalUnits.findUnique({
     where: { billId: billId },
+    select: {
+        id: true,
+        electricityUnits: true,
+        waterUnits: true,
+        createdAt: true,
+        updatedAt: true,
+        billId: true,
+        bill: {
+          select: {
+            id: true,
+            room: {
+              select: {
+                id: true,
+                roomNo: true,
+                floor: true,
+                status: true,
+                tenant: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
   });
 }
 
