@@ -1,11 +1,11 @@
 import { Request } from 'express';
 import { NotFoundError } from '../common/errors';
 import prisma from '../lib/prismaClient';
-import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateServiceType,
   GetAllServiceQueryType,
-  TenantIdAndStatusType,
+  TenantIdType,
+  TenantServiceHistoryType,
   UpdateServiceType,
 } from '../validations/serviceSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
@@ -41,8 +41,9 @@ export const createCustomerService = async (
 
 //get service history by tenantId
 export const cutomerServiceHistory = async (req: Request) => {
-  const { id, status } = req.validatedParams as TenantIdAndStatusType;
-  const { page, limit } = req.validatedQuery as PaginationQueryType;
+  const { id } = req.validatedParams as TenantIdType;
+  const { page, limit, status } =
+    req.validatedQuery as TenantServiceHistoryType;
 
   const skip = (page - 1) * limit;
 
@@ -56,13 +57,18 @@ export const cutomerServiceHistory = async (req: Request) => {
     throw new NotFoundError('Tenant not found');
   }
 
+  const whereClause: Prisma.CustomerServiceWhereInput = {
+    roomId: tenant.roomId,
+  };
+
+  if (status) {
+    whereClause.status = status;
+  }
+
   //Get customer service history and total count
   const [historyServices, totalCount] = await Promise.all([
     prisma.customerService.findMany({
-      where: {
-        roomId: tenant.roomId,
-        status,
-      },
+      where: whereClause,
       include: {
         room: {
           select: {
@@ -75,10 +81,7 @@ export const cutomerServiceHistory = async (req: Request) => {
       take: limit,
     }),
     prisma.customerService.count({
-      where: {
-        roomId: tenant.roomId,
-        status,
-      },
+      where: whereClause,
     }),
   ]);
 

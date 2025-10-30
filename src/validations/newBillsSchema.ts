@@ -83,6 +83,7 @@ export const GetAllBillQuerySchema = PaginationQuerySchema.extend({
     .string()
     .min(1, 'Room number is required and choose a positive number in the list')
     .optional(),
+  search: z.string().min(1, 'Search cannot be empty').optional(),
 });
 
 export type CreateBillSchemaType = z.infer<typeof CreateBillSchema>;

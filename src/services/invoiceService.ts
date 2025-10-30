@@ -11,10 +11,6 @@ import {
 import { BadRequestError, NotFoundError } from '../common/errors';
 import getTimeLimitQuery from '../common/utils/timeLimitQuery';
 import { generatePaginationData } from '../common/utils/paginationHelper';
-import {
-  INVOICES_FLATTENER_CONFIG,
-  universalFlattener,
-} from '../common/utils/obj-flattener';
 
 export async function createInvoiceService(body: CreateInvoiceType) {
   const existingBill = await prisma.bill.findUnique({
@@ -49,7 +45,7 @@ export async function createInvoiceService(body: CreateInvoiceType) {
 }
 
 export async function getAllInvoicesService(req: Request) {
-  const { page, limit, month, year, status, roomNo, tenantName } =
+  const { page, limit, month, year, status, roomNo, tenantName, search } =
     req.validatedQuery as GetInvoiceQueryType;
   const skip = (page - 1) * limit;
 
@@ -88,6 +84,55 @@ export async function getAllInvoicesService(req: Request) {
       };
     }
   }
+  // universal search -> query params [tenant name and roomNo]
+  const searchString = search?.toString();
+
+  if (searchString) {
+    const searchNumber = isNaN(Number(searchString))
+      ? undefined
+      : Number(searchString);
+    const OR_conditions: any[] = [];
+
+    // For RoomNo
+    if (searchNumber !== undefined) {
+      OR_conditions.push({
+        bill: {
+          is: {
+            room: {
+              is: {
+                roomNo: searchNumber,
+              },
+            },
+          },
+        },
+      });
+    } else {
+      // For Tenant Name
+      OR_conditions.push({
+        bill: {
+          is: {
+            room: {
+              is: {
+                tenant: {
+                  is: {
+                    name: {
+                      contains: searchString,
+                      mode: 'insensitive',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // OR will only be applied if search param is provided
+    if (OR_conditions.length > 0) {
+      whereClause.OR = OR_conditions;
+    }
+  }
 
   const [invoices, totalCount] = await prisma.$transaction([
     prisma.invoice.findMany({
@@ -123,10 +168,9 @@ export async function getAllInvoicesService(req: Request) {
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
-  const data = universalFlattener(invoices, INVOICES_FLATTENER_CONFIG);
 
   return {
-    data,
+    data: invoices,
     ...paginationData,
   };
 }
@@ -308,10 +352,9 @@ export async function getTenantInvoiceHistoryService(req: Request) {
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
-  const data = universalFlattener(invoices, INVOICES_FLATTENER_CONFIG);
 
   return {
-    data,
+    data: invoices,
     ...paginationData,
   };
 }

@@ -187,22 +187,39 @@ export async function getAllTenantService(req: Request) {
     };
   }
 
-  // const minCount = query.minOccupants ? Number(query.minOccupants) : undefined;
-  // const maxCount = query.maxOccupants ? Number(query.maxOccupants) : undefined;
-  // const exactCount = query.occupantCounts ? Number(query.occupantCounts) : undefined;
+  // universal search -> query params [tenant name and roomNo]
+  const searchString = query.search?.toString();
 
-  // if (exactCount) {
-  //   whereClause.occupants = {
-  //     _count: { equals: exactCount }
-  //   };
-  // } else if (minCount || maxCount) {
-  //   whereClause.occupants = {
-  //     _count: {
-  //       ...(minCount && { gte: minCount }),
-  //       ...(maxCount && { lte: maxCount }),
-  //     }
-  //   };
-  // }
+  if (searchString) {
+    const searchNumber = isNaN(Number(searchString))
+      ? undefined
+      : Number(searchString);
+    const OR_conditions: any[] = [];
+
+    // For RoomNo
+    if (searchNumber !== undefined) {
+      OR_conditions.push({
+        room: {
+          is: {
+            roomNo: searchNumber,
+          },
+        },
+      });
+    } else {
+      // For Tenant Name
+      OR_conditions.push({
+        name: {
+          contains: searchString,
+          mode: 'insensitive',
+        },
+      });
+    }
+
+    // OR will only be applied if search param is provided
+    if (OR_conditions.length > 0) {
+      whereClause.OR = OR_conditions;
+    }
+  }
 
   const [tenants, totalCount] = await Promise.all([
     prisma.tenant.findMany({

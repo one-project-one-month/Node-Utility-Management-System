@@ -7,10 +7,6 @@ import {
   UpdateTotalUnitsType,
 } from '../validations/totalUnitsSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
-import {
-  TOTAL_UNIT_FLATTENER_CONFIG,
-  universalFlattener,
-} from '../common/utils/obj-flattener';
 
 // Get All Total Units
 export async function getAllTotalUnitsService(req: Request) {
@@ -59,13 +55,9 @@ export async function getAllTotalUnitsService(req: Request) {
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
-  const flattenedUnits = universalFlattener(
-    totalUnits,
-    TOTAL_UNIT_FLATTENER_CONFIG
-  );
 
   return {
-    data: flattenedUnits || totalUnits,
+    data: totalUnits,
     ...paginationData,
   };
 }
@@ -74,6 +66,32 @@ export async function getAllTotalUnitsService(req: Request) {
 export async function getTotalUnitsByIdService(totalUnitId: string) {
   return await prisma.totalUnits.findUnique({
     where: { id: totalUnitId },
+    select: {
+        id: true,
+        electricityUnits: true,
+        waterUnits: true,
+        createdAt: true,
+        updatedAt: true,
+        billId: true,
+        bill: {
+          select: {
+            id: true,
+            room: {
+              select: {
+                id: true,
+                roomNo: true,
+                floor: true,
+                status: true,
+                tenant: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
   });
 }
 
@@ -81,6 +99,32 @@ export async function getTotalUnitsByIdService(totalUnitId: string) {
 export async function getTotalUnitsByBillIdService(billId: string) {
   return await prisma.totalUnits.findUnique({
     where: { billId: billId },
+    select: {
+        id: true,
+        electricityUnits: true,
+        waterUnits: true,
+        createdAt: true,
+        updatedAt: true,
+        billId: true,
+        bill: {
+          select: {
+            id: true,
+            room: {
+              select: {
+                id: true,
+                roomNo: true,
+                floor: true,
+                status: true,
+                tenant: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
   });
 }
 
