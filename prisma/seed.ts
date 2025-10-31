@@ -188,8 +188,10 @@ async function createTenantsAndUsersBatch(
   for (const tenant of tenants) {
     userData.push({
       userName:
-        tenant.name.split(' ')[0].toLowerCase() +
-        faker.number.int({ min: 1, max: 99 }),
+        tenant.name === 'TenantName'
+          ? 'tenant'
+          : tenant.name.split(' ')[0].toLowerCase() +
+            faker.number.int({ min: 1, max: 99 }),
       email: tenant.email,
       password: tenantPassword,
       role: 'Tenant' as UserRole,
