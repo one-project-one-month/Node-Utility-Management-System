@@ -11,10 +11,6 @@ import {
 import { BadRequestError, NotFoundError } from '../common/errors';
 import getTimeLimitQuery from '../common/utils/timeLimitQuery';
 import { generatePaginationData } from '../common/utils/paginationHelper';
-import {
-  INVOICES_FLATTENER_CONFIG,
-  universalFlattener,
-} from '../common/utils/obj-flattener';
 
 export async function createInvoiceService(body: CreateInvoiceType) {
   const existingBill = await prisma.bill.findUnique({
@@ -172,10 +168,9 @@ export async function getAllInvoicesService(req: Request) {
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
-  const data = universalFlattener(invoices, INVOICES_FLATTENER_CONFIG);
 
   return {
-    data,
+    data: invoices,
     ...paginationData,
   };
 }
@@ -357,10 +352,9 @@ export async function getTenantInvoiceHistoryService(req: Request) {
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
-  const data = universalFlattener(invoices, INVOICES_FLATTENER_CONFIG);
 
   return {
-    data,
+    data: invoices,
     ...paginationData,
   };
 }
