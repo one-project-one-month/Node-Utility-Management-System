@@ -449,8 +449,8 @@ export const getLatestBillByTenantIdService = async (tenantId: string) => {
           contract: {
             include: {
               contractType: true,
-            }
-          }
+            },
+          },
         },
       },
       totalUnit: true,
@@ -490,8 +490,8 @@ export const getBillHistoryByTenantIdService = async (req: Request) => {
             contract: {
               include: {
                 contractType: true,
-              }
-            }
+              },
+            },
           },
         },
         totalUnit: true,
