@@ -107,7 +107,7 @@ router.put(
  *         $ref: '#/components/responses/NotFoundError'
  */
 router.get(
-  '/contracts/:contractId',
+  '/contracts/show/:contractId',
   hasRole(['Admin', 'Staff']),
   validateRequestParams(ContractIdSchema),
   getContractByIdController

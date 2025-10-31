@@ -21,8 +21,6 @@ export const createContractService = async (data: CreateContractSchemaType) => {
     where: { id: data.tenantId },
     select: { id: true, roomId: true },
   });
-  // if (existingTenant?.roomId)
-  //   throw new BadRequestError('Room already has a tenant');
   if (!existingTenant?.id) throw new NotFoundError('Tenant not found');
 
   // check contract type exists
@@ -147,15 +145,6 @@ export const getContractByTenantIdService = async (tenantId: string) => {
     select: { id: true },
   });
   if (!tenant) throw new NotFoundError('Tenant not found');
-
-  // return await prisma.contract.findUnique({
-  //   where: { tenantId: tenant.id },
-  //   include: {
-  //     tenant: true,
-  //     room: true,
-  //     contractType: true,
-  //   },
-  // });
 
   const contract = await prisma.contract.findUnique({
     where: { tenantId: tenant.id },

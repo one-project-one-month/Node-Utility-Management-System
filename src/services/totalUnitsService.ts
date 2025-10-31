@@ -49,7 +49,7 @@ export async function getAllTotalUnitsService(req: Request) {
     prisma.totalUnits.count(),
   ]);
 
-  if (!totalUnits || totalUnits.length === 0)
+  if (Array.isArray(totalUnits) && totalUnits.length === 0)
     throw new NotFoundError('No total units found');
 
   // Generate pagination data

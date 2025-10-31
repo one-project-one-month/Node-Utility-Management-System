@@ -152,23 +152,6 @@ export async function updateUserService(userId: string, data: UpdateUserType) {
     throw new NotFoundError('User not found');
   }
 
-  if (data.tenantId) {
-    const tenant = await prisma.tenant.findFirst({
-      where: { id: data.tenantId },
-      select: { id: true },
-    });
-    if (!tenant) throw new BadRequestError('Tenant not found');
-
-    const existingUserWithTenant = await prisma.user.findFirst({
-      where: { tenantId: data.tenantId },
-      select: { id: true },
-    });
-    if (existingUserWithTenant)
-      throw new BadRequestError(
-        'This tenant is already associated with another user'
-      );
-  }
-
   // Check email is taken if provided
   if (data.email && data.email !== existingUser.email) {
     const emailTaken = await prisma.user.findUnique({
@@ -178,6 +161,10 @@ export async function updateUserService(userId: string, data: UpdateUserType) {
     if (emailTaken) {
       throw new BadRequestError('Email is already taken');
     }
+  }
+
+  if (data.password) {
+    data.password = await hashPassword(data.password);
   }
 
   return await prisma.user.update({

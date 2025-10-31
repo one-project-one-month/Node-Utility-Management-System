@@ -7,17 +7,17 @@ type ValidateProps = {
   target: 'BODY' | 'PARAMS' | 'QUERY';
 };
 
-const validate = ({ schema, target }: ValidateProps) => {
+const validate = (props: ValidateProps) => {
   return (req: Request, _res: Response, next: NextFunction) => {
     // Get the correct data source based on target
     const dataToValidate =
-      target === 'BODY'
+      props.target === 'BODY'
         ? req.body
-        : target === 'PARAMS'
+        : props.target === 'PARAMS'
           ? req.params
           : req.query;
 
-    const { success, error, data } = schema.safeParse(dataToValidate);
+    const { success, error, data } = props.schema.safeParse(dataToValidate);
 
     if (!success) {
       const formattedErrors = error.issues.map((err) => ({
@@ -28,11 +28,11 @@ const validate = ({ schema, target }: ValidateProps) => {
     }
 
     // Store validated data in the correct request property
-    if (target === 'BODY') {
+    if (props.target === 'BODY') {
       req.validatedBody = data;
-    } else if (target === 'PARAMS') {
+    } else if (props.target === 'PARAMS') {
       req.validatedParams = data;
-    } else if (target === 'QUERY') {
+    } else if (props.target === 'QUERY') {
       req.validatedQuery = data;
     }
     next();

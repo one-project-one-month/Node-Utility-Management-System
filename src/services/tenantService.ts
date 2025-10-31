@@ -155,7 +155,7 @@ export async function getAllTenantService(req: Request) {
   const { page, limit } = query;
   const skip = (page - 1) * limit;
 
-  const whereClause: Prisma.TenantWhereInput = {};
+  const whereClause: any = {};
 
   if (query.name) {
     whereClause.name = { contains: query.name, mode: 'insensitive' };
@@ -197,7 +197,7 @@ export async function getAllTenantService(req: Request) {
     const OR_conditions: any[] = [];
 
     // For RoomNo
-    if (searchNumber != undefined) {
+    if (searchNumber !== undefined) {
       OR_conditions.push({
         room: {
           is: {
