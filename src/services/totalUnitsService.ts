@@ -7,10 +7,6 @@ import {
   UpdateTotalUnitsType,
 } from '../validations/totalUnitsSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
-import {
-  TOTAL_UNIT_FLATTENER_CONFIG,
-  universalFlattener,
-} from '../common/utils/obj-flattener';
 
 // Get All Total Units
 export async function getAllTotalUnitsService(req: Request) {
@@ -58,13 +54,9 @@ export async function getAllTotalUnitsService(req: Request) {
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
-  const flattenedUnits = universalFlattener(
-    totalUnits,
-    TOTAL_UNIT_FLATTENER_CONFIG
-  );
 
   return {
-    data: flattenedUnits || totalUnits,
+    data: totalUnits,
     ...paginationData,
   };
 }
