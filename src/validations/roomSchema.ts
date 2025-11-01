@@ -25,6 +25,11 @@ export const CreateRoomSchema = z.object({
     .int()
     .min(1, 'Maximum number of people is required and must be at least 1'),
   description: z.string().optional().nullable(),
+
+  //Relations
+  tenantId: z.uuid({ version: 'v4' }).optional().nullable(),
+  billId: z.uuid({ version: 'v4' }).optional().nullable(),
+  customerServiceId: z.uuid({ version: 'v4' }).optional().nullable(),
 });
 
 export const UpdateRoomSchema = z

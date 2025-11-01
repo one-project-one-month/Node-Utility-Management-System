@@ -91,7 +91,7 @@ export const GetAllTenantQuerySchema = PaginationQuerySchema.extend({
     .min(1, 'Room number is required and choose a positive number in the list')
     .optional(),
   contractType: z.string().min(1, 'Contract type name is required').optional(),
-  search: z.string().min(1, 'Search key cannot be empty').optional(),
+  search: z.string().min(1, 'Search query cannot be empty').optional(),
   occupantCounts: z
     .string()
     .refine((data) => Number(data) && Number(data) > 0, {
