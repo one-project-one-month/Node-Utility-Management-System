@@ -73,10 +73,6 @@ export const GetAllServiceQuerySchema = PaginationQuerySchema.extend({
   search: z.string().optional(),
 }).strict();
 
-export const IdSchema = z.object({
-  id: z.uuid({ version: 'v4', error: 'Invalid UUID' }),
-});
-
 export const TenantIdSchema = z.object({
   id: z.uuid({ version: 'v4', error: 'Invalid UUID' }),
 });

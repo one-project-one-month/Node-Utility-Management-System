@@ -14,11 +14,10 @@ export async function getAllTotalUnitsService(req: Request) {
   const skip = (page - 1) * limit;
 
   // Get totalUnits & totalCount
-  const [totalUnits, totalCount] = await Promise.all([
+  const [totalUnits, totalCount] = await prisma.$transaction([
     prisma.totalUnits.findMany({
       skip,
       take: limit,
-      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         electricityUnits: true,
@@ -45,13 +44,13 @@ export async function getAllTotalUnitsService(req: Request) {
           },
         },
       },
+      orderBy: { createdAt: 'desc' },
     }),
     prisma.totalUnits.count(),
   ]);
 
-  if (totalUnits.length === 0) {
+  if (Array.isArray(totalUnits) && totalUnits.length === 0)
     throw new NotFoundError('No total units found');
-  }
 
   // Generate pagination data
   const paginationData = generatePaginationData(req, totalCount, page, limit);
@@ -142,7 +141,7 @@ export async function createTotalUnitService({
 
   // Check if total-units already exists for this bill
   const existingTotalUnits = await prisma.totalUnits.findUnique({
-    where: { billId: billId },
+    where: { billId },
     select: { id: true },
   });
 

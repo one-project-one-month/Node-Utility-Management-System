@@ -11,11 +11,10 @@ import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from '../middlewares/validationMiddlware';
+} from '../middlewares/validationMiddleware';
 import {
   CreateCustomerServiceSchema,
   GetAllServiceQuerySchema,
-  IdSchema,
   TenantIdSchema,
   TenantServiceHistorySchema,
   UpdateCustomerServiceSchema,
@@ -49,7 +48,7 @@ const router = Router();
  */
 router.post(
   '/tenants/:id/customer-services/create',
-  validateRequestParams(IdSchema),
+  validateRequestParams(TenantIdSchema),
   validateRequestBody(CreateCustomerServiceSchema),
   createServiceController
 );
@@ -138,7 +137,7 @@ router.get(
 router.get(
   '/customer-services/:id',
   hasRole(['Admin', 'Staff']),
-  validateRequestParams(IdSchema),
+  validateRequestParams(TenantIdSchema),
   getServiceById
 );
 
@@ -170,7 +169,7 @@ router.get(
 router.put(
   '/customer-services/:id',
   hasRole(['Admin', 'Staff']),
-  validateRequestParams(IdSchema),
+  validateRequestParams(TenantIdSchema),
   validateRequestBody(UpdateCustomerServiceSchema),
   updateServiceController
 );
@@ -199,7 +198,7 @@ router.put(
 router.delete(
   '/customer-services/:id',
   hasRole(['Admin', 'Staff']),
-  validateRequestParams(IdSchema),
+  validateRequestParams(TenantIdSchema),
   deleteServiceController
 );
 

@@ -7,7 +7,7 @@ export const CreateContractTypeSchema = z.object({
   price: z.number().positive('Price must be positive'),
   facilities: z
     .array(z.string().min(1, 'Facility name is required'))
-    .nonempty('At least one facility is requried.'),
+    .nonempty('At least one facility is required.'),
 });
 
 // Get Contract Type by contractTypeId

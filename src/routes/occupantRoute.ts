@@ -3,7 +3,7 @@ import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from '../middlewares/validationMiddlware';
+} from '../middlewares/validationMiddleware';
 import { hasRole } from '../middlewares/authMiddleware';
 import {
   createOccupantController,

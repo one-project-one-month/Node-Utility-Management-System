@@ -22,15 +22,14 @@ const WATER_RATE = 300;
 const randomNumber = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
-// Utility: generate random date within ±15 days
-const randomDate = () => {
-  const now = new Date();
-  const futureDate = new Date(now.getTime());
+// Utility: generate due date 1 month after contract created date
+const randomDate = (contractStartDate: Date) => {
+  const dueDate = new Date(contractStartDate);
 
-  const randomDays = Math.floor(Math.random() * 30) - 15;
-  futureDate.setDate(futureDate.getDate() + randomDays);
+  // Set due date to 1 month after contract created date
+  dueDate.setMonth(dueDate.getMonth() + 1);
 
-  return futureDate;
+  return dueDate;
 };
 
 const mailBodyGenerator = (
@@ -129,11 +128,19 @@ export const createBillService = async (data: CreateBillSchemaType) => {
         include: {
           contractType: true,
         },
+        orderBy: {
+          createdDate: 'desc', // Get the most recent contract first
+        },
       },
     },
   });
 
   if (!room) throw new NotFoundError('Room not found');
+  if (Array.isArray(room.contract) && !room.contract.length) {
+    throw new NotFoundError('No contract found for this room');
+  }
+
+  // Get the current/most recent contract
 
   // Generate random data if missing
   const rent = rentalFee ?? Number(room.contract[0].contractType.price);
@@ -170,7 +177,7 @@ export const createBillService = async (data: CreateBillSchemaType) => {
       carParkingFee: carParkingFee || randomParking,
       wifiFee: wifiFee || randomWifi,
       totalAmount,
-      dueDate: new Date(dueDate ?? randomDate()),
+      dueDate: new Date(dueDate ?? randomDate(room.contract[0].createdDate)),
     },
   });
 

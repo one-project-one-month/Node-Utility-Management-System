@@ -9,7 +9,7 @@ import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from '../middlewares/validationMiddlware';
+} from '../middlewares/validationMiddleware';
 import { hasRole } from '../middlewares/authMiddleware';
 import { PaginationQuerySchema } from '../validations/paginationSchema';
 import {

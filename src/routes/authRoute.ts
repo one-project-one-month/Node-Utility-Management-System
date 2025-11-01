@@ -4,7 +4,7 @@ import {
   logoutController,
   refreshTokenController,
 } from '../controllers/authController';
-import { validateRequestBody } from '../middlewares/validationMiddlware';
+import { validateRequestBody } from '../middlewares/validationMiddleware';
 
 import { isAuthenticated } from '../middlewares/authMiddleware';
 import { LogInSchema } from '../validations/authSchema';
