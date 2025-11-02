@@ -92,24 +92,6 @@ export const GetAllTenantQuerySchema = PaginationQuerySchema.extend({
     .optional(),
   contractType: z.string().min(1, 'Contract type name is required').optional(),
   search: z.string().min(1, 'Search query cannot be empty').optional(),
-  occupantCounts: z
-    .string()
-    .refine((data) => Number(data) && Number(data) > 0, {
-      message: 'occupant filter must be number and greater than 0',
-    })
-    .optional(),
-  minOccupants: z
-    .string()
-    .refine((data) => Number(data) && Number(data) > 0, {
-      message: 'occupant filter must be number and greater than 0',
-    })
-    .optional(),
-  maxOccupants: z
-    .string()
-    .refine((data) => Number(data) && Number(data) > 0, {
-      message: 'occupant filter must be number and greater than 0',
-    })
-    .optional(),
 });
 
 export type CreateTenantType = z.infer<typeof CreateTenantSchema>;

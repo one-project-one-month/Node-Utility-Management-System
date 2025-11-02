@@ -13,6 +13,7 @@ import {
   mailSend,
 } from '../common/utils/mail-service/resendMailTransporter';
 import { Bill, Invoice, Room, TotalUnits } from '../../generated/prisma';
+import getTimeLimitQuery from '../common/utils/timeLimitQuery';
 
 // define rate constants (cost per unit)
 const ELECTRICITY_RATE = 500;
@@ -322,12 +323,17 @@ export const getBillsByIdService = async (billId: string) => {
 
 export const getAllBillsService = async (req: Request) => {
   // Calculate pagination
-  const { page, limit, status, roomNo, tenantName, search } =
+  const { page, limit, status, roomNo, tenantName, search, month, year } =
     req.validatedQuery as GetAllBillQueryType;
   const skip = (page - 1) * limit;
 
   const whereClause: any = {};
 
+  if (month || year) {
+    const { startDate, endDate } = getTimeLimitQuery(month, year);
+    whereClause.createdAt = { gt: startDate, lte: endDate };
+  }
+  
   if (status) {
     whereClause.invoice = {
       is: {
