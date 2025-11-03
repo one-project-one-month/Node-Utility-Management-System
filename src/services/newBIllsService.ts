@@ -568,10 +568,10 @@ export const getBillsofLastFourMonth = async (tenantId: string) => {
       month: 'short', //  e.g., "Sep"
     });
 
-    // Dynamically sum all numeric fields from totalUnit table
-    const totalUnits = Object.values(bill.totalUnit)
-      .filter((val) => typeof val === 'number')
-      .reduce((a, b) => a + (b || 0), 0);
+    // convert Decimal values to numbers
+    const electricity = Number(bill.totalUnit.electricityUnits) || 0;
+    const water = Number(bill.totalUnit.waterUnits) || 0;
+    const totalUnits = electricity + water;
 
     monthlyTotals[monthName] = (monthlyTotals[monthName] || 0) + totalUnits;
   }
