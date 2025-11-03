@@ -94,7 +94,7 @@ export const GetAllBillQuerySchema = PaginationQuerySchema.extend({
         const yearNum = parseInt(year);
         return yearNum >= 2020;
       },
-      { message: 'Year must be between 2020 and 2030' }
+      { message: 'Year must be between 2020' }
     )
     .optional(),
 });

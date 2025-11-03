@@ -26,7 +26,7 @@ export const GetInvoiceQuerySchema = PaginationQuerySchema.extend({
         const yearNum = parseInt(year);
         return yearNum >= 2020;
       },
-      { message: 'Year must be between 2020 and 2030' }
+      { message: 'Year must be between 2020' }
     )
     .optional(),
   tenantName: z.string().min(1, 'Tenant name is required').optional(),

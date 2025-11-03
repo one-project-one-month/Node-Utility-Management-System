@@ -59,8 +59,8 @@ router.post(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *       - $ref: '#/components/parameters/InvoiceStatusParam'
  *       - $ref: '#/components/parameters/MonthParam'
  *       - $ref: '#/components/parameters/YearParam'
@@ -174,8 +174,8 @@ router.get(
  *       - bearerAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/TenantIdParam'
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *       - $ref: '#/components/parameters/InvoiceStatusParam'
  *       - $ref: '#/components/parameters/MonthParam'
  *       - $ref: '#/components/parameters/YearParam'

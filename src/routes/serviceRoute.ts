@@ -66,8 +66,8 @@ router.post(
  *     parameters:
  *       - $ref: '#/components/parameters/TenantIdParam'
  *       - $ref: '#/components/parameters/StatusParam'
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/ServiceHistorySuccess'
@@ -115,8 +115,8 @@ router.get(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *       - $ref: '#/components/parameters/CategoryParam'
  *       - $ref: '#/components/parameters/StatusQuery'
  *       - $ref: '#/components/parameters/PriorityLevelParam'
