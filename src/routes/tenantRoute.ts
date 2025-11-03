@@ -1,17 +1,17 @@
 import { Router } from 'express';
 import {
   createTenantController,
+  getActiveTenantCountController,
   getAllTenantController,
   getByIdTenantController,
   updateTenantController,
 } from '../controllers/tenantController';
+import { hasRole } from '../middlewares/authMiddleware';
 import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
 } from '../middlewares/validationMiddleware';
-import { hasRole } from '../middlewares/authMiddleware';
-import { PaginationQuerySchema } from '../validations/paginationSchema';
 import {
   CreateTenantSchema,
   GetAllTenantQuerySchema,
@@ -20,6 +20,12 @@ import {
 } from '../validations/tenantSchema';
 
 const router = Router();
+
+router.get(
+  '/active-count',
+  hasRole(['Admin', 'Staff']),
+  getActiveTenantCountController
+);
 
 /**
  * @swagger
