@@ -9,6 +9,7 @@ import {
   getAllTotalUnitsController,
   getTotalUnitsByBillIdController,
   getTotalUnitsByIdController,
+  getTotalUnitsSummaryMonthlyController,
   updateTotalUnitsController,
 } from '../controllers/totalUnitsController';
 import {
@@ -21,6 +22,34 @@ import { PaginationQuerySchema } from '../validations/paginationSchema';
 import { hasRole } from '../middlewares/authMiddleware';
 
 const router = Router();
+
+/**
+ * @swagger
+ * /api/v1/total-units/summary:
+ *   get:
+ *     tags: [Total Units]
+ *     summary: Get summary total units monthly (Admin & Staff only)
+ *     description: Retrieves summary total units of all rooms monthly.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/PaginatedTotalUnitsResponse'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router.get(
+  '/summary',
+  hasRole(['Admin', 'Staff']),
+  getTotalUnitsSummaryMonthlyController
+);
 
 /**
  * @swagger

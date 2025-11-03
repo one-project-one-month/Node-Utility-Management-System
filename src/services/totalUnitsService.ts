@@ -8,6 +8,77 @@ import {
 } from '../validations/totalUnitsSchema';
 import { generatePaginationData } from '../common/utils/paginationHelper';
 
+// Get total units summary by monthly
+export async function getTotalUnitsSummaryMonthlyService() {
+  // Current month + previous 4 month
+  const currentDate = new Date();
+  const currentMonth = new Date().getMonth() + 1;
+  const startDate = new Date(currentDate.getFullYear(), currentMonth - 4, 1);
+
+  const totalUnits = await prisma.totalUnits.findMany({
+    where: {
+      createdAt: {
+        gte: startDate,
+      },
+    },
+    select: {
+      id: true,
+      electricityUnits: true,
+      waterUnits: true,
+      createdAt: true,
+      bill: {
+        select: {
+          room: {
+            select: {
+              roomNo: true,
+              floor: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  // Group by month and calculate summary
+  const monthlySummary = totalUnits.reduce(
+    (acc, unit) => {
+      const monthYear = new Date(unit.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+      });
+
+      if (!acc[monthYear]) {
+        acc[monthYear] = {
+          month: monthYear,
+          totalUnits: 0,
+        };
+      }
+
+      acc[monthYear].totalUnits +=
+        Number(unit.electricityUnits) + Number(unit.waterUnits);
+
+      return acc;
+    },
+    {} as Record<
+      string,
+      {
+        month: string;
+        totalUnits: number;
+      }
+    >
+  );
+
+  // Convert to array and sort by date (most recent first)
+  const summaryArray = Object.values(monthlySummary).sort((a, b) => {
+    const dateA = new Date(a.month);
+    const dateB = new Date(b.month);
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  return { data: summaryArray };
+}
+
 // Get All Total Units
 export async function getAllTotalUnitsService(req: Request) {
   const { page, limit } = req.validatedQuery as PaginationQueryType;
