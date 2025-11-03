@@ -32,12 +32,9 @@ const router = Router();
  *     description: Retrieves summary total units of all rooms monthly.
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
  *     responses:
  *       200:
- *         $ref: '#/components/responses/PaginatedTotalUnitsResponse'
+ *         $ref: '#/components/responses/TotalUnitsSummaryResponse'
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *       403:

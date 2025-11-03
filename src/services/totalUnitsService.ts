@@ -10,7 +10,7 @@ import { generatePaginationData } from '../common/utils/paginationHelper';
 
 // Get total units summary by monthly
 export async function getTotalUnitsSummaryMonthlyService() {
-  // Current month + previous 4 month
+  // Current month + previous 3 month
   const currentDate = new Date();
   const currentMonth = new Date().getMonth() + 1;
   const startDate = new Date(currentDate.getFullYear(), currentMonth - 4, 1);
