@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import { deployedUrls } from './common/auth/allowedOrigins';
 import corsOptions from './common/auth/corsOptions';
-import { crediential } from './common/auth/credential';
+import { credential } from './common/auth/credential';
 import { customLogger } from './common/utils/customLogger';
 import { setupSwagger } from './docs/openapi';
 import { hasRole, isAuthenticated } from './middlewares/authMiddleware';
@@ -36,7 +36,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('trust proxy', 1 /* number of proxies between user and server */); // To solve 'X-Forwarded-For' header error in production
-app.use(crediential);
+app.use(credential);
 app.use(cors(corsOptions));
 
 // API DOCUMENTATION
