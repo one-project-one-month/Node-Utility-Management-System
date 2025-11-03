@@ -83,10 +83,11 @@ router.get(
   serviceHistoryController
 );
 //get customer service count of status and priority level
-router.get('/customer-services/counts',
+router.get(
+  '/customer-services/counts',
   hasRole(['Admin', 'Staff']),
   getServiceCountController
-)
+);
 /**
  * @swagger
  * /api/v1/customer-services:
@@ -206,7 +207,5 @@ router.delete(
   validateRequestParams(TenantIdSchema),
   deleteServiceController
 );
-
-
 
 export default router;

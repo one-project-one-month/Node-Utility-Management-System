@@ -333,7 +333,7 @@ export const getAllBillsService = async (req: Request) => {
     const { startDate, endDate } = getTimeLimitQuery(month, year);
     whereClause.createdAt = { gt: startDate, lte: endDate };
   }
-  
+
   if (status) {
     whereClause.invoice = {
       is: {
