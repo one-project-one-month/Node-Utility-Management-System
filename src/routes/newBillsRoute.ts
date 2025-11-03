@@ -18,6 +18,7 @@ import {
   getAllBillsController,
   getBillByIdController,
   getBillHistoryByTenantIdController,
+  getBillsofLastFourMonthController,
   getLatestBillByTenantIdController,
   updateBillController,
 } from '../controllers/newBillsController';
@@ -221,6 +222,13 @@ router.get(
   validateRequestParams(GetBillByTenantIdSchema),
   validateRequestQuery(PaginationQuerySchema),
   getBillHistoryByTenantIdController
+);
+
+router.get(
+  '/tenants/:tenantId/bills/lastFourMonths',
+  hasRole(['Admin', 'Staff', 'Tenant']),
+  validateRequestParams(GetBillByTenantIdSchema),
+  getBillsofLastFourMonthController
 );
 
 export default router;
