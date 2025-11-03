@@ -82,7 +82,24 @@ router.get(
   validateRequestQuery(TenantServiceHistorySchema),
   serviceHistoryController
 );
-//get customer service count of status and priority level
+
+/**
+ * @swagger
+ * /api/v1/customer-services/counts:
+ *   get:
+ *     tags: [Customer Services]
+ *     summary: Get customer service counts
+ *     description: Retrieves the count of customer service records for each status.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetServiceCountSuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get(
   '/customer-services/counts',
   hasRole(['Admin', 'Staff']),

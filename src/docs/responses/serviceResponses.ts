@@ -50,6 +50,29 @@
  * @swagger
  * components:
  *   responses:
+ *     GetServiceCountSuccess:
+ *       description: Customer service count
+ *       content:
+ *         application/json:
+ *           schema:
+ *             allOf:
+ *               - $ref: '#/components/schemas/ApiSuccessResponse'
+ *               - type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: Fetch customer service by ID successfully
+ *                   content:
+ *                     type: object
+ *                     properties:
+ *                       data:
+ *                         $ref: '#/components/schemas/CustomerService'
+ */
+
+/**
+ * @swagger
+ * components:
+ *   responses:
  *     UpdateServiceSuccess:
  *       description: Customer service updated successfully
  *       content:
