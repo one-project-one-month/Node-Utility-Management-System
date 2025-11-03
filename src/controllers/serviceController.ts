@@ -6,6 +6,7 @@ import {
   deleteCustomerServiceById,
   getAllCustomerService,
   getCustomerServiceById,
+  getCustomerServiceCount,
   updateCustomerService,
 } from '../services/customerService';
 
@@ -119,3 +120,22 @@ export const deleteServiceController = async (
     next(error);
   }
 };
+
+//get customer service counts 
+export const getServiceCountController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const totalCounts = await getCustomerServiceCount();
+    successResponse(
+      res,
+      'Get customer service counts  successfully',
+      { data: totalCounts },
+      200
+    );
+  } catch (error) {
+    next(error);
+  }
+}
