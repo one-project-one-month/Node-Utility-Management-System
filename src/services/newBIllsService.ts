@@ -528,7 +528,7 @@ export const getBillHistoryByTenantIdService = async (req: Request) => {
 
 export const getBillsofLastFourMonth = async (tenantId: string) => {
   const now = new Date();
-  const startDate = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+  const startDate = new Date(now.getFullYear(), now.getMonth() - 4, 1);
 
   // Get tenant info to find the associated room
   const tenant = await prisma.tenant.findUnique({
