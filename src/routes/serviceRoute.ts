@@ -66,8 +66,8 @@ router.post(
  *     parameters:
  *       - $ref: '#/components/parameters/TenantIdParam'
  *       - $ref: '#/components/parameters/StatusParam'
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/ServiceHistorySuccess'
@@ -82,11 +82,29 @@ router.get(
   validateRequestQuery(TenantServiceHistorySchema),
   serviceHistoryController
 );
-//get customer service count of status and priority level
-router.get('/customer-services/counts',
+
+/**
+ * @swagger
+ * /api/v1/customer-services/counts:
+ *   get:
+ *     tags: [Customer Services]
+ *     summary: Get customer service counts
+ *     description: Retrieves the count of customer service records for each status.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetServiceCountSuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router.get(
+  '/customer-services/counts',
   hasRole(['Admin', 'Staff']),
   getServiceCountController
-)
+);
 /**
  * @swagger
  * /api/v1/customer-services:
@@ -97,8 +115,8 @@ router.get('/customer-services/counts',
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *       - $ref: '#/components/parameters/CategoryParam'
  *       - $ref: '#/components/parameters/StatusQuery'
  *       - $ref: '#/components/parameters/PriorityLevelParam'
@@ -206,7 +224,5 @@ router.delete(
   validateRequestParams(TenantIdSchema),
   deleteServiceController
 );
-
-
 
 export default router;

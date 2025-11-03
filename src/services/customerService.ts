@@ -235,9 +235,8 @@ export const deleteCustomerServiceById = async (id: string) => {
 //get customer service count of status 'Pending' and priority level "high"
 export const getCustomerServiceCount = async () => {
   const [pendingIssueCount, highProrityCount] = await Promise.all([
-    prisma.customerService.count({ where: { status: "Pending" } }),
+    prisma.customerService.count({ where: { status: 'Pending' } }),
     prisma.customerService.count({ where: { priorityLevel: 'High' } }),
-  ])
-  return { pendingIssueCount, highProrityCount }
-
-}
+  ]);
+  return { pendingIssueCount, highProrityCount };
+};

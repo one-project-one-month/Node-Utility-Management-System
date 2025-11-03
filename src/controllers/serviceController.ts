@@ -121,7 +121,7 @@ export const deleteServiceController = async (
   }
 };
 
-//get customer service counts 
+//get customer service counts
 export const getServiceCountController = async (
   req: Request,
   res: Response,
@@ -138,4 +138,4 @@ export const getServiceCountController = async (
   } catch (error) {
     next(error);
   }
-}
+};
