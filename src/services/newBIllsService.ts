@@ -12,7 +12,13 @@ import {
   mailOptionConfig,
   mailSend,
 } from '../common/utils/mail-service/resendMailTransporter';
-import { Bill, Invoice, Room, TotalUnits } from '../../generated/prisma';
+import {
+  Bill,
+  Invoice,
+  Prisma,
+  Room,
+  TotalUnits,
+} from '../../generated/prisma';
 import getTimeLimitQuery from '../common/utils/timeLimitQuery';
 
 // define rate constants (cost per unit)
@@ -327,13 +333,13 @@ export const getAllBillsService = async (req: Request) => {
     req.validatedQuery as GetAllBillQueryType;
   const skip = (page - 1) * limit;
 
-  const whereClause: any = {};
+  const whereClause: Prisma.BillWhereInput = {};
 
   if (month || year) {
     const { startDate, endDate } = getTimeLimitQuery(month, year);
     whereClause.createdAt = { gt: startDate, lte: endDate };
   }
-  
+
   if (status) {
     whereClause.invoice = {
       is: {

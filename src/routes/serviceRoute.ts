@@ -4,6 +4,7 @@ import {
   deleteServiceController,
   getAllServiceController,
   getServiceById,
+  getServiceCountController,
   serviceHistoryController,
   updateServiceController,
 } from '../controllers/serviceController';
@@ -65,8 +66,8 @@ router.post(
  *     parameters:
  *       - $ref: '#/components/parameters/TenantIdParam'
  *       - $ref: '#/components/parameters/StatusParam'
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/ServiceHistorySuccess'
@@ -84,6 +85,28 @@ router.get(
 
 /**
  * @swagger
+ * /api/v1/customer-services/counts:
+ *   get:
+ *     tags: [Customer Services]
+ *     summary: Get customer service counts
+ *     description: Retrieves the count of customer service records for each status.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetServiceCountSuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router.get(
+  '/customer-services/counts',
+  hasRole(['Admin', 'Staff']),
+  getServiceCountController
+);
+/**
+ * @swagger
  * /api/v1/customer-services:
  *   get:
  *     tags: [Customer Services]
@@ -92,8 +115,8 @@ router.get(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *       - $ref: '#/components/parameters/CategoryParam'
  *       - $ref: '#/components/parameters/StatusQuery'
  *       - $ref: '#/components/parameters/PriorityLevelParam'
@@ -106,13 +129,13 @@ router.get(
  *       403:
  *         $ref: '#/components/responses/ForbiddenError'
  */
+
 router.get(
-  '/customer-services/',
+  '/customer-services',
   hasRole(['Admin', 'Staff']),
   validateRequestQuery(GetAllServiceQuerySchema),
   getAllServiceController
 );
-
 /**
  * @swagger
  * /api/v1/customer-services/{id}:

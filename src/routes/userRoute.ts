@@ -31,8 +31,8 @@ const router = Router();
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *       - $ref: '#/components/parameters/RoleFilterParam'
  *       - $ref: '#/components/parameters/ActiveFilterParam'
  *     responses:

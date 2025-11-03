@@ -149,8 +149,14 @@ router.get(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
+ *       - $ref: '#/components/parameters/StatusQuery'
+ *       - $ref: '#/components/parameters/TenantNameQuery'
+ *       - $ref: '#/components/parameters/RoomNoQuery'
+ *       - $ref: '#/components/parameters/SearchParam'
+ *       - $ref: '#/components/parameters/MonthParam'
+ *       - $ref: '#/components/parameters/YearParam'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/PaginatedBillsResponse'
@@ -205,8 +211,8 @@ router.get(
  *       - bearerAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/BillTenantIdParam'
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/PaginatedBillHistoryResponse'

@@ -6,9 +6,29 @@ import {
   getAllTotalUnitsService,
   getTotalUnitsByBillIdService,
   getTotalUnitsByIdService,
+  getTotalUnitsSummaryMonthlyService,
   updateTotalUnitsService,
 } from '../services/totalUnitsService';
 
+export async function getTotalUnitsSummaryMonthlyController(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const result = await getTotalUnitsSummaryMonthlyService();
+    if (!result || !result.data.length)
+      return next(new NotFoundError('No receipts found'));
+
+    successResponse(
+      res,
+      'Total-units summary by monthly  fetched successfully',
+      result
+    );
+  } catch (error) {
+    return next(error);
+  }
+}
 export async function getAllTotalUnitsController(
   req: Request,
   res: Response,
