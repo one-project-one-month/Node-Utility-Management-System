@@ -21,22 +21,6 @@ export async function getTotalUnitsSummaryMonthlyService() {
         gte: startDate,
       },
     },
-    select: {
-      id: true,
-      electricityUnits: true,
-      waterUnits: true,
-      createdAt: true,
-      bill: {
-        select: {
-          room: {
-            select: {
-              roomNo: true,
-              floor: true,
-            },
-          },
-        },
-      },
-    },
     orderBy: { createdAt: 'desc' },
   });
 
