@@ -21,6 +21,25 @@ import {
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/v1/tenants/active-count:
+ *   get:
+ *     tags: [Tenants]
+ *     summary: Get active tenant count (Admin & Staff only)
+ *     description: Retrieve the count of active tenants. Accessible only to Admin and Staff users.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetActiveTenantCountSuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get(
   '/active-count',
   hasRole(['Admin', 'Staff']),
