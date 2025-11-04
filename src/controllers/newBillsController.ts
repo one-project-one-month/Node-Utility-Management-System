@@ -1,4 +1,4 @@
-import { getBillsofLastFourMonth } from './../services/newBIllsService';
+import { getRevenueByMonthService } from './../services/newBIllsService';
 import { Request, Response, NextFunction } from 'express';
 import {
   autoGenerateBillsService,
@@ -120,19 +120,17 @@ export const getBillHistoryByTenantIdController = async (
   }
 };
 
-export const getBillsofLastFourMonthController = async (
+export const getRevenueByMonthController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const totalUnitsOfLastFourMonth = await getBillsofLastFourMonth(
-      req.validatedParams.tenantId
-    );
+    const totalRevenue = await getRevenueByMonthService(req);
     successResponse(
       res,
-      'Total Units of Last Four Month fetched successfully',
-      { data: totalUnitsOfLastFourMonth },
+      'Monthly revenue fetched successfully',
+      { data: totalRevenue },
       200
     );
   } catch (error) {
