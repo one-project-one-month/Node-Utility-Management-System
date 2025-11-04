@@ -10,6 +10,7 @@ import {
   GetAllBillQuerySchema,
   GetBillByIdSchema,
   GetBillByTenantIdSchema,
+  GetTotalRevenueByMonthSchema,
   UpdateBillSchema,
 } from '../validations/newBillsSchema';
 import {
@@ -18,13 +19,20 @@ import {
   getAllBillsController,
   getBillByIdController,
   getBillHistoryByTenantIdController,
-  getBillsofLastFourMonthController,
   getLatestBillByTenantIdController,
+  getRevenueByMonthController,
   updateBillController,
 } from '../controllers/newBillsController';
 import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
+
+router.get(
+  '/bills/revenue-by-month',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(GetTotalRevenueByMonthSchema),
+  getRevenueByMonthController
+);
 
 /**
  * @swagger
@@ -253,11 +261,5 @@ router.get(
  *       404:
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.get(
-  '/tenants/:tenantId/bills/last-four-months',
-  hasRole(['Admin', 'Staff', 'Tenant']),
-  validateRequestParams(GetBillByTenantIdSchema),
-  getBillsofLastFourMonthController
-);
 
 export default router;
