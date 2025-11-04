@@ -90,6 +90,14 @@ export async function updateRoomService(roomId: string, data: UpdateRoomType) {
   return updatedRoom;
 }
 
+export async function getRoomCountService() {
+  const [allRoomsCount, availableRoomsCount] = await Promise.all([
+    prisma.room.count(),
+    prisma.room.count({ where: { status: "Available" } })
+  ])
+  return { allRoomsCount, availableRoomsCount }
+}
+
 // export async function deleteRoomService(roomId: string) {
 //   const existingRoom = await prisma.room.findUnique({ where: { id: roomId } });
 //   if (!existingRoom) throw new NotFoundError('Room not found');

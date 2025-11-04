@@ -4,6 +4,7 @@ import {
   getRoomController,
   createRoomController,
   updateRoomController,
+  getRoomCountController,
   // deleteRoomController,
 } from '../controllers/roomController';
 import {
@@ -49,6 +50,12 @@ router.post(
   createRoomController
 );
 
+// get total room and avaliable room count
+router.get(
+  '/counts',
+  hasRole(['Admin', 'Staff']),
+  getRoomCountController
+)
 /**
  * @swagger
  * /api/v1/rooms:
