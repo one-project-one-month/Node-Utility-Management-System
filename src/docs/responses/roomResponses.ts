@@ -69,3 +69,30 @@
  *                       data:
  *                         $ref: '#/components/schemas/Room'
  */
+
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     GetRoomCountSuccess:
+ *       description:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             allOf:
+ *               - $ref: '#/components/schemas/ApiSuccessResponse'
+ *               - type: object
+ *                 properties:
+ *                   content:
+ *                     type: object
+ *                     properties:
+ *                       data:
+ *                         type: object
+ *                         properties:
+ *                           allRoomsCount:
+ *                             type: number
+ *                             example: 100
+ *                           availableRoomsCount:
+ *                             type: number
+ *                             example: 50
+ */

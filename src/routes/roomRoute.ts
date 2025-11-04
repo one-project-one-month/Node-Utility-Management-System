@@ -4,6 +4,7 @@ import {
   getRoomController,
   createRoomController,
   updateRoomController,
+  getRoomCountController,
   // deleteRoomController,
 } from '../controllers/roomController';
 import {
@@ -48,6 +49,27 @@ router.post(
   validateRequestBody(CreateRoomSchema),
   createRoomController
 );
+
+/**
+ * @swagger
+ * /api/v1/rooms/counts:
+ *   get:
+ *     tags: [Rooms]
+ *     summary: Get Room count (Admin & Staff only)
+ *     description: Get room count. Accessible only to Admin and Staff users.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetRoomCountSuccess'
+ *       400:
+ *         $ref: '#/components/responses/BadRequestError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+router.get('/counts', hasRole(['Admin', 'Staff']), getRoomCountController);
 
 /**
  * @swagger
