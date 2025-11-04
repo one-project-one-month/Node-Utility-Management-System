@@ -226,7 +226,7 @@ router.get(
 
 /**
  * @swagger
- * /api/v1/tenants/{tenantId}/bills/lastFourMonths:
+ * /api/v1/tenants/{tenantId}/bills/last-four-months:
  *   get:
  *     tags: [Bills]
  *     summary: Get total units consumption for last four months by tenant
@@ -248,7 +248,7 @@ router.get(
  *         $ref: '#/components/responses/NotFoundError'
  */
 router.get(
-  '/tenants/:tenantId/bills/lastFourMonths',
+  '/tenants/:tenantId/bills/last-four-months',
   hasRole(['Admin', 'Staff', 'Tenant']),
   validateRequestParams(GetBillByTenantIdSchema),
   getBillsofLastFourMonthController
