@@ -27,6 +27,46 @@ import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/v1/bills/revenue-by-month:
+ *   get:
+ *     tags: [Bills]
+ *     summary: Get total revenue by month (Admin & Staff only)
+ *     description: Retrieve aggregated total units (electricity + water) consumption by month.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: month
+ *         in: query
+ *         description: Filter by month (1-12, where 1=January, 12=December)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 12
+ *           example: 10
+ *       - name: year
+ *         in: query
+ *         description: Filter by year (4 digits)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 2020
+ *           maximum: 2030
+ *           example: 2024
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetMonthRevenueSuccess'
+ *       400:
+ *         $ref: '#/components/responses/BadRequestError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get(
   '/bills/revenue-by-month',
   hasRole(['Admin', 'Staff']),
@@ -237,29 +277,5 @@ router.get(
   validateRequestQuery(PaginationQuerySchema),
   getBillHistoryByTenantIdController
 );
-
-/**
- * @swagger
- * /api/v1/tenants/{tenantId}/bills/last-four-months:
- *   get:
- *     tags: [Bills]
- *     summary: Get total units consumption for last four months by tenant
- *     description: Retrieve aggregated total units (electricity + water) consumption for the last four months for a specific tenant. Accessible by Admin, Staff, and the tenant themselves.
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - $ref: '#/components/parameters/BillTenantIdParam'
- *     responses:
- *       200:
- *         $ref: '#/components/responses/GetFourMonthsBillSuccess'
- *       400:
- *         $ref: '#/components/responses/BadRequestError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       403:
- *         $ref: '#/components/responses/ForbiddenError'
- *       404:
- *         $ref: '#/components/responses/NotFoundError'
- */
 
 export default router;
