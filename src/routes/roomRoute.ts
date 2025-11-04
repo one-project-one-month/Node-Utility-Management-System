@@ -69,10 +69,12 @@ router.post(
  *       403:
  *         $ref: '#/components/responses/ForbiddenError'
  */
-router.get('/counts',
+router.get(
+  '/counts',
   hasRole(['Admin', 'Staff']),
   validateRequestQuery(GetAllRoomsQuerySchema),
-  getRoomCountController);
+  getRoomCountController
+);
 
 /**
  * @swagger

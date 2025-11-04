@@ -234,15 +234,19 @@ export const deleteCustomerServiceById = async (id: string) => {
 
 //get customer service count of status 'Pending' and priority level "high"
 export const getCustomerServiceCount = async (req: Request) => {
-  const { status = "Pending", priorityLevel = "High" } = req.validatedQuery as GetAllServiceQueryType
+  const { status = 'Pending', priorityLevel = 'High' } =
+    req.validatedQuery as GetAllServiceQueryType;
 
-  const [statusCount, priorityLevelCount, statusAndPriorityCount] = await prisma.$transaction([
-    prisma.customerService.count({ where: { status } }),
-    prisma.customerService.count({ where: { priorityLevel } }),
-    prisma.customerService.count({ where: { status, priorityLevel } })
-  ])
+  const [statusCount, priorityLevelCount, statusAndPriorityCount] =
+    await prisma.$transaction([
+      prisma.customerService.count({ where: { status } }),
+      prisma.customerService.count({ where: { priorityLevel } }),
+      prisma.customerService.count({ where: { status, priorityLevel } }),
+    ]);
   if (!statusCount && !priorityLevelCount && !statusAndPriorityCount) {
-    throw new NotFoundError(`No service count found for this ${status} status and this ${priorityLevel} `)
+    throw new NotFoundError(
+      `No service count found for this ${status} status and this ${priorityLevel} `
+    );
   }
 
   return { statusCount, priorityLevelCount, statusAndPriorityCount };
