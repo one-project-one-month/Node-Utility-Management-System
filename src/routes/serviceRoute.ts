@@ -93,6 +93,9 @@ router.get(
  *     description: Retrieves the count of customer service records for each status.
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/StatusQuery'
+ *       - $ref: '#/components/parameters/PriorityLevelParam'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/GetServiceCountSuccess'

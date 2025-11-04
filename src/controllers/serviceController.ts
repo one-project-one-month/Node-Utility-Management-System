@@ -131,7 +131,7 @@ export const getServiceCountController = async (
     const totalCounts = await getCustomerServiceCount(req);
     successResponse(
       res,
-      'Get customer service counts  successfully',
+      'Get customer service counts successfully',
       { data: totalCounts },
       200
     );
