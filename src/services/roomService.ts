@@ -4,6 +4,7 @@ import {
   CreateRoomType,
   UpdateRoomType,
   GetAllRoomsQueryType,
+  getRoomCountType,
 } from '../validations/roomSchema';
 import { Prisma } from '../../generated/prisma';
 import { Request } from 'express';
@@ -91,7 +92,7 @@ export async function updateRoomService(roomId: string, data: UpdateRoomType) {
 }
 
 export async function getRoomCountService(req: Request) {
-  const { status = 'Available' } = req.validatedQuery as GetAllRoomsQueryType;
+  const { status = 'Available' } = req.validatedQuery as getRoomCountType;
 
   const [allRoomsCount, roomStatusCount] = await prisma.$transaction([
     prisma.room.count(),

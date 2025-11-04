@@ -4,6 +4,7 @@ import prisma from '../lib/prismaClient';
 import {
   CreateServiceType,
   GetAllServiceQueryType,
+  GetServiceCountType,
   TenantIdType,
   TenantServiceHistoryType,
   UpdateServiceType,
@@ -235,7 +236,7 @@ export const deleteCustomerServiceById = async (id: string) => {
 //get customer service count of status 'Pending' and priority level "high"
 export const getCustomerServiceCount = async (req: Request) => {
   const { status = 'Pending', priorityLevel = 'High' } =
-    req.validatedQuery as GetAllServiceQueryType;
+    req.validatedQuery as GetServiceCountType;
 
   const [statusCount, priorityLevelCount, statusAndPriorityCount] =
     await prisma.$transaction([

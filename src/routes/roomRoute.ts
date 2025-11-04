@@ -17,6 +17,7 @@ import {
   UpdateRoomSchema,
   RoomIdSchema,
   GetAllRoomsQuerySchema,
+  GetRoomCountSchmea,
 } from '../validations/roomSchema';
 import { hasRole } from '../middlewares/authMiddleware';
 
@@ -72,7 +73,7 @@ router.post(
 router.get(
   '/counts',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(GetAllRoomsQuerySchema),
+  validateRequestQuery(GetRoomCountSchmea),
   getRoomCountController
 );
 

@@ -16,6 +16,7 @@ import {
 import {
   CreateCustomerServiceSchema,
   GetAllServiceQuerySchema,
+  GetServiceCountSchema,
   TenantIdSchema,
   TenantServiceHistorySchema,
   UpdateCustomerServiceSchema,
@@ -103,7 +104,7 @@ router.get(
 router.get(
   '/customer-services/counts',
   hasRole(['Admin', 'Staff']),
-  validateRequestQuery(GetAllServiceQuerySchema),
+  validateRequestQuery(GetServiceCountSchema),
   getServiceCountController
 );
 /**
