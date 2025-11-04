@@ -532,24 +532,13 @@ export const getBillHistoryByTenantIdService = async (req: Request) => {
   return { data: bills, ...paginationData };
 };
 
-export const getBillsofLastFourMonth = async (tenantId: string) => {
+export const getBillsofLastFourMonth = async () => {
   const now = new Date();
   const startDate = new Date(now.getFullYear(), now.getMonth() - 4, 1);
-
-  // Get tenant info to find the associated room
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { roomId: true },
-  });
-
-  if (!tenant || !tenant.roomId) {
-    throw new NotFoundError('Tenant or associated room not found');
-  }
 
   // Fetch only bills for this tenant's room within the last 4 months
   const bills = await prisma.bill.findMany({
     where: {
-      roomId: tenant.roomId,
       createdAt: {
         gte: startDate,
         lte: now,
@@ -571,7 +560,8 @@ export const getBillsofLastFourMonth = async (tenantId: string) => {
     if (!bill.totalUnit) continue;
 
     const monthName = bill.createdAt.toLocaleString('en-US', {
-      month: 'short', //  e.g., "Sep"
+      month: 'short',
+      year: 'numeric', //  e.g., "Sep 2025"
     });
 
     // convert Decimal values to numbers

@@ -126,9 +126,7 @@ export const getBillsofLastFourMonthController = async (
   next: NextFunction
 ) => {
   try {
-    const totalUnitsOfLastFourMonth = await getBillsofLastFourMonth(
-      req.validatedParams.tenantId
-    );
+    const totalUnitsOfLastFourMonth = await getBillsofLastFourMonth();
     successResponse(
       res,
       'Total Units of Last Four Month fetched successfully',

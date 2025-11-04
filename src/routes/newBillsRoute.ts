@@ -26,6 +26,12 @@ import { PaginationQuerySchema } from '../validations/paginationSchema';
 
 const router = Router();
 
+router.get(
+  '/bills/lastFourMonths',
+  hasRole(['Admin', 'Staff']),
+  getBillsofLastFourMonthController
+);
+
 /**
  * @swagger
  * /api/v1/bills/auto-generate:
@@ -253,11 +259,5 @@ router.get(
  *       404:
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.get(
-  '/tenants/:tenantId/bills/last-four-months',
-  hasRole(['Admin', 'Staff', 'Tenant']),
-  validateRequestParams(GetBillByTenantIdSchema),
-  getBillsofLastFourMonthController
-);
 
 export default router;
