@@ -83,6 +83,9 @@
  *               - $ref: '#/components/schemas/ApiSuccessResponse'
  *               - type: object
  *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: Get total room and avaliable room count successfully.
  *                   content:
  *                     type: object
  *                     properties:
@@ -92,7 +95,7 @@
  *                           allRoomsCount:
  *                             type: number
  *                             example: 100
- *                           availableRoomsCount:
+ *                           roomStatusCount:
  *                             type: number
  *                             example: 50
  */

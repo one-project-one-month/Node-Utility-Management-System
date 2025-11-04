@@ -200,7 +200,7 @@
  *       required: false
  *       schema:
  *         type: string
- *         enum: [Available, Rented, Maintenance]
+ *         enum: [Available, Rented, Purchased, InMaintenance]
  *         example: Available
  *
  *     CategoryParam:
@@ -259,6 +259,15 @@
  *       schema:
  *         type: string
  *         example: '101'
+ *
+ *     FloorQuery:
+ *       name: floor
+ *       in: query
+ *       description: Filter by floor number
+ *       required: false
+ *       schema:
+ *         type: integer
+ *         example: 1
  *
  *     # Invoice Filter Parameters
  *     InvoiceStatusParam:

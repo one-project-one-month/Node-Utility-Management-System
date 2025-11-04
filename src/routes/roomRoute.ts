@@ -57,9 +57,11 @@ router.post(
  *   get:
  *     tags: [Rooms]
  *     summary: Get Room count (Admin & Staff only)
- *     description: Get room count. Accessible only to Admin and Staff users.
+ *     description: Get room count. Accessible only to Admin and Staff users. When no status query is provided, status is default to "Available".
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/RoomStatusFilterParam'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/GetRoomCountSuccess'
