@@ -89,7 +89,7 @@ router.get(
  * /api/v1/customer-services/counts:
  *   get:
  *     tags: [Customer Services]
- *     summary: Get customer service counts
+ *     summary: Get customer service counts (Admin & Staff only)
  *     description: Retrieves the count of customer service records for each status.
  *     security:
  *       - bearerAuth: []

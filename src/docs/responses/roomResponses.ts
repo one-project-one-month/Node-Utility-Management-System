@@ -75,7 +75,7 @@
  * components:
  *   responses:
  *     GetRoomCountSuccess:
- *       description:
+ *       description: Get total room and avaliable room count successfully
  *       content:
  *         application/json:
  *           schema:
