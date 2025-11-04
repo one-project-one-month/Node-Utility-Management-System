@@ -531,3 +531,71 @@ export const getBillHistoryByTenantIdService = async (req: Request) => {
 
   return { data: bills, ...paginationData };
 };
+
+export const getBillsofLastFourMonth = async (tenantId: string) => {
+  const now = new Date();
+  const startDate = new Date(now.getFullYear(), now.getMonth() - 4, 1);
+
+  // Get tenant info to find the associated room
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { roomId: true },
+  });
+
+  if (!tenant || !tenant.roomId) {
+    throw new NotFoundError('Tenant or associated room not found');
+  }
+
+  // Fetch only bills for this tenant's room within the last 4 months
+  const bills = await prisma.bill.findMany({
+    where: {
+      roomId: tenant.roomId,
+      createdAt: {
+        gte: startDate,
+        lte: now,
+      },
+    },
+    include: {
+      totalUnit: true,
+    },
+  });
+
+  if (!bills.length) {
+    return {};
+  }
+
+  // Aggregate total units by month
+  const monthlyTotals: Record<string, number> = {};
+
+  for (const bill of bills) {
+    if (!bill.totalUnit) continue;
+
+    const monthName = bill.createdAt.toLocaleString('en-US', {
+      month: 'short', //  e.g., "Sep"
+    });
+
+    // convert Decimal values to numbers
+    const electricity = Number(bill.totalUnit.electricityUnits) || 0;
+    const water = Number(bill.totalUnit.waterUnits) || 0;
+    const totalUnits = electricity + water;
+
+    monthlyTotals[monthName] = (monthlyTotals[monthName] || 0) + totalUnits;
+  }
+
+  // Sort months (newest first)
+  const orderedTotals = Object.entries(monthlyTotals)
+    .sort(
+      ([a], [b]) =>
+        new Date(`${b} 1, ${now.getFullYear()}`).getTime() -
+        new Date(`${a} 1, ${now.getFullYear()}`).getTime()
+    )
+    .reduce(
+      (acc, [month, total]) => {
+        acc[month] = Number(total.toFixed(2));
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
+  return orderedTotals;
+};
