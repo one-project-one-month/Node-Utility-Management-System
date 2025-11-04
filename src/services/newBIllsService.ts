@@ -5,6 +5,7 @@ import prisma from '../lib/prismaClient';
 import {
   CreateBillSchemaType,
   GetAllBillQueryType,
+  GetTotalRevenueByMonthType,
   UpdateBillSchemaType,
 } from '../validations/newBillsSchema';
 import { PaginationQueryType } from '../validations/paginationSchema';
@@ -532,70 +533,50 @@ export const getBillHistoryByTenantIdService = async (req: Request) => {
   return { data: bills, ...paginationData };
 };
 
-export const getBillsofLastFourMonth = async (tenantId: string) => {
-  const now = new Date();
-  const startDate = new Date(now.getFullYear(), now.getMonth() - 4, 1);
+export const getRevenueByMonthService = async (req: Request) => {
+  const { month, year } = req.validatedQuery as GetTotalRevenueByMonthType;
+  const monthNum = month ?? new Date().getMonth() + 1; // 1–12
+  const yearNum = year ?? new Date().getFullYear();
 
-  // Get tenant info to find the associated room
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { roomId: true },
-  });
+  // Date for current month
+  const thisMonthStart = new Date(yearNum, monthNum - 1, 1);
+  const thisMonthEnd = new Date(yearNum, monthNum, 0, 23, 59, 59, 999);
 
-  if (!tenant || !tenant.roomId) {
-    throw new NotFoundError('Tenant or associated room not found');
-  }
+  // Date for previous month
+  const prevMonthStart = new Date(yearNum, monthNum - 2, 1);
+  const prevMonthEnd = new Date(yearNum, monthNum - 1, 0, 23, 59, 59, 999);
 
-  // Fetch only bills for this tenant's room within the last 4 months
-  const bills = await prisma.bill.findMany({
-    where: {
-      roomId: tenant.roomId,
-      createdAt: {
-        gte: startDate,
-        lte: now,
+  // Fetch bills for both months
+  const [thisMonthBills, prevMonthBills] = await Promise.all([
+    prisma.bill.findMany({
+      where: {
+        createdAt: {
+          gte: thisMonthStart,
+          lte: thisMonthEnd,
+        },
       },
-    },
-    include: {
-      totalUnit: true,
-    },
-  });
-
-  if (!bills.length) {
-    return {};
-  }
-
-  // Aggregate total units by month
-  const monthlyTotals: Record<string, number> = {};
-
-  for (const bill of bills) {
-    if (!bill.totalUnit) continue;
-
-    const monthName = bill.createdAt.toLocaleString('en-US', {
-      month: 'short', //  e.g., "Sep"
-    });
-
-    // convert Decimal values to numbers
-    const electricity = Number(bill.totalUnit.electricityUnits) || 0;
-    const water = Number(bill.totalUnit.waterUnits) || 0;
-    const totalUnits = electricity + water;
-
-    monthlyTotals[monthName] = (monthlyTotals[monthName] || 0) + totalUnits;
-  }
-
-  // Sort months (newest first)
-  const orderedTotals = Object.entries(monthlyTotals)
-    .sort(
-      ([a], [b]) =>
-        new Date(`${b} 1, ${now.getFullYear()}`).getTime() -
-        new Date(`${a} 1, ${now.getFullYear()}`).getTime()
-    )
-    .reduce(
-      (acc, [month, total]) => {
-        acc[month] = Number(total.toFixed(2));
-        return acc;
+      select: { totalAmount: true },
+    }),
+    prisma.bill.findMany({
+      where: {
+        createdAt: {
+          gte: prevMonthStart,
+          lte: prevMonthEnd,
+        },
       },
-      {} as Record<string, number>
-    );
+      select: { totalAmount: true },
+    }),
+  ]);
 
-  return orderedTotals;
+  // Calculate total revenue for both months
+  const thisMonthRevenue = thisMonthBills.reduce(
+    (sum, b) => sum + Number(b.totalAmount),
+    0
+  );
+  const prevMonthRevenue = prevMonthBills.reduce(
+    (sum, b) => sum + Number(b.totalAmount),
+    0
+  );
+
+  return { thisMonthRevenue, prevMonthRevenue };
 };
