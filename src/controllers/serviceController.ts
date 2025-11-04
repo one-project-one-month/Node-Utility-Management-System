@@ -128,10 +128,10 @@ export const getServiceCountController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const totalCounts = await getCustomerServiceCount();
+    const totalCounts = await getCustomerServiceCount(req);
     successResponse(
       res,
-      'Get customer service counts  successfully',
+      'Get customer service counts successfully',
       { data: totalCounts },
       200
     );

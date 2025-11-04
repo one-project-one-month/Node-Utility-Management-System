@@ -4,6 +4,7 @@ import prisma from '../lib/prismaClient';
 import {
   CreateServiceType,
   GetAllServiceQueryType,
+  GetServiceCountType,
   TenantIdType,
   TenantServiceHistoryType,
   UpdateServiceType,
@@ -163,7 +164,7 @@ export const getAllCustomerService = async (req: Request) => {
   }
 
   //Get services and totalCount
-  const [services, totalCount] = await Promise.all([
+  const [services, totalCount] = await prisma.$transaction([
     prisma.customerService.findMany({
       where,
       include: {
@@ -233,10 +234,21 @@ export const deleteCustomerServiceById = async (id: string) => {
 };
 
 //get customer service count of status 'Pending' and priority level "high"
-export const getCustomerServiceCount = async () => {
-  const [pendingIssueCount, highProrityCount] = await Promise.all([
-    prisma.customerService.count({ where: { status: 'Pending' } }),
-    prisma.customerService.count({ where: { priorityLevel: 'High' } }),
-  ]);
-  return { pendingIssueCount, highProrityCount };
+export const getCustomerServiceCount = async (req: Request) => {
+  const { status = 'Pending', priorityLevel = 'High' } =
+    req.validatedQuery as GetServiceCountType;
+
+  const [statusCount, priorityLevelCount, statusAndPriorityCount] =
+    await prisma.$transaction([
+      prisma.customerService.count({ where: { status } }),
+      prisma.customerService.count({ where: { priorityLevel } }),
+      prisma.customerService.count({ where: { status, priorityLevel } }),
+    ]);
+  if (!statusCount && !priorityLevelCount && !statusAndPriorityCount) {
+    throw new NotFoundError(
+      `No service count found for this ${status} status and this ${priorityLevel} `
+    );
+  }
+
+  return { statusCount, priorityLevelCount, statusAndPriorityCount };
 };

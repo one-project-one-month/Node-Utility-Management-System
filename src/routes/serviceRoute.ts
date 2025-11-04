@@ -16,6 +16,7 @@ import {
 import {
   CreateCustomerServiceSchema,
   GetAllServiceQuerySchema,
+  GetServiceCountSchema,
   TenantIdSchema,
   TenantServiceHistorySchema,
   UpdateCustomerServiceSchema,
@@ -88,10 +89,13 @@ router.get(
  * /api/v1/customer-services/counts:
  *   get:
  *     tags: [Customer Services]
- *     summary: Get customer service counts
+ *     summary: Get customer service counts (Admin & Staff only)
  *     description: Retrieves the count of customer service records for each status.
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/StatusQuery'
+ *       - $ref: '#/components/parameters/PriorityLevelParam'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/GetServiceCountSuccess'
@@ -103,6 +107,7 @@ router.get(
 router.get(
   '/customer-services/counts',
   hasRole(['Admin', 'Staff']),
+  validateRequestQuery(GetServiceCountSchema),
   getServiceCountController
 );
 /**

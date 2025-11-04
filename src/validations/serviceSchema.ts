@@ -86,6 +86,18 @@ export const TenantServiceHistorySchema = PaginationQuerySchema.extend({
     .optional(),
 });
 
+export const GetServiceCountSchema = z.object({
+  status: z
+    .enum(
+      ServiceStatus,
+      "Category must be one of 'Pending', 'Ongoing', or 'Resolved"
+    )
+    .optional(),
+  priorityLevel: z
+    .enum(PriorityLevel, "Category must be one of 'Low', 'Medium', or 'High")
+    .optional(),
+});
+
 export type CreateServiceType = z.infer<typeof CreateCustomerServiceSchema>;
 export type UpdateServiceType = z.infer<typeof UpdateCustomerServiceSchema>;
 export type GetAllServiceQueryType = z.infer<typeof GetAllServiceQuerySchema>;
@@ -93,3 +105,4 @@ export type TenantIdType = z.infer<typeof TenantIdSchema>;
 export type TenantServiceHistoryType = z.infer<
   typeof TenantServiceHistorySchema
 >;
+export type GetServiceCountType = z.infer<typeof GetServiceCountSchema>;

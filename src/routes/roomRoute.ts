@@ -17,6 +17,7 @@ import {
   UpdateRoomSchema,
   RoomIdSchema,
   GetAllRoomsQuerySchema,
+  GetRoomCountSchmea,
 } from '../validations/roomSchema';
 import { hasRole } from '../middlewares/authMiddleware';
 
@@ -56,9 +57,11 @@ router.post(
  *   get:
  *     tags: [Rooms]
  *     summary: Get Room count (Admin & Staff only)
- *     description: Get room count. Accessible only to Admin and Staff users.
+ *     description: Get room count. Accessible only to Admin and Staff users. When no status query is provided, status is default to "Available".
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/RoomStatusFilterParam'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/GetRoomCountSuccess'
@@ -69,7 +72,12 @@ router.post(
  *       403:
  *         $ref: '#/components/responses/ForbiddenError'
  */
-router.get('/counts', hasRole(['Admin', 'Staff']), getRoomCountController);
+router.get(
+  '/counts',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(GetRoomCountSchmea),
+  getRoomCountController
+);
 
 /**
  * @swagger

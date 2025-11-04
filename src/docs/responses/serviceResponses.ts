@@ -61,12 +61,22 @@
  *                 properties:
  *                   message:
  *                     type: string
- *                     example: Fetch customer service by ID successfully
+ *                     example: Get customer service counts successfully
  *                   content:
  *                     type: object
  *                     properties:
  *                       data:
- *                         $ref: '#/components/schemas/CustomerService'
+ *                         type: object
+ *                         properties:
+ *                           statusCount:
+ *                             type: number
+ *                             example: 56
+ *                           priorityLevelCount:
+ *                             type: number
+ *                             example: 127
+ *                           statusAndPriorityCount:
+ *                             type: number
+ *                             example: 24
  */
 
 /**
