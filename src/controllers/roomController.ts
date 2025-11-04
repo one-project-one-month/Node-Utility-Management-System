@@ -80,9 +80,13 @@ export async function getRoomCountController(
 ): Promise<void> {
   try {
     const totalCount = await getRoomCountService();
-    successResponse(res, "Get total room and avaliable room count successfully.", { data: totalCount })
+    successResponse(
+      res,
+      'Get total room and avaliable room count successfully.',
+      { data: totalCount }
+    );
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 

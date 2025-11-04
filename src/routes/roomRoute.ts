@@ -51,11 +51,8 @@ router.post(
 );
 
 // get total room and avaliable room count
-router.get(
-  '/counts',
-  hasRole(['Admin', 'Staff']),
-  getRoomCountController
-)
+router.get('/counts', hasRole(['Admin', 'Staff']), getRoomCountController);
+
 /**
  * @swagger
  * /api/v1/rooms:
