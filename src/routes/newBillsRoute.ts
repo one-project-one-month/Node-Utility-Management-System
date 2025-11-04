@@ -18,6 +18,7 @@ import {
   getAllBillsController,
   getBillByIdController,
   getBillHistoryByTenantIdController,
+  getBillsofLastFourMonthController,
   getLatestBillByTenantIdController,
   updateBillController,
 } from '../controllers/newBillsController';
@@ -227,6 +228,36 @@ router.get(
   validateRequestParams(GetBillByTenantIdSchema),
   validateRequestQuery(PaginationQuerySchema),
   getBillHistoryByTenantIdController
+);
+
+/**
+ * @swagger
+ * /api/v1/tenants/{tenantId}/bills/last-four-months:
+ *   get:
+ *     tags: [Bills]
+ *     summary: Get total units consumption for last four months by tenant
+ *     description: Retrieve aggregated total units (electricity + water) consumption for the last four months for a specific tenant. Accessible by Admin, Staff, and the tenant themselves.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/BillTenantIdParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetFourMonthsBillSuccess'
+ *       400:
+ *         $ref: '#/components/responses/BadRequestError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router.get(
+  '/tenants/:tenantId/bills/last-four-months',
+  hasRole(['Admin', 'Staff', 'Tenant']),
+  validateRequestParams(GetBillByTenantIdSchema),
+  getBillsofLastFourMonthController
 );
 
 export default router;
