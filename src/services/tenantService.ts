@@ -1,7 +1,7 @@
-import { Prisma } from './../../generated/prisma/index.d';
 import { Request } from 'express';
 import { BadRequestError } from '../common/errors/badRequestError';
 import { NotFoundError } from '../common/errors/notFoundError';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
 import prisma from '../lib/prismaClient';
 import {
@@ -9,7 +9,6 @@ import {
   GetAllTenantQueryType,
   UpdateTenantType,
 } from '../validations/tenantSchema';
-import { generatePaginationData } from '../common/utils/paginationHelper';
 
 export async function createTenantService(data: CreateTenantType) {
   const {
@@ -257,4 +256,33 @@ export async function getAllTenantService(req: Request) {
     data: tenants,
     ...paginationData,
   };
+}
+
+export async function getActiveTenantCountService() {
+  const today = new Date();
+
+  const activeTenantCount = await prisma.tenant.count({
+    where: {
+      OR: [
+        {
+          //Active renters: contract not expired + room rented
+          contract: {
+            expiryDate: {
+              gt: today,
+            },
+          },
+          room: {
+            status: 'Rented',
+          },
+        },
+        {
+          //Active buyers: room purchased (no expiry check needed)
+          room: {
+            status: 'Purchased',
+          },
+        },
+      ],
+    },
+  });
+  return activeTenantCount;
 }

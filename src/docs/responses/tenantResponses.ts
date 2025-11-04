@@ -105,3 +105,27 @@
  *                                 items:
  *                                   $ref: '#/components/schemas/Occupant'
  */
+
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     GetActiveTenantCountSuccess:
+ *       description: Active tenants count retrieved successfully
+ *       content:
+ *         application/json:
+ *           schema:
+ *             allOf:
+ *               - $ref: '#/components/schemas/ApiSuccessResponse'
+ *               - type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: Tenants updated successfully
+ *                   content:
+ *                     type: object
+ *                     properties:
+ *                       data:
+ *                         type: number
+ *                         example: 52
+ */
