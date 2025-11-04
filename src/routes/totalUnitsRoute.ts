@@ -3,12 +3,13 @@ import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from '../middlewares/validationMiddlware';
+} from '../middlewares/validationMiddleware';
 import {
   createTotalUnitsController,
   getAllTotalUnitsController,
   getTotalUnitsByBillIdController,
   getTotalUnitsByIdController,
+  getTotalUnitsSummaryMonthlyController,
   updateTotalUnitsController,
 } from '../controllers/totalUnitsController';
 import {
@@ -24,6 +25,31 @@ const router = Router();
 
 /**
  * @swagger
+ * /api/v1/total-units/summary:
+ *   get:
+ *     tags: [Total Units]
+ *     summary: Get summary total units monthly (Admin & Staff only)
+ *     description: Retrieves summary total units of all rooms monthly.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/TotalUnitsSummaryResponse'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router.get(
+  '/summary',
+  hasRole(['Admin', 'Staff']),
+  getTotalUnitsSummaryMonthlyController
+);
+
+/**
+ * @swagger
  * /api/v1/total-units:
  *   get:
  *     tags: [Total Units]
@@ -32,8 +58,8 @@ const router = Router();
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/PaginatedTotalUnitsResponse'

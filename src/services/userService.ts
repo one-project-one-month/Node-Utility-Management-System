@@ -138,7 +138,6 @@ export async function createUserService(data: CreateUserType) {
   });
 }
 
-// todo: tenantId check
 export async function updateUserService(userId: string, data: UpdateUserType) {
   // Find if user exists
   const existingUser = await prisma.user.findUnique({
@@ -164,7 +163,6 @@ export async function updateUserService(userId: string, data: UpdateUserType) {
     }
   }
 
-  // Hash password if provided
   if (data.password) {
     data.password = await hashPassword(data.password);
   }

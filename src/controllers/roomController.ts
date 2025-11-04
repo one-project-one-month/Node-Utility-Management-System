@@ -4,6 +4,7 @@ import {
   getRoomService,
   createRoomService,
   updateRoomService,
+  getRoomCountService,
   // deleteRoomService,
 } from '../services/roomService';
 import { successResponse } from '../common/apiResponse';
@@ -68,6 +69,24 @@ export async function updateRoomController(
     successResponse(res, 'Room updated successfully', { data: updatedRoom });
   } catch (error) {
     return next(error);
+  }
+}
+
+//get total room and avaliabe room count
+export async function getRoomCountController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const totalCount = await getRoomCountService(req);
+    successResponse(
+      res,
+      'Get total room and avaliable room count successfully.',
+      { data: totalCount }
+    );
+  } catch (error) {
+    next(error);
   }
 }
 

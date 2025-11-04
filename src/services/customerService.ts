@@ -4,6 +4,7 @@ import prisma from '../lib/prismaClient';
 import {
   CreateServiceType,
   GetAllServiceQueryType,
+  GetServiceCountType,
   TenantIdType,
   TenantServiceHistoryType,
   UpdateServiceType,
@@ -40,7 +41,7 @@ export const createCustomerService = async (
 };
 
 //get service history by tenantId
-export const cutomerServiceHistory = async (req: Request) => {
+export const customerServiceHistory = async (req: Request) => {
   const { id } = req.validatedParams as TenantIdType;
   const { page, limit, status } =
     req.validatedQuery as TenantServiceHistoryType;
@@ -126,7 +127,7 @@ export const updateCustomerService = async (
   });
 };
 
-//get all cutomer service
+//get all customer service
 export const getAllCustomerService = async (req: Request) => {
   const { page, limit, status, priorityLevel, category, search } =
     req.validatedQuery as GetAllServiceQueryType;
@@ -146,34 +147,24 @@ export const getAllCustomerService = async (req: Request) => {
   //Priority filter
   if (priorityLevel) where.priorityLevel = priorityLevel;
 
-  //Serach filter
+  //Search filter
   if (!isNaN(Number(search))) {
-    // Search by room number OR description
-    where.OR = [
-      {
-        room: {
-          is: {
-            roomNo: Number(search),
-          },
-        },
+    // Search by room number only when search is numeric
+    where.room = {
+      is: {
+        roomNo: Number(search),
       },
-      {
-        description: {
-          contains: search,
-          mode: 'insensitive',
-        },
-      },
-    ];
+    };
   } else {
-    // Search by description only
+    // Search by description only when search is string
     where.description = {
       contains: search,
       mode: 'insensitive',
     };
   }
 
-  //Get sevices and totalCount
-  const [services, totalCount] = await Promise.all([
+  //Get services and totalCount
+  const [services, totalCount] = await prisma.$transaction([
     prisma.customerService.findMany({
       where,
       include: {
@@ -240,4 +231,24 @@ export const deleteCustomerServiceById = async (id: string) => {
   }
 
   return await prisma.customerService.delete({ where: { id } });
+};
+
+//get customer service count of status 'Pending' and priority level "high"
+export const getCustomerServiceCount = async (req: Request) => {
+  const { status = 'Pending', priorityLevel = 'High' } =
+    req.validatedQuery as GetServiceCountType;
+
+  const [statusCount, priorityLevelCount, statusAndPriorityCount] =
+    await prisma.$transaction([
+      prisma.customerService.count({ where: { status } }),
+      prisma.customerService.count({ where: { priorityLevel } }),
+      prisma.customerService.count({ where: { status, priorityLevel } }),
+    ]);
+  if (!statusCount && !priorityLevelCount && !statusAndPriorityCount) {
+    throw new NotFoundError(
+      `No service count found for this ${status} status and this ${priorityLevel} `
+    );
+  }
+
+  return { statusCount, priorityLevelCount, statusAndPriorityCount };
 };

@@ -1,17 +1,17 @@
 import { Router } from 'express';
 import {
   createTenantController,
+  getActiveTenantCountController,
   getAllTenantController,
   getByIdTenantController,
   updateTenantController,
 } from '../controllers/tenantController';
+import { hasRole } from '../middlewares/authMiddleware';
 import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from '../middlewares/validationMiddlware';
-import { hasRole } from '../middlewares/authMiddleware';
-import { PaginationQuerySchema } from '../validations/paginationSchema';
+} from '../middlewares/validationMiddleware';
 import {
   CreateTenantSchema,
   GetAllTenantQuerySchema,
@@ -20,6 +20,31 @@ import {
 } from '../validations/tenantSchema';
 
 const router = Router();
+
+/**
+ * @swagger
+ * /api/v1/tenants/active-count:
+ *   get:
+ *     tags: [Tenants]
+ *     summary: Get active tenant count (Admin & Staff only)
+ *     description: Retrieve the count of active tenants. Accessible only to Admin and Staff users.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetActiveTenantCountSuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router.get(
+  '/active-count',
+  hasRole(['Admin', 'Staff']),
+  getActiveTenantCountController
+);
 
 /**
  * @swagger
@@ -59,8 +84,8 @@ router.get(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/PaginatedTenantsResponse'

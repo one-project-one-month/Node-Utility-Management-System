@@ -4,6 +4,7 @@ import {
   deleteServiceController,
   getAllServiceController,
   getServiceById,
+  getServiceCountController,
   serviceHistoryController,
   updateServiceController,
 } from '../controllers/serviceController';
@@ -11,11 +12,11 @@ import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from '../middlewares/validationMiddlware';
+} from '../middlewares/validationMiddleware';
 import {
   CreateCustomerServiceSchema,
   GetAllServiceQuerySchema,
-  IdSchema,
+  GetServiceCountSchema,
   TenantIdSchema,
   TenantServiceHistorySchema,
   UpdateCustomerServiceSchema,
@@ -49,7 +50,7 @@ const router = Router();
  */
 router.post(
   '/tenants/:id/customer-services/create',
-  validateRequestParams(IdSchema),
+  validateRequestParams(TenantIdSchema),
   validateRequestBody(CreateCustomerServiceSchema),
   createServiceController
 );
@@ -66,8 +67,8 @@ router.post(
  *     parameters:
  *       - $ref: '#/components/parameters/TenantIdParam'
  *       - $ref: '#/components/parameters/StatusParam'
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/ServiceHistorySuccess'
@@ -85,6 +86,32 @@ router.get(
 
 /**
  * @swagger
+ * /api/v1/customer-services/counts:
+ *   get:
+ *     tags: [Customer Services]
+ *     summary: Get customer service counts (Admin & Staff only)
+ *     description: Retrieves the count of customer service records for each status.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/StatusQuery'
+ *       - $ref: '#/components/parameters/PriorityLevelParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetServiceCountSuccess'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router.get(
+  '/customer-services/counts',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(GetServiceCountSchema),
+  getServiceCountController
+);
+/**
+ * @swagger
  * /api/v1/customer-services:
  *   get:
  *     tags: [Customer Services]
@@ -93,8 +120,8 @@ router.get(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *       - $ref: '#/components/parameters/CategoryParam'
  *       - $ref: '#/components/parameters/StatusQuery'
  *       - $ref: '#/components/parameters/PriorityLevelParam'
@@ -107,13 +134,13 @@ router.get(
  *       403:
  *         $ref: '#/components/responses/ForbiddenError'
  */
+
 router.get(
-  '/customer-services/',
+  '/customer-services',
   hasRole(['Admin', 'Staff']),
   validateRequestQuery(GetAllServiceQuerySchema),
   getAllServiceController
 );
-
 /**
  * @swagger
  * /api/v1/customer-services/{id}:
@@ -138,7 +165,7 @@ router.get(
 router.get(
   '/customer-services/:id',
   hasRole(['Admin', 'Staff']),
-  validateRequestParams(IdSchema),
+  validateRequestParams(TenantIdSchema),
   getServiceById
 );
 
@@ -170,7 +197,7 @@ router.get(
 router.put(
   '/customer-services/:id',
   hasRole(['Admin', 'Staff']),
-  validateRequestParams(IdSchema),
+  validateRequestParams(TenantIdSchema),
   validateRequestBody(UpdateCustomerServiceSchema),
   updateServiceController
 );
@@ -199,7 +226,7 @@ router.put(
 router.delete(
   '/customer-services/:id',
   hasRole(['Admin', 'Staff']),
-  validateRequestParams(IdSchema),
+  validateRequestParams(TenantIdSchema),
   deleteServiceController
 );
 

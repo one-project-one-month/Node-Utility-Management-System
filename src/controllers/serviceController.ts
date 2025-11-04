@@ -2,10 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 import { successResponse } from '../common/apiResponse';
 import {
   createCustomerService,
-  cutomerServiceHistory,
+  customerServiceHistory,
   deleteCustomerServiceById,
   getAllCustomerService,
   getCustomerServiceById,
+  getCustomerServiceCount,
   updateCustomerService,
 } from '../services/customerService';
 
@@ -39,8 +40,8 @@ export const serviceHistoryController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await cutomerServiceHistory(req);
-    successResponse(res, 'Fetch service history successfullly', result, 200);
+    const result = await customerServiceHistory(req);
+    successResponse(res, 'Fetch service history successfully', result, 200);
   } catch (error) {
     next(error);
   }
@@ -113,6 +114,25 @@ export const deleteServiceController = async (
       res,
       'Delete customer service by ID successfully',
       { data: service },
+      200
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get customer service counts
+export const getServiceCountController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const totalCounts = await getCustomerServiceCount(req);
+    successResponse(
+      res,
+      'Get customer service counts successfully',
+      { data: totalCounts },
       200
     );
   } catch (error) {

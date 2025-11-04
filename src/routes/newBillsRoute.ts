@@ -4,7 +4,7 @@ import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from '../middlewares/validationMiddlware';
+} from '../middlewares/validationMiddleware';
 import {
   CreateBillSchema,
   GetAllBillQuerySchema,
@@ -18,6 +18,7 @@ import {
   getAllBillsController,
   getBillByIdController,
   getBillHistoryByTenantIdController,
+  getBillsofLastFourMonthController,
   getLatestBillByTenantIdController,
   updateBillController,
 } from '../controllers/newBillsController';
@@ -149,8 +150,14 @@ router.get(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
+ *       - $ref: '#/components/parameters/StatusQuery'
+ *       - $ref: '#/components/parameters/TenantNameQuery'
+ *       - $ref: '#/components/parameters/RoomNoQuery'
+ *       - $ref: '#/components/parameters/SearchParam'
+ *       - $ref: '#/components/parameters/MonthParam'
+ *       - $ref: '#/components/parameters/YearParam'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/PaginatedBillsResponse'
@@ -205,8 +212,8 @@ router.get(
  *       - bearerAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/BillTenantIdParam'
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/PaginatedBillHistoryResponse'
@@ -221,6 +228,36 @@ router.get(
   validateRequestParams(GetBillByTenantIdSchema),
   validateRequestQuery(PaginationQuerySchema),
   getBillHistoryByTenantIdController
+);
+
+/**
+ * @swagger
+ * /api/v1/tenants/{tenantId}/bills/last-four-months:
+ *   get:
+ *     tags: [Bills]
+ *     summary: Get total units consumption for last four months by tenant
+ *     description: Retrieve aggregated total units (electricity + water) consumption for the last four months for a specific tenant. Accessible by Admin, Staff, and the tenant themselves.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/BillTenantIdParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetFourMonthsBillSuccess'
+ *       400:
+ *         $ref: '#/components/responses/BadRequestError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router.get(
+  '/tenants/:tenantId/bills/last-four-months',
+  hasRole(['Admin', 'Staff', 'Tenant']),
+  validateRequestParams(GetBillByTenantIdSchema),
+  getBillsofLastFourMonthController
 );
 
 export default router;

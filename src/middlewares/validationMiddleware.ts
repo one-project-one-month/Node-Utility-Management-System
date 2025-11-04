@@ -9,20 +9,18 @@ type ValidateProps = {
 
 const validate = (props: ValidateProps) => {
   return (req: Request, _res: Response, next: NextFunction) => {
-    const { schema, target } = props;
-
     // Get the correct data source based on target
     const dataToValidate =
-      target === 'BODY'
+      props.target === 'BODY'
         ? req.body
-        : target === 'PARAMS'
+        : props.target === 'PARAMS'
           ? req.params
           : req.query;
 
-    const validation = schema.safeParse(dataToValidate);
+    const { success, error, data } = props.schema.safeParse(dataToValidate);
 
-    if (!validation.success) {
-      const formattedErrors = validation.error.issues.map((err) => ({
+    if (!success) {
+      const formattedErrors = error.issues.map((err) => ({
         path: err.path.join('.'),
         message: err.message,
       }));
@@ -30,36 +28,34 @@ const validate = (props: ValidateProps) => {
     }
 
     // Store validated data in the correct request property
-    if (target === 'BODY') {
-      req.validatedBody = validation.data;
-    } else if (target === 'PARAMS') {
-      req.validatedParams = validation.data;
-    } else if (target === 'QUERY') {
-      req.validatedQuery = validation.data;
+    if (props.target === 'BODY') {
+      req.validatedBody = data;
+    } else if (props.target === 'PARAMS') {
+      req.validatedParams = data;
+    } else if (props.target === 'QUERY') {
+      req.validatedQuery = data;
     }
     next();
   };
 };
 
-const validateRequestParams = (schema: z.Schema<any>) => {
+export const validateRequestParams = (schema: z.Schema<any>) => {
   return validate({
     schema,
     target: 'PARAMS',
   });
 };
 
-const validateRequestQuery = (schema: z.Schema<any>) => {
+export const validateRequestQuery = (schema: z.Schema<any>) => {
   return validate({
     schema,
     target: 'QUERY',
   });
 };
 
-const validateRequestBody = (schema: z.Schema<any>) => {
+export const validateRequestBody = (schema: z.Schema<any>) => {
   return validate({
     schema,
     target: 'BODY',
   });
 };
-
-export { validateRequestBody, validateRequestQuery, validateRequestParams };

@@ -110,3 +110,33 @@
  *                       data:
  *                         $ref: '#/components/schemas/BillWithTenantId'
  */
+
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     GetFourMonthsBillSuccess:
+ *       description: Total units for last four months retrieved successfully
+ *       content:
+ *         application/json:
+ *           schema:
+ *             allOf:
+ *               - $ref: '#/components/schemas/ApiSuccessResponse'
+ *               - type: object
+ *                 properties:
+ *                   content:
+ *                     type: object
+ *                     properties:
+ *                       data:
+ *                         type: object
+ *                         additionalProperties:
+ *                           type: number
+ *                           format: float
+ *                           example: 225.8
+ *                         description: Object with month abbreviations as keys and total units as values
+ *                         example:
+ *                           Nov: 225.8
+ *                           Oct: 217.9
+ *                           Sep: 225.6
+ *                           Aug: 154.4
+ */

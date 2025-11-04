@@ -84,6 +84,19 @@ export const GetAllBillQuerySchema = PaginationQuerySchema.extend({
     .min(1, 'Room number is required and choose a positive number in the list')
     .optional(),
   search: z.string().min(1, 'Search cannot be empty').optional(),
+  month: z.string().optional(),
+  year: z
+    .string()
+    .length(4, { message: 'Year must be exactly 4 digits' })
+    .regex(/^\d+$/, { message: 'Year must contain only numbers' })
+    .refine(
+      (year) => {
+        const yearNum = parseInt(year);
+        return yearNum >= 2020;
+      },
+      { message: 'Year must be between 2020' }
+    )
+    .optional(),
 });
 
 export type CreateBillSchemaType = z.infer<typeof CreateBillSchema>;

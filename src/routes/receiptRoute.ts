@@ -13,7 +13,7 @@ import {
   validateRequestBody,
   validateRequestParams,
   validateRequestQuery,
-} from '../middlewares/validationMiddlware';
+} from '../middlewares/validationMiddleware';
 import {
   CreateReceiptSchema,
   GetReceiptParamSchema,
@@ -64,8 +64,8 @@ router.get(
  *       - bearerAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/TenantIdParam'
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *     responses:
  *       200:
  *         $ref: '#/components/responses/ReceiptHistorySuccess'
@@ -91,8 +91,8 @@ router.get(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
  *       - $ref: '#/components/parameters/PaymentMethodFilterParam'
  *     responses:
  *       200:

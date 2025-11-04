@@ -32,7 +32,7 @@ export const createContractTypeController = async (
 // @desc get all contract types
 // @access Dashboard
 export const getAllContractTypeController = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {

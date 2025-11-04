@@ -22,6 +22,14 @@ export const createContractTypeService = async (
 export const getAllContractTypeService = async () => {
   const contractTypes = await prisma.contractType.findMany({
     orderBy: { createdAt: 'desc' },
+    include: {
+      contract: true,
+      _count: {
+        select: {
+          contract: true,
+        },
+      },
+    },
   });
 
   if (Array.isArray(contractTypes) && !contractTypes.length)
@@ -34,6 +42,14 @@ export const getAllContractTypeService = async () => {
 export const getByIdContractTypeService = async (contractTypeId: string) => {
   const contractType = await prisma.contractType.findUnique({
     where: { id: contractTypeId },
+    include: {
+      contract: true,
+      _count: {
+        select: {
+          contract: true,
+        },
+      },
+    },
   });
   if (!contractType) throw new NotFoundError('Contract type not found');
   return contractType;

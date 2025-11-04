@@ -3,7 +3,7 @@
  * components:
  *   parameters:
  *     # Pagination Parameters
- *     PageParam:
+ *     PageQuery:
  *       name: page
  *       in: query
  *       description: Page number for pagination
@@ -13,7 +13,7 @@
  *         minimum: 1
  *         example: 1
  *
- *     LimitParam:
+ *     LimitQuery:
  *       name: limit
  *       in: query
  *       description: Number of items per page
@@ -23,12 +23,7 @@
  *         minimum: 1
  *         maximum: 100
  *         example: 10
- */
-
-/**
- * @swagger
- * components:
- *   parameters:
+ *
  *     # ID Parameters
  *     UserIdParam:
  *       name: userId
@@ -159,12 +154,7 @@
  *         type: string
  *         format: uuid
  *         example: d44605d3-4f8e-4057-b778-201111db860d
- */
-
-/**
- * @swagger
- * components:
- *   parameters:
+ *
  *     # Filter Parameters
  *     RoleFilterParam:
  *       name: role
@@ -210,7 +200,7 @@
  *       required: false
  *       schema:
  *         type: string
- *         enum: [Available, Rented, Maintenance]
+ *         enum: [Available, Rented, Purchased, InMaintenance]
  *         example: Available
  *
  *     CategoryParam:
@@ -246,18 +236,39 @@
  *     SearchParam:
  *       name: search
  *       in: query
- *       description: Filter by search term ( desc or roomNo )
+ *       description: Filter by search term (desc or roomNo)
  *       required: false
  *       schema:
  *         type: string
- *         example:
- */
-
-// Invoice
-/**
- * @swagger
- * components:
- *   parameters:
+ *         example: "search term"
+ *
+ *     TenantNameQuery:
+ *       name: tenantName
+ *       in: query
+ *       description: Filter by tenant name
+ *       required: false
+ *       schema:
+ *         type: string
+ *         example: 'John Doe'
+ *
+ *     RoomNoQuery:
+ *       name: roomNo
+ *       in: query
+ *       description: Filter by room number
+ *       required: false
+ *       schema:
+ *         type: string
+ *         example: '101'
+ *
+ *     FloorQuery:
+ *       name: floor
+ *       in: query
+ *       description: Filter by floor number
+ *       required: false
+ *       schema:
+ *         type: integer
+ *         example: 1
+ *
  *     # Invoice Filter Parameters
  *     InvoiceStatusParam:
  *       name: status

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { successResponse } from '../common/apiResponse';
 import {
   createTenantService,
+  getActiveTenantCountService,
   getAllTenantService,
   getByIdTenantService,
   updateTenantService,
@@ -14,7 +15,7 @@ export async function getByIdTenantController(
 ): Promise<void> {
   try {
     const tenant = await getByIdTenantService(req.validatedParams.tenantId);
-    successResponse(res, 'Tenant gets successfull.', { data: tenant }, 200);
+    successResponse(res, 'Tenant gets successful.', { data: tenant }, 200);
   } catch (error) {
     return next(error);
   }
@@ -62,6 +63,24 @@ export async function updateTenantController(
       { data: updatedTenants },
       200
     ); // Not 201
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getActiveTenantCountController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const activeTenantCount = await getActiveTenantCountService();
+    successResponse(
+      res,
+      'Active tenant count gets successfully',
+      { data: activeTenantCount },
+      200
+    );
   } catch (error) {
     return next(error);
   }

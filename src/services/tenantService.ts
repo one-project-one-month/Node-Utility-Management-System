@@ -1,15 +1,14 @@
 import { Request } from 'express';
 import { BadRequestError } from '../common/errors/badRequestError';
 import { NotFoundError } from '../common/errors/notFoundError';
+import { generatePaginationData } from '../common/utils/paginationHelper';
 import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
 import prisma from '../lib/prismaClient';
-import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateTenantType,
   GetAllTenantQueryType,
   UpdateTenantType,
 } from '../validations/tenantSchema';
-import { generatePaginationData } from '../common/utils/paginationHelper';
 
 export async function createTenantService(data: CreateTenantType) {
   const {
@@ -24,7 +23,7 @@ export async function createTenantService(data: CreateTenantType) {
   //Check if room exists
   const room = await prisma.room.findUnique({ where: { id: roomId } });
   if (!room) {
-    throw new BadRequestError('Room not found');
+    throw new NotFoundError('Room not found');
   }
 
   const existingTenantForRoom = await prisma.tenant.findUnique({
@@ -83,18 +82,18 @@ export async function updateTenantService(
   });
   if (!tenant) throw new NotFoundError('Tenant not found');
 
-  // Check that the provided roomId exists
-  const room = await prisma.room.findUnique({
-    where: { id: data.roomId },
-  });
-  if (!room) throw new NotFoundError('Room not found.');
-
   // Ensure the provided roomId matches the tenant’s current roomId
   if (tenant.roomId !== data.roomId) {
     throw new BadRequestError(
       'RoomId mismatch: tenant is not assigned to this room.'
     );
   }
+
+  // Check that the provided roomId exists
+  const room = await prisma.room.findUnique({
+    where: { id: data.roomId },
+  });
+  if (!room) throw new NotFoundError('Room not found.');
 
   // Ensure occupant belongs to this tenant
   if (data.occupantId) {
@@ -257,4 +256,33 @@ export async function getAllTenantService(req: Request) {
     data: tenants,
     ...paginationData,
   };
+}
+
+export async function getActiveTenantCountService() {
+  const today = new Date();
+
+  const activeTenantCount = await prisma.tenant.count({
+    where: {
+      OR: [
+        {
+          //Active renters: contract not expired + room rented
+          contract: {
+            expiryDate: {
+              gt: today,
+            },
+          },
+          room: {
+            status: 'Rented',
+          },
+        },
+        {
+          //Active buyers: room purchased (no expiry check needed)
+          room: {
+            status: 'Purchased',
+          },
+        },
+      ],
+    },
+  });
+  return activeTenantCount;
 }
