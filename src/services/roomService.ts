@@ -90,10 +90,12 @@ export async function updateRoomService(roomId: string, data: UpdateRoomType) {
   return updatedRoom;
 }
 
-export async function getRoomCountService() {
+export async function getRoomCountService(req: Request) {
+  const { status = "Available" } = req.validatedQuery as GetAllRoomsQueryType
+
   const [allRoomsCount, availableRoomsCount] = await Promise.all([
     prisma.room.count(),
-    prisma.room.count({ where: { status: 'Available' } }),
+    prisma.room.count({ where: { status } }),
   ]);
   return { allRoomsCount, availableRoomsCount };
 }

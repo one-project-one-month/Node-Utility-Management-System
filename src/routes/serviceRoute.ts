@@ -103,6 +103,7 @@ router.get(
 router.get(
   '/customer-services/counts',
   hasRole(['Admin', 'Staff']),
+  validateRequestQuery(GetAllServiceQuerySchema),
   getServiceCountController
 );
 /**
