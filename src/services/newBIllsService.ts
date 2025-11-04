@@ -535,8 +535,8 @@ export const getBillHistoryByTenantIdService = async (req: Request) => {
 
 export const getRevenueByMonthService = async (req: Request) => {
   const { month, year } = req.validatedQuery as GetTotalRevenueByMonthType;
-  const monthNum = parseInt(month as string); // 1–12
-  const yearNum = parseInt(year as string) || new Date().getFullYear();
+  const monthNum = month ?? new Date().getMonth() + 1; // 1–12
+  const yearNum = year ?? new Date().getFullYear();
 
   // Date for current month
   const thisMonthStart = new Date(yearNum, monthNum - 1, 1);

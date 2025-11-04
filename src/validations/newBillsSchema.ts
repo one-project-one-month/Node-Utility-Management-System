@@ -100,17 +100,29 @@ export const GetAllBillQuerySchema = PaginationQuerySchema.extend({
 });
 
 export const GetTotalRevenueByMonthSchema = z.object({
-  month: z.string().optional(),
+  month: z
+    .preprocess(
+      (val) => Number(val),
+      z
+        .number({
+          message: 'Month must be a number',
+        })
+        .min(1, { message: 'Month must be between 1 and 12' })
+        .max(12, { message: 'Month must be between 1 and 12' })
+    )
+    .optional(),
+
   year: z
-    .string()
-    .length(4, { message: 'Year must be exactly 4 digits' })
-    .regex(/^\d+$/, { message: 'Year must contain only numbers' })
-    .refine(
-      (year) => {
-        const yearNum = parseInt(year);
-        return yearNum >= 2020;
-      },
-      { message: 'Year must be between 2020' }
+    .preprocess(
+      (val) => Number(val),
+      z
+        .number({
+          message: 'Year must be a number',
+        })
+        .min(2020, { message: 'Year must be 2020 or later' })
+        .max(new Date().getFullYear(), {
+          message: 'Year cannot be in the future',
+        })
     )
     .optional(),
 });
