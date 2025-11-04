@@ -96,7 +96,7 @@ export const GetServiceCountSchema = z.object({
   priorityLevel: z
     .enum(PriorityLevel, "Category must be one of 'Low', 'Medium', or 'High")
     .optional(),
-})
+});
 
 export type CreateServiceType = z.infer<typeof CreateCustomerServiceSchema>;
 export type UpdateServiceType = z.infer<typeof UpdateCustomerServiceSchema>;
@@ -105,4 +105,4 @@ export type TenantIdType = z.infer<typeof TenantIdSchema>;
 export type TenantServiceHistoryType = z.infer<
   typeof TenantServiceHistorySchema
 >;
-export type GetServiceCountType = z.infer<typeof GetServiceCountSchema>
+export type GetServiceCountType = z.infer<typeof GetServiceCountSchema>;

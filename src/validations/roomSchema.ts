@@ -66,11 +66,11 @@ export const GetRoomCountSchmea = z.object({
       "Room Status must be one of 'Available', 'Rented', 'Purchased', 'InMaintenance"
     )
     .optional(),
-})
+});
 
 //Type inference
 export type CreateRoomType = z.infer<typeof CreateRoomSchema>;
 export type UpdateRoomType = z.infer<typeof UpdateRoomSchema>;
 export type RoomIdType = z.infer<typeof RoomIdSchema>;
 export type GetAllRoomsQueryType = z.infer<typeof GetAllRoomsQuerySchema>;
-export type getRoomCountType = z.infer<typeof GetRoomCountSchmea>
+export type getRoomCountType = z.infer<typeof GetRoomCountSchmea>;
