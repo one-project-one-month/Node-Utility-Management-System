@@ -4,6 +4,7 @@ import {
   getActiveTenantCountController,
   getAllTenantController,
   getByIdTenantController,
+  getTenantWithoutContractController,
   updateTenantController,
 } from '../controllers/tenantController';
 import { hasRole } from '../middlewares/authMiddleware';
@@ -12,6 +13,7 @@ import {
   validateRequestParams,
   validateRequestQuery,
 } from '../middlewares/validationMiddleware';
+import { PaginationQuerySchema } from '../validations/paginationSchema';
 import {
   CreateTenantSchema,
   GetAllTenantQuerySchema,
@@ -20,6 +22,13 @@ import {
 } from '../validations/tenantSchema';
 
 const router = Router();
+
+router.get(
+  '/no-contract',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(PaginationQuerySchema),
+  getTenantWithoutContractController
+);
 
 /**
  * @swagger
