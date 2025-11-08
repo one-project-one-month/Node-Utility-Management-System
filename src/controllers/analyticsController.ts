@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { contractTypeAnalyticsService } from '../services/analyticsServices';
 import { successResponse } from '../common/apiResponse';
 
-// @
 export const contractTypeAnalyticsController = async (
   _req: Request,
   res: Response,
@@ -13,7 +12,7 @@ export const contractTypeAnalyticsController = async (
     successResponse(
       res,
       'Contract type analytics fetched successfully',
-      contracts,
+      { data: contracts },
       200
     );
   } catch (error) {
