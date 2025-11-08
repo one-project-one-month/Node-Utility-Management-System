@@ -129,3 +129,41 @@
  *                         type: number
  *                         example: 52
  */
+
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     GetTenantWithoutContractSuccess:
+ *       description: Tenants without contract retrieved successfully
+ *       content:
+ *         application/json:
+ *           schema:
+ *             allOf:
+ *               - $ref: '#/components/schemas/ApiSuccessResponse'
+ *               - type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: Tenants without contract fetched successfully
+ *                   content:
+ *                     type: object
+ *                     properties:
+ *                       data:
+ *                         type: array
+ *                         items:
+ *                           allOf:
+ *                             - $ref: '#/components/schemas/Tenant'
+ *                             - type: object
+ *                               properties:
+ *                                 room:
+ *                                   $ref: '#/components/schemas/Room'
+ *                                 occupants:
+ *                                   type: array
+ *                                   items:
+ *                                     $ref: '#/components/schemas/Occupant'
+ *                       meta:
+ *                         $ref: '#/components/schemas/PaginationMeta'
+ *                       links:
+ *                         $ref: '#/components/schemas/PaginationLinks'
+ */
