@@ -77,6 +77,10 @@ export const getBillRevenueByFourMonthService = async (req: Request) => {
     },
   });
 
+  if (!bills) {
+    throw new NotFoundError('No bills found for the current month');
+  }
+
   const groupedBills = bills.reduce((acc: any, bill: Bill) => {
     const billMonth = moment(bill.createdAt).format('YYYY-MM');
     if (!acc[billMonth]) {
