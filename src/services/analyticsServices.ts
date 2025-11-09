@@ -16,9 +16,9 @@ export const contractTypeAnalyticsService = async () => {
   }
 
   const result = await Promise.all(
-    contracts.map(async (stat) => {
+    contracts.map(async (contract) => {
       const contractType = await prisma.contractType.findUnique({
-        where: { id: stat.contractTypeId },
+        where: { id: contract.contractTypeId },
         select: {
           name: true,
         },
@@ -26,7 +26,7 @@ export const contractTypeAnalyticsService = async () => {
 
       return {
         contractType,
-        tenantCount: stat._count.tenantId,
+        tenantCount: contract._count.tenantId,
       };
     })
   );
