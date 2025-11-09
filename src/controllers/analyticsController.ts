@@ -9,11 +9,10 @@ export const getAnalyticServiceCountController = async (
 ): Promise<void> => {
     try {
         const data = await getAnalyticServiceCount(req)
-        console.log(data, "in controller")
         successResponse(
             res,
             "Get analytic customer service count data sccessful.",
-            data,
+            { data },
             200,
         )
 

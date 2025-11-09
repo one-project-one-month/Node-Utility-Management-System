@@ -60,7 +60,7 @@ app.use('/api/v1', isAuthenticated, contractRoute); // contract endpoint
 app.use('/api/v1/rooms', isAuthenticated, roomRoute);
 app.use('/api/v1', isAuthenticated, invoiceRoute); // invoice endpoint
 app.use('/api/v1', isAuthenticated, newBillsRoute);
-app.use('/api/v1/analytic', isAuthenticated, analytic);
+app.use('/api/v1', isAuthenticated, analytic);
 
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
