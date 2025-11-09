@@ -42,3 +42,42 @@
  *                               name: "6 Months"
  *                             tenantCount: 36
  */
+
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     RoomAnalyticsSuccess:
+ *       description: Room analytics fetched successfully
+ *       content:
+ *         application/json:
+ *           schema:
+ *             allOf:
+ *               - $ref: '#/components/schemas/ApiSuccessResponse'
+ *               - type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: Room analytics fetched successfully
+ *                   content:
+ *                     type: object
+ *                     properties:
+ *                       data:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             status:
+ *                               type: string
+ *                               example: Available
+ *                             count:
+ *                               type: number
+ *                               example: 10
+ *                         example:
+ *                           - status: "Available"
+ *                             count: 10
+ *                           - status: "Occupied"
+ *                             count: 25
+ *                           - status: "Maintenance"
+ *                             count: 5
+ */

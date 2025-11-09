@@ -16,5 +16,29 @@ export const contractTypeAnalyticsService = async () => {
 
   if (!contractTypes.length) throw new NotFoundError('No contract types found');
 
-  return contractTypes;
+  const flatten = contractTypes.map((ct) => ({
+    contractType: ct.name,
+    tenantCount: ct._count.contract,
+  }));
+
+  return flatten;
+};
+
+// Room analytics
+export const roomAnalyticsService = async () => {
+  const roomData = await prisma.room.groupBy({
+    by: ['status'],
+    _count: {
+      status: true,
+    },
+  });
+
+  if (!roomData.length) throw new NotFoundError('No room data found');
+
+  const flatten = roomData.map((rd) => ({
+    status: rd.status,
+    count: rd._count.status,
+  }));
+
+  return flatten;
 };
