@@ -23,7 +23,7 @@ import tenantRoute from './routes/tenantRoute';
 import totalUnitsRoute from './routes/totalUnitsRoute';
 import userRoute from './routes/userRoute';
 import newBillsRoute from './routes/newBillsRoute';
-
+import analyticsRoute from './routes/analyticsRoute';
 dotenv.config();
 
 const app = express();
@@ -60,6 +60,7 @@ app.use('/api/v1', isAuthenticated, contractRoute); // contract endpoint
 app.use('/api/v1/rooms', isAuthenticated, roomRoute);
 app.use('/api/v1', isAuthenticated, invoiceRoute); // invoice endpoint
 app.use('/api/v1', isAuthenticated, newBillsRoute);
+app.use('/api/v1', isAuthenticated, analyticsRoute);
 
 // ERROR HANDLER MUST BE THE LAST MIDDLEWARE
 app.use(errorHandler);

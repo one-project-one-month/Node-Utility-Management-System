@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 import { ServiceStatus } from "../../generated/prisma";
 
 export const AnalyticsServiceQuerySchema = z.object({
@@ -21,6 +21,10 @@ export const AnalyticsServiceQuerySchema = z.object({
     .refine((date) => !isNaN(date.getTime()), {
       error: 'Invalid due date',
     }).optional(),
-})
+}).refine((data) => data.to && data.from && data.from > data.to,
+  {
+    message: "'From' date cannot be later than 'To' date.",
+  }
+)
 
 export type AnalyticsServiceCount = z.infer<typeof AnalyticsServiceQuerySchema>

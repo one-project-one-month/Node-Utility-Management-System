@@ -18,7 +18,7 @@ export const getAnalyticServiceCountController = async (
         )
 
     } catch (error) {
-        next(error)
+        return next(error);
     }
 }
 
