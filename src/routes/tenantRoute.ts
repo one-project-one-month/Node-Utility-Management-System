@@ -4,6 +4,7 @@ import {
   getActiveTenantCountController,
   getAllTenantController,
   getByIdTenantController,
+  getTenantWithoutContractController,
   updateTenantController,
 } from '../controllers/tenantController';
 import { hasRole } from '../middlewares/authMiddleware';
@@ -12,6 +13,7 @@ import {
   validateRequestParams,
   validateRequestQuery,
 } from '../middlewares/validationMiddleware';
+import { PaginationQuerySchema } from '../validations/paginationSchema';
 import {
   CreateTenantSchema,
   GetAllTenantQuerySchema,
@@ -20,6 +22,29 @@ import {
 } from '../validations/tenantSchema';
 
 const router = Router();
+
+/**
+ * @swagger
+ * /api/v1/tenants/no-contract:
+ *   get:
+ *     tags: [Tenants]
+ *     summary: Get tenants without contract (Admin & Staff only)
+ *     description: Retrieve a list of tenants without contracts. Accessible only to Admin and Staff users.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageQuery'
+ *       - $ref: '#/components/parameters/LimitQuery'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/GetTenantWithoutContractSuccess'
+ */
+router.get(
+  '/no-contract',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(PaginationQuerySchema),
+  getTenantWithoutContractController
+);
 
 /**
  * @swagger

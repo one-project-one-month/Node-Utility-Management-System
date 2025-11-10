@@ -4,6 +4,7 @@ import { NotFoundError } from '../common/errors/notFoundError';
 import { generatePaginationData } from '../common/utils/paginationHelper';
 import { checkDuplicateTenantData } from '../helpers/checkDuplicateTenantData';
 import prisma from '../lib/prismaClient';
+import { PaginationQueryType } from '../validations/paginationSchema';
 import {
   CreateTenantType,
   GetAllTenantQueryType,
@@ -285,4 +286,35 @@ export async function getActiveTenantCountService() {
     },
   });
   return activeTenantCount;
+}
+
+export async function getTenantWithoutContractService(req: Request) {
+  const { page, limit } = req.validatedQuery as PaginationQueryType;
+  const skip = (page - 1) * limit;
+
+  const [tenantsWithoutContract, totalCount] = await prisma.$transaction([
+    prisma.tenant.findMany({
+      where: {
+        contract: null,
+      },
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        room: true,
+        occupants: true,
+      },
+    }),
+    prisma.tenant.count({ where: { contract: null } }),
+  ]);
+
+  if (Array.isArray(tenantsWithoutContract) && !tenantsWithoutContract.length)
+    throw new NotFoundError('Tenants without contract Not Found');
+
+  const paginationData = generatePaginationData(req, totalCount, page, limit);
+
+  return {
+    data: tenantsWithoutContract,
+    ...paginationData,
+  };
 }
