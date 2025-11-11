@@ -24,19 +24,16 @@ export const getBillStatusAnalyticsService = async (req: Request) => {
       },
     },
   });
-  const paidbills = bills.filter((bill: any) => bill.invoice.status === 'Paid');
-  //   console.log('Paid bills', paidbills.length);
-  const pendingbills = bills.filter(
-    (bill: any) => bill.invoice.status === 'Pending'
-  );
-  //   console.log('Pending bills', pendingbills.length);
-  const overduebills = bills.filter(
-    (bill: any) => bill.invoice.status === 'Overdue'
-  );
-  // console.log('Overdue bills', overduebills.length);
   if (!bills) {
     throw new NotFoundError('No bills found for the current month');
   }
+  const paidbills = bills.filter((bill: any) => bill.invoice.status === 'Paid');
+  const pendingbills = bills.filter(
+    (bill: any) => bill.invoice.status === 'Pending'
+  );
+  const overduebills = bills.filter(
+    (bill: any) => bill.invoice.status === 'Overdue'
+  );
 
   const totalPaid = paidbills.reduce(
     (acc: number, bills: Bill) => acc + Number(bills.totalAmount),
