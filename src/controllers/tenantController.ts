@@ -5,6 +5,7 @@ import {
   getActiveTenantCountService,
   getAllTenantService,
   getByIdTenantService,
+  getTenantWithoutContractService,
   updateTenantService,
 } from '../services/tenantService';
 
@@ -79,6 +80,24 @@ export async function getActiveTenantCountController(
       res,
       'Active tenant count gets successfully',
       { data: activeTenantCount },
+      200
+    );
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getTenantWithoutContractController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const result = await getTenantWithoutContractService(req);
+    successResponse(
+      res,
+      'Tenants without contract fetched successfully',
+      result,
       200
     );
   } catch (error) {
