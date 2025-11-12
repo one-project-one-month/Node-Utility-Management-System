@@ -21,38 +21,31 @@ export const CreateCustomerServiceSchema = z.object({
   roomId: z.uuid({ version: 'v4', error: 'Invalid UUID' }),
 });
 
-export const UpdateCustomerServiceSchema = z
-  .object({
-    description: z
-      .string('Description is required.')
-      .min(10, { message: 'Description must be at least 10 characters' })
-      .optional(),
-    category: z
-      .enum(
-        Category,
-        "Category must be one of 'Complain', 'Maintenance', or 'Other'"
-      )
-      .optional(),
-    status: z
-      .enum(
-        ServiceStatus,
-        "Status must be one of 'Pending', 'Ongoing', or 'Resolved'"
-      )
-      .optional(),
-    priorityLevel: z
-      .enum(
-        PriorityLevel,
-        "Priority Level must be one of 'Low', 'Medium', or 'High'"
-      )
-      .optional(),
-    roomId: z.uuid({ version: 'v4', error: 'Invalid UUID' }).optional(),
-  })
-  .refine(
-    (data) => data.status !== undefined && data.priorityLevel !== undefined,
-    {
-      message: 'Both status AND priorityLevel must be provided for update',
-    }
-  );
+export const UpdateCustomerServiceSchema = z.object({
+  description: z
+    .string('Description is required.')
+    .min(10, { message: 'Description must be at least 10 characters' })
+    .optional(),
+  category: z
+    .enum(
+      Category,
+      "Category must be one of 'Complain', 'Maintenance', or 'Other'"
+    )
+    .optional(),
+  status: z
+    .enum(
+      ServiceStatus,
+      "Status must be one of 'Pending', 'Ongoing', or 'Resolved'"
+    )
+    .optional(),
+  priorityLevel: z
+    .enum(
+      PriorityLevel,
+      "Priority Level must be one of 'Low', 'Medium', or 'High'"
+    )
+    .optional(),
+  roomId: z.uuid({ version: 'v4', error: 'Invalid UUID' }).optional(),
+});
 
 export const GetAllServiceQuerySchema = PaginationQuerySchema.extend({
   category: z
