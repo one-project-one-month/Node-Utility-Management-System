@@ -26,21 +26,17 @@ export const AnalyticsServiceQuerySchema = z
       })
       .optional(),
   })
-  // .refine(
-  //   (data) => {
-  //     if (data.from && data.to) {
-  //       return data.from < data.to;
-  //     }
-  //     return true;
-  //   },
-  //   {
-  //     message: "'From' date cannot be later than 'To' date.",
-  //     path: ['from', 'to'],
-  //   }
-  // );
-  .refine((data) => data.to && data.from && data.from < data.to, {
-    message: "'From' date cannot be later than 'To' date.",
-    path: ['from', 'to'],
-  });
+  .refine(
+    (data) => {
+      if (data.from && data.to) {
+        return data.from < data.to;
+      }
+      return true;
+    },
+    {
+      message: "'From' date can't be later than 'To' date.",
+      path: ['from'],
+    }
+  );
 
 export type AnalyticsServiceCount = z.infer<typeof AnalyticsServiceQuerySchema>;
