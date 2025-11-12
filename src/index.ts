@@ -24,6 +24,7 @@ import totalUnitsRoute from './routes/totalUnitsRoute';
 import userRoute from './routes/userRoute';
 import newBillsRoute from './routes/newBillsRoute';
 import analyticsRoute from './routes/analyticsRoute';
+
 dotenv.config();
 
 const app = express();

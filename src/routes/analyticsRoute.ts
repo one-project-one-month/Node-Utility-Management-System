@@ -1,8 +1,11 @@
-import { Router } from "express";
-import { validateRequestQuery } from "../middlewares/validationMiddleware";
-import { AnalyticsServiceQuerySchema } from "../validations/analyticsSchema";
-import { getAnalyticServiceCountController } from "../controllers/analyticsController";
-import { contractTypeAnalyticsController, roomAnalyticsController } from '../controllers/analyticsController';
+import { Router } from 'express';
+import { validateRequestQuery } from '../middlewares/validationMiddleware';
+import { AnalyticsServiceQuerySchema } from '../validations/analyticsSchema';
+import { getAnalyticServiceCountController } from '../controllers/analyticsController';
+import {
+  contractTypeAnalyticsController,
+  roomAnalyticsController,
+} from '../controllers/analyticsController';
 import { hasRole } from '../middlewares/authMiddleware';
 
 const router = Router();
@@ -21,9 +24,9 @@ const router = Router();
  *         $ref: '#/components/responses/ContractTypeAnalyticsSuccess'
  */
 router.get(
-    '/analytics/contract-types/tenant-counts',
-    hasRole(['Admin', 'Staff']),
-    contractTypeAnalyticsController
+  '/analytics/contract-types/tenant-counts',
+  hasRole(['Admin', 'Staff']),
+  contractTypeAnalyticsController
 );
 
 /**
@@ -40,13 +43,16 @@ router.get(
  *         $ref: '#/components/responses/RoomAnalyticsSuccess'
  */
 router.get(
-    '/analytics/rooms/status-counts',
-    hasRole(['Admin', 'Staff']),
-    roomAnalyticsController
+  '/analytics/rooms/status-counts',
+  hasRole(['Admin', 'Staff']),
+  roomAnalyticsController
 );
 
-router.get('/analytics/customer-services-counts',
-    hasRole(['Admin', 'Staff']),
-    validateRequestQuery(AnalyticsServiceQuerySchema), getAnalyticServiceCountController);
+router.get(
+  '/analytics/customer-services-counts',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(AnalyticsServiceQuerySchema),
+  getAnalyticServiceCountController
+);
 
 export default router;
