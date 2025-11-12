@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { contractTypeAnalyticsService, roomAnalyticsService } from '../services/analyticsServices';
+import {
+  contractTypeAnalyticsService,
+  roomAnalyticsService,
+} from '../services/analyticsServices';
 import { successResponse } from '../common/apiResponse';
 
 export const contractTypeAnalyticsController = async (
