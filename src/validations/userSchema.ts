@@ -45,6 +45,7 @@ export const UpdateUserSchema = z
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
+    path: ['userName', 'email', 'password', 'role', 'tenantId', 'isActive'],
   });
 
 export type GetUserParamType = z.infer<typeof GetUserParamSchema>;
