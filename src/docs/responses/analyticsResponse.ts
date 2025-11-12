@@ -81,3 +81,47 @@
  *                           - status: "Maintenance"
  *                             count: 5
  */
+
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     CustomerServiceAnalyticsSuccess:
+ *       description: Get analytic customer service count data sccessful.
+ *       content:
+ *         application/json:
+ *           schema:
+ *             allOf:
+ *               - $ref: '#/components/schemas/ApiSuccessResponse'
+ *               - type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: Get analytic customer service count data sccessful.
+ *                   content:
+ *                     type: object
+ *                     properties:
+ *                       data:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             countByStatus:
+ *                               type: object
+ *                               properties:
+ *                                 pending:
+ *                                   type: object
+ *                                   properties:
+ *                                     all:
+ *                                       type: number
+ *                                       example: 20
+ *                                     high:
+ *                                       type: number
+ *                                       example: 2
+ *                                     medium:
+ *                                       type: number
+ *                                       example: 7
+ *                                     low:
+ *                                       type: number
+ *                                       example: 11
+ */
