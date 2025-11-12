@@ -1,5 +1,8 @@
 import { Router } from 'express';
-import { contractTypeAnalyticsController, roomAnalyticsController } from '../controllers/analyticsController';
+import {
+  contractTypeAnalyticsController,
+  roomAnalyticsController,
+} from '../controllers/analyticsController';
 import { hasRole } from '../middlewares/authMiddleware';
 
 const router = Router();

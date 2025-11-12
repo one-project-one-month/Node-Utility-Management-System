@@ -23,24 +23,19 @@
  *                           type: object
  *                           properties:
  *                             contractType:
- *                               type: object
- *                               properties:
- *                                 name:
- *                                   type: string
- *                                   example: 12 Months
+ *                               type: string
+ *                               example: 12 Months
  *                             tenantCount:
  *                               type: number
  *                               example: 18
  *                         example:
- *                           - contractType:
- *                               name: "12 Months"
- *                             tenantCount: 18
- *                           - contractType:
- *                               name: "24 Months"
- *                             tenantCount: 24
- *                           - contractType:
- *                               name: "6 Months"
+ *                           - contractType: "6 Months"
  *                             tenantCount: 36
+ *                           - contractType: "12 Months"
+ *                             tenantCount: 18
+ *                           - contractType: "24 Months"
+ *                             tenantCount: 24
+
  */
 
 /**
