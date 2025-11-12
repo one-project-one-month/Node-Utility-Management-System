@@ -21,9 +21,9 @@ export const AnalyticsServiceQuerySchema = z.object({
     .refine((date) => !isNaN(date.getTime()), {
       error: 'Invalid due date',
     }).optional(),
-}).refine((data) => data.to && data.from && data.from > data.to,
+}).refine((data) => data.to && data.from && data.from < data.to,
   {
-    message: "'From' date cannot be later than 'To' date.",
+    message: "'From' date can't be later than 'To' date.",
   }
 )
 
