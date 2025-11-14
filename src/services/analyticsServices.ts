@@ -3,7 +3,7 @@ import prisma from '../lib/prismaClient';
 import moment from 'moment';
 import { NotFoundError } from '../common/errors';
 import { Bill } from '../../generated/prisma';
-import { GetTotalRevenueByMonthType } from '../validations/newBillsSchema';
+import { GetTotalRevenueByMonthType } from '../validations/analyticsSchema';
 
 export const getBillStatusAnalyticsService = async (req: Request) => {
   const { month, year } = req.validatedQuery as GetTotalRevenueByMonthType;

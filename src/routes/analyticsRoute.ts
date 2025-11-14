@@ -7,10 +7,34 @@ import {
   contractTypeAnalyticsController,
   roomAnalyticsController,
 } from '../controllers/analyticsController';
-import { GetTotalRevenueByMonthSchema } from '../validations/newBillsSchema';
+import { GetTotalRevenueByMonthSchema } from '../validations/analyticsSchema';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/v1/analytics/bills/amount-by-status:
+ *   get:
+ *     tags: [Analytics]
+ *     summary: Get bill analytics by status (Admin & Staff only)
+ *     description: Retrieves analytics for bills grouped by their status.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: month
+ *         in: query
+ *         description: Filter by month (1-12, where 1=January, 12=December)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 12
+ *           example: 2
+ *       - $ref: '#/components/parameters/YearParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/BillStatusAnalyticsSuccess'
+ */
 router.get(
   '/analytics/bills/amount-by-status',
   hasRole(['Admin', 'Staff']),
@@ -18,6 +42,30 @@ router.get(
   billStatusAnalyticsController
 );
 
+/**
+ * @swagger
+ * /api/v1/analytics/bills/revenue-by-month:
+ *   get:
+ *     tags: [Analytics]
+ *     summary: Get bill analytics by month (Admin & Staff only)
+ *     description: Retrieves analytics for bills grouped by month.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: month
+ *         in: query
+ *         description: Filter by month (1-12, where 1=January, 12=December)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 12
+ *           example: 2
+ *       - $ref: '#/components/parameters/YearParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/BillRevenueAnalyticsSuccess'
+ */
 router.get(
   '/analytics/bills/revenue-by-month',
   hasRole(['Admin', 'Staff']),
