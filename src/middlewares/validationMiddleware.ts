@@ -21,7 +21,7 @@ const validate = (props: ValidateProps) => {
 
     if (!success) {
       const formattedErrors = error.issues.map((err) => ({
-        path: err.path.join('.'),
+        path: err.path.join(', '),
         message: err.message,
       }));
       return next(new ValidationError(formattedErrors));
