@@ -29,6 +29,7 @@ export const UpdateContractTypeSchema = z
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: 'At least one field must be provided for update',
+    path: ['name', 'duration', 'price', 'facilities'],
   });
 
 export type CreateContractTypeSchemaType = z.infer<

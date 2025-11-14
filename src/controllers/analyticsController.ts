@@ -1,4 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
+import {
+  contractTypeAnalyticsService,
+  roomAnalyticsService,
+} from '../services/analyticsServices';
 import { successResponse } from '../common/apiResponse';
 import { getAnalyticServiceCount } from '../services/analyticsServices';
 import {

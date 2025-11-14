@@ -29,6 +29,14 @@ export const UpdateContractSchema = z
   })
   .refine((data) => Object.keys(data).length > 0, {
     error: 'At least one field must be provided for update',
+    path: [
+      'roomId',
+      'contractTypeId',
+      'tenantId',
+      'createdDate',
+      'expiryDate',
+      'updatedDate',
+    ],
   });
 
 export const ContractIdSchema = z.object({

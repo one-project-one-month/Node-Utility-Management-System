@@ -1,7 +1,4 @@
 import { Router } from 'express';
-import { validateRequestQuery } from '../middlewares/validationMiddleware';
-import { AnalyticsServiceQuerySchema } from '../validations/analyticsSchema';
-import { getAnalyticServiceCountController } from '../controllers/analyticsController';
 import {
   contractTypeAnalyticsController,
   roomAnalyticsController,
