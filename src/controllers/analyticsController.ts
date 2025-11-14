@@ -4,6 +4,29 @@ import {
   roomAnalyticsService,
 } from '../services/analyticsServices';
 import { successResponse } from '../common/apiResponse';
+import { getAnalyticServiceCount } from '../services/analyticsServices';
+import {
+  contractTypeAnalyticsService,
+  roomAnalyticsService,
+} from '../services/analyticsServices';
+
+export const getAnalyticServiceCountController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const data = await getAnalyticServiceCount(req);
+    successResponse(
+      res,
+      'Get analytic customer service count data sccessful.',
+      { data },
+      200
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
 
 export const contractTypeAnalyticsController = async (
   _req: Request,
