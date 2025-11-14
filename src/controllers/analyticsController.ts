@@ -4,7 +4,45 @@ import { getAnalyticServiceCount } from '../services/analyticsServices';
 import {
   contractTypeAnalyticsService,
   roomAnalyticsService,
+  getBillRevenueByFourMonthService,
+  getBillStatusAnalyticsService,
 } from '../services/analyticsServices';
+
+export const billStatusAnalyticsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const analyticsData = await getBillStatusAnalyticsService(req);
+    successResponse(
+      res,
+      'Bill analytics fetched successfully',
+      { data: analyticsData },
+      200
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const billsRevenueByMonthController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const revenueData = await getBillRevenueByFourMonthService(req);
+    successResponse(
+      res,
+      'Bill revenue fetched successfully',
+      { data: revenueData },
+      200
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
 
 export const getAnalyticServiceCountController = async (
   req: Request,
