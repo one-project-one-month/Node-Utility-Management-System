@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import {
   contractTypeAnalyticsController,
+  getAnalyticServiceCountController,
   roomAnalyticsController,
 } from '../controllers/analyticsController';
 import { hasRole } from '../middlewares/authMiddleware';
+import { validateRequestQuery } from '../middlewares/validationMiddleware';
+import { AnalyticsServiceQuerySchema } from '../validations/analyticsSchema';
 
 const router = Router();
 
