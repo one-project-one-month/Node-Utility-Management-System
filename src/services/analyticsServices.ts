@@ -48,7 +48,7 @@ export const getBillStatusAnalyticsService = async (req: Request) => {
     0
   );
   return {
-    month: `${year}-${month}`,
+    month: `${targetYear}-${targetMonth}`,
     pending: totalPending,
     paid: totalPaid,
     overdue: totalOverdue,
