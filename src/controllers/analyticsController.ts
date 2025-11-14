@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { successResponse } from '../common/apiResponse';
-import { getAnalyticServiceCount } from '../services/analyticsServices';
 import {
   contractTypeAnalyticsService,
   roomAnalyticsService,
   getBillRevenueByFourMonthService,
   getBillStatusAnalyticsService,
+  getAnalyticServiceCount,
 } from '../services/analyticsServices';
 
 export const billStatusAnalyticsController = async (
