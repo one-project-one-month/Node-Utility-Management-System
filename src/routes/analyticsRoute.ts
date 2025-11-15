@@ -9,8 +9,10 @@ import {
   roomAnalyticsController,
 } from '../controllers/analyticsController';
 
-import { GetTotalRevenueByMonthSchema } from '../validations/analyticsSchema';
-import { AnalyticsServiceQuerySchema } from '../validations/analyticsSchema';
+import {
+  AnalyticsServiceQuerySchema,
+  GetTotalRevenueByMonthSchema,
+} from '../validations/analyticsSchema';
 
 const router = Router();
 

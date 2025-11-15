@@ -2,10 +2,11 @@ import { Request } from 'express';
 import prisma from '../lib/prismaClient';
 import moment from 'moment';
 import { NotFoundError } from '../common/errors';
-import { Bill } from '../../generated/prisma';
-import { GetTotalRevenueByMonthType } from '../validations/analyticsSchema';
-import type { AnalyticsServiceCount } from '../validations/analyticsSchema';
-import { Category, PriorityLevel } from '../../generated/prisma';
+import type {
+  AnalyticsServiceCount,
+  GetTotalRevenueByMonthType,
+} from '../validations/analyticsSchema';
+import { Category, PriorityLevel, Bill } from '../../generated/prisma';
 import {
   countFieldsHelper,
   serviceDateRangeHelper,
