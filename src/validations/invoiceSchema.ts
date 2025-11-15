@@ -13,7 +13,7 @@ export const GetInvoiceParamSchema = z.object({
 export const GetInvoiceQuerySchema = PaginationQuerySchema.extend({
   status: z
     .enum(InvoiceStatus, {
-      error: "Status must be one of 'Pending', 'Paid', 'Partial', 'Overdue'",
+      error: "Status must be one of 'Pending', 'Paid', 'Overdue'",
     })
     .optional(),
   month: z.string().optional(),

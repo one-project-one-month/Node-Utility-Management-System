@@ -1,8 +1,82 @@
 import { Router } from 'express';
-import { contractTypeAnalyticsController, roomAnalyticsController } from '../controllers/analyticsController';
 import { hasRole } from '../middlewares/authMiddleware';
+import { validateRequestQuery } from '../middlewares/validationMiddleware';
+import {
+  billsRevenueByMonthController,
+  billStatusAnalyticsController,
+  contractTypeAnalyticsController,
+  getAnalyticServiceCountController,
+  roomAnalyticsController,
+} from '../controllers/analyticsController';
+
+import {
+  AnalyticsServiceQuerySchema,
+  GetTotalRevenueByMonthSchema,
+} from '../validations/analyticsSchema';
 
 const router = Router();
+
+/**
+ * @swagger
+ * /api/v1/analytics/bills/amount-by-status:
+ *   get:
+ *     tags: [Analytics]
+ *     summary: Get bill analytics by status (Admin & Staff only)
+ *     description: Retrieves analytics for bills grouped by their status.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: month
+ *         in: query
+ *         description: Filter by month (1-12, where 1=January, 12=December)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 12
+ *           example: 2
+ *       - $ref: '#/components/parameters/YearParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/BillStatusAnalyticsSuccess'
+ */
+router.get(
+  '/analytics/bills/amount-by-status',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(GetTotalRevenueByMonthSchema),
+  billStatusAnalyticsController
+);
+
+/**
+ * @swagger
+ * /api/v1/analytics/bills/revenue-by-month:
+ *   get:
+ *     tags: [Analytics]
+ *     summary: Get bill analytics by month (Admin & Staff only)
+ *     description: Retrieves analytics for bills grouped by month.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: month
+ *         in: query
+ *         description: Filter by month (1-12, where 1=January, 12=December)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 12
+ *           example: 2
+ *       - $ref: '#/components/parameters/YearParam'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/BillRevenueAnalyticsSuccess'
+ */
+router.get(
+  '/analytics/bills/revenue-by-month',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(GetTotalRevenueByMonthSchema),
+  billsRevenueByMonthController
+);
 
 /**
  * @swagger
@@ -40,6 +114,49 @@ router.get(
   '/analytics/rooms/status-counts',
   hasRole(['Admin', 'Staff']),
   roomAnalyticsController
+);
+
+/**
+ * @swagger
+ * /api/v1/analytics/customer-services-counts:
+ *   get:
+ *     tags: [Analytics]
+ *     summary: Get service analytics by status and priority (Admin & Staff only)
+ *     description: Retrieves analytics for customer services grouped by their status and priority. (If status is not provided, it will default to "Pending".)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: query
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [priority, category, status]
+ *           example: status
+ *       - '$ref': '#/components/parameters/StatusQuery'
+ *       - name: from
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: '2025-06-10'
+ *       - name: to
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: '2025-12-18'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/CustomerServiceAnalyticsSuccess'
+ */
+router.get(
+  '/analytics/customer-services-counts',
+  hasRole(['Admin', 'Staff']),
+  validateRequestQuery(AnalyticsServiceQuerySchema),
+  getAnalyticServiceCountController
 );
 
 export default router;

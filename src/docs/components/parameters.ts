@@ -302,5 +302,5 @@
  *       schema:
  *         type: string
  *         pattern: '^\d{4}$'
- *         example: '2024'
+ *         example: '2025'
  */
