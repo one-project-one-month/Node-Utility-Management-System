@@ -2,6 +2,12 @@
 
 A comprehensive utility management system built with Node.js, TypeScript, and PostgreSQL for managing rental properties, tenants, billing, and customer services.
 
+## Frontend Dashboard Repo
+- https://github.com/one-project-one-month/React-Utility-Management-System-Dashboard
+
+## Frontend Web App Repo
+- https://github.com/one-project-one-month/Tenent-Web-App-Utility-Management-System
+
 ## Server Deployment Info
 
 This project is deployed on render. Here you can access the server:
